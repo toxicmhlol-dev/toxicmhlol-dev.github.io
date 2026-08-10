@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>V0ID</title>
-<!-- Firebase SDKs (Compat Version for easy integration) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<!-- Firebase SDKs (Compat GameHubtatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
@@ -50,7 +49,7 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
 <body>
 <div class="app">
 <aside class="side">
-  <div class="logo"><b>🎮</b><span>GameHub</span></div>
+  <div class="logo"><b>🎮</b><span>V0ID</span></div>
   <label>Categories</label>
   <button class="nav active" data-view="home">🏠 Home</button>
   <button class="nav" data-view="action">⚔️ Action</button>
