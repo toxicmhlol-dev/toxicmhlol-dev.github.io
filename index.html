@@ -238,13 +238,14 @@ chatInput.onkeydown = (e) => {
   if (e.key === "Enter") document.getElementById("sendChat").click();
 };
 
-// Real-time listener for incoming messages ordered by time
+// Real-time listener for incoming messages (using safe desc ordering + reverse)
 db.collection("gamehub_messages")
-  .orderBy("timestamp", "asc")
-  .limitToLast(50)
+  .orderBy("timestamp", "desc")
+  .limit(50)
   .onSnapshot(snapshot => {
     chatMessages.innerHTML = "";
-    snapshot.forEach(doc => {
+    const docs = snapshot.docs.reverse();
+    docs.forEach(doc => {
       const data = doc.data();
       appendMessage(data.sender || "Anon", data.emoji || "😀", data.text);
     });
