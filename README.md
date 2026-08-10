@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>GameHub — Ultimate Edition</title>
-<!-- Gun.js for Zero-Config Serverless Real-time Sync -->
+<!-- Gun.js for Serverless Real-time Sync -->
 <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 <style>
 :root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
@@ -77,8 +77,8 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
   </div>
   <div class="chat">
     <div class="chathead">
-      <small>Status: Peer Mesh Network</small>
-      <span id="chatStatusBadge" style="font-size:11px; color:#f1c40f;">Connecting...</span>
+      <small>Status: Decentralized Peer Mesh</small>
+      <span id="chatStatusBadge" style="font-size:11px; color:#f1c40f;">Connecting to relay...</span>
     </div>
     <div class="messages" id="chatMessages"></div>
     <div class="composer">
@@ -186,24 +186,31 @@ document.getElementById("save").onclick=()=>{
   renderProfile();
 };
 
-// --- CHROMEBOOK-FRIENDLY CHAT ENGINE ---
+// --- REAL CHAT ENGINE WITH MULTI-PEER RELAYS ---
 const gun = Gun({
   peers: [
     'https://gun-manhattan.herokuapp.com/gun',
-    'https://peer.gun.eco/gun'
+    'https://peer.gun.eco/gun',
+    'https://relay.peer.ooo/gun'
   ]
 });
 
-const chatRoom = gun.get('gamehub_chromebook_room_2026');
+const chatRoom = gun.get('gamehub_chromebook_room_2026_v3');
 const chatMessages = document.getElementById("chatMessages");
 const chatInput = document.getElementById("chatInput");
 const chatStatusBadge = document.getElementById("chatStatusBadge");
 const seenMessages = new Set();
 
-setTimeout(() => {
+// True connection listener using Gun's internal peer status
+gun.on('hi', peer => {
   chatStatusBadge.textContent = "Connected Live";
   chatStatusBadge.style.color = "#7de5a6";
-}, 1500);
+});
+
+gun.on('bye', peer => {
+  chatStatusBadge.textContent = "Reconnecting...";
+  chatStatusBadge.style.color = "#f1c40f";
+});
 
 function appendMessage(sender, emoji, text) {
   const msgDiv = document.createElement("div");
