@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>V0ID</title>
-<Firebase SDKs (Compat GameHubtatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
