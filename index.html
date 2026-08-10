@@ -32,8 +32,6 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 .back-btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:bold}
 .back-btn:hover{background:var(--border)}
 .game-frame{flex:1;border:none;width:100%;background:#000}
-.game-fallback{text-align:center;padding:8px;font-size:12px;background:var(--bg);color:var(--muted);border-bottom:1px solid var(--border)}
-.game-fallback a{color:var(--accent);text-decoration:none;font-weight:bold}
 
 .notes-list{display:grid;gap:12px;max-width:600px;margin:20px auto}
 .note-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:16px}
@@ -45,12 +43,13 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 .chathead{padding:14px 17px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.chathead small{color:var(--muted)}
 .messages{flex:1;overflow:auto;padding:18px}.msg{display:flex;gap:9px;margin-bottom:15px;cursor:context-menu}.msg .avatar{width:34px;height:34px;font-size:12px}.meta{font-size:12px;color:var(--muted);margin-bottom:4px}.bubble{background:var(--panel2);padding:9px 12px;border-radius:5px 12px 12px 12px;max-width:min(650px,75vw);word-break:break-word}
 .composer{display:flex;gap:8px;padding:11px;border-top:1px solid var(--border)}.composer input{flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0}.send{padding:0 18px}
+.clear-chat-btn{background:#d93850;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;margin-right:10px;}
+.clear-chat-btn:hover{background:#b82a3e;}
 
 /* Context Menu */
 .context-menu{display:none;position:absolute;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:1000;box-shadow:0 6px 20px rgba(0,0,0,0.6);min-width:160px}
 .context-menu button{display:block;width:100%;background:transparent;border:0;color:var(--text);text-align:left;padding:9px 12px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
 .context-menu button:hover{background:var(--border)}
-.context-menu .danger{color:#ff9aaa}
 
 .math-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;margin-top:20px}
 .math-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}
@@ -58,7 +57,6 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 .math-card input,.math-card select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:9px;border-radius:8px;outline:0;margin-bottom:8px}
 .math-card button{width:100%;border:0;background:var(--accent);color:white;font-weight:700;border-radius:8px;padding:8px;cursor:pointer;margin-top:4px}
 .math-result{margin-top:10px;padding:8px;background:var(--bg);border-radius:8px;font-size:13px;color:#7de5a6;border:1px solid var(--border);word-break:break-all}
-
 .calculator{max-width:390px;margin:auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
 .calc-display{width:100%;height:65px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:right;font-size:27px;margin-bottom:12px}
 .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -66,8 +64,6 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 .calc-grid button:hover{background:var(--border)}.calc-grid .equals{background:var(--accent);color:white;border-color:var(--accent)}
 .settings{max-width:600px;margin:auto}
 .status{font-size:11px;color:#7de5a6;margin-top:3px}.hint{font-size:12px;color:var(--muted);margin-top:12px}
-
-/* Setting Inputs */
 .field{margin-bottom: 15px;}
 .field span{display:block;margin-bottom:6px;font-size:13px;font-weight:600;}
 .field input, .field select, .field textarea {width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0;font-family:inherit}
@@ -95,7 +91,7 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 <header class="top"><div class="title" id="title">Home</div><div class="online" id="connection">● Ready</div></header>
 <section class="content">
 
-<div class="view active" id="home"><div class="hero"><h1>Welcome to GameHub 🎮</h1><p>Choose a category and play.</p></div><div class="games" id="homeGames"></div></div>
+<div class="view active" id="home"><div class="hero"><h1>Welcome to GameHub 🎮</h1><p>Choose a category and play original, built-in games.</p></div><div class="games" id="homeGames"></div></div>
 <div class="view" id="action"><div class="hero"><h1>⚔️ Action</h1><p>Fast-paced games.</p></div><div class="games" id="actionGames"></div></div>
 <div class="view" id="puzzle"><div class="hero"><h1>🧩 Puzzle</h1><p>Brain games.</p></div><div class="games" id="puzzleGames"></div></div>
 <div class="view" id="arcade"><div class="hero"><h1>👾 Arcade</h1><p>Classic quick games.</p></div><div class="games" id="arcadeGames"></div></div>
@@ -105,10 +101,9 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
   <div class="game-header">
     <button class="back-btn" onclick="closeGame()">⬅ Back to Games</button>
     <div id="gameTitle" style="font-weight:700;">Loading...</div>
-    <div style="width:80px;"></div>
+    <div style="width:120px;"></div>
   </div>
-  <div class="game-fallback">If the game doesn't load or is blocked by the server, <a href="#" id="gameLink" target="_blank">Click Here</a> to play in a new tab.</div>
-  <iframe class="game-frame" id="gameFrame" src="" allowfullscreen></iframe>
+  <iframe class="game-frame" id="gameFrame" srcdoc="" allowfullscreen></iframe>
 </div>
 
 <div class="view" id="chat">
@@ -118,8 +113,11 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
   </div>
   <div class="chat" id="chatContainer">
     <div class="chathead">
-      <small>Status: Firebase Sync (Right-click any profile for options)</small>
-      <span id="chatStatusBadge" style="font-size:11px; color:#7de5a6;">Connected Live</span>
+      <small>Status: Firebase Sync (Right-click profile to block)</small>
+      <div>
+        <button class="clear-chat-btn" id="uiClearChat">🗑️ Clear Local Chat</button>
+        <span id="chatStatusBadge" style="font-size:11px; color:#7de5a6;">Connected Live</span>
+      </div>
     </div>
     <div class="messages" id="chatMessages"></div>
     <div class="composer">
@@ -127,8 +125,7 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
       <button class="send" id="sendChat">Send</button>
     </div>
     <div class="context-menu" id="chatContextMenu">
-      <button id="ctxBlock">🚫 Block User</button>
-      <button class="danger" id="ctxClear">🗑️ Clear Chat</button>
+      <button id="ctxBlock" style="color:#ff9aaa;">🚫 Block User</button>
     </div>
   </div>
 </div>
@@ -144,7 +141,7 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 </div>
 
 <div class="view" id="math">
-  <div class="hero"><h1>➗ Advanced Math Hub</h1><p>Standard calculator plus 25+ specific math calculators and tools.</p></div>
+  <div class="hero"><h1>➗ Advanced Math Hub</h1><p>Standard calculator plus quick conversion tools.</p></div>
   <div class="calculator" style="margin-bottom:30px;">
     <input id="calcDisplay" class="calc-display" readonly value="0">
     <div class="calc-grid">
@@ -154,35 +151,6 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
       <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button data-value="+">+</button>
       <button data-value="(">(</button><button data-value="0">0</button><button data-value=")">)</button><button data-calc="equals" class="equals">=</button>
     </div>
-  </div>
-  <h2 style="margin-top:20px;">25+ Quick Math & Conversion Tools</h2>
-  <div class="math-grid">
-    <div class="math-card"><h3>1. Percentage (%)</h3><input id="p1" placeholder="What is X%"><input id="p2" placeholder="Of this number"><button onclick="calcPct()">Calculate</button><div class="math-result" id="rPct">Result: -</div></div>
-    <div class="math-card"><h3>2. Square Root</h3><input id="sqrtIn" placeholder="Enter number"><button onclick="calcSqrt()">Calculate</button><div class="math-result" id="rSqrt">Result: -</div></div>
-    <div class="math-card"><h3>3. Exponent (Base^Exp)</h3><input id="baseIn" placeholder="Base"><input id="expIn" placeholder="Exponent"><button onclick="calcPow()">Calculate</button><div class="math-result" id="rPow">Result: -</div></div>
-    <div class="math-card"><h3>4. Pythagorean (Hypotenuse c)</h3><input id="pytA" placeholder="Side a"><input id="pytB" placeholder="Side b"><button onclick="calcPyt()">Find Hypotenuse</button><div class="math-result" id="rPyt">Result: -</div></div>
-    <div class="math-card"><h3>5. Circle Area</h3><input id="cirR" placeholder="Radius (r)"><button onclick="calcCircle()">Calculate Area</button><div class="math-result" id="rCir">Result: -</div></div>
-    <div class="math-card"><h3>6. Mean / Average</h3><input id="meanIn" placeholder="Comma-separated numbers (e.g. 10,20,30)"><button onclick="calcMean()">Calculate Mean</button><div class="math-result" id="rMean">Result: -</div></div>
-    <div class="math-card"><h3>7. Quadratic Roots (ax^2+bx+c)</h3><input id="quadA" placeholder="a"><input id="quadB" placeholder="b"><input id="quadC" placeholder="c"><button onclick="calcQuad()">Solve X</button><div class="math-result" id="rQuad">Result: -</div></div>
-    <div class="math-card"><h3>8. Fahrenheit to Celsius</h3><input id="fahrIn" placeholder="Degrees Fahrenheit"><button onclick="calcTemp()">Convert to °C</button><div class="math-result" id="rTemp">Result: -</div></div>
-    <div class="math-card"><h3>9. Celsius to Fahrenheit</h3><input id="celsIn" placeholder="Degrees Celsius"><button onclick="calcTemp2()">Convert to °F</button><div class="math-result" id="rTemp2">Result: -</div></div>
-    <div class="math-card"><h3>10. Simple Interest</h3><input id="siP" placeholder="Principal"><input id="siR" placeholder="Rate (%)"><input id="siT" placeholder="Time (Years)"><button onclick="calcSI()">Calculate Interest</button><div class="math-result" id="rSI">Result: -</div></div>
-    <div class="math-card"><h3>11. Speed Finder (Dist / Time)</h3><input id="sdDist" placeholder="Distance"><input id="sdTime" placeholder="Time"><button onclick="calcSpeed()">Find Speed</button><div class="math-result" id="rSpeed">Result: -</div></div>
-    <div class="math-card"><h3>12. Factorial (n!)</h3><input id="factIn" placeholder="Integer n (max 170)"><button onclick="calcFact()">Calculate</button><div class="math-result" id="rFact">Result: -</div></div>
-    <div class="math-card"><h3>13. Greatest Common Divisor</h3><input id="gcd1" placeholder="Number 1"><input id="gcd2" placeholder="Number 2"><button onclick="calcGCD()">Find GCD</button><div class="math-result" id="rGCD">Result: -</div></div>
-    <div class="math-card"><h3>14. Least Common Multiple</h3><input id="lcm1" placeholder="Number 1"><input id="lcm2" placeholder="Number 2"><button onclick="calcLCM()">Find LCM</button><div class="math-result" id="rLCM">Result: -</div></div>
-    <div class="math-card"><h3>15. BMI Calculator (Metric)</h3><input id="bmiKg" placeholder="Weight (kg)"><input id="bmiM" placeholder="Height (m)"><button onclick="calcBMI()">Calculate BMI</button><div class="math-result" id="rBMI">Result: -</div></div>
-    <div class="math-card"><h3>16. Triangle Area</h3><input id="triB" placeholder="Base"><input id="triH" placeholder="Height"><button onclick="calcTri()">Calculate Area</button><div class="math-result" id="rTri">Result: -</div></div>
-    <div class="math-card"><h3>17. Rectangle Perimeter</h3><input id="recL" placeholder="Length"><input id="recW" placeholder="Width"><button onclick="calcPerim()">Calculate Perimeter</button><div class="math-result" id="rPerim">Result: -</div></div>
-    <div class="math-card"><h3>18. Line Slope (x1,y1 to x2,y2)</h3><input id="sl1" placeholder="x1, y1 (comma separated)"><input id="sl2" placeholder="x2, y2 (comma separated)"><button onclick="calcSlope()">Find Slope</button><div class="math-result" id="rSlope">Result: -</div></div>
-    <div class="math-card"><h3>19. 2D Point Distance</h3><input id="pt1" placeholder="x1, y1"><input id="pt2" placeholder="x2, y2"><button onclick="calcDist()">Find Distance</button><div class="math-result" id="rDist">Result: -</div></div>
-    <div class="math-card"><h3>20. Simplify Fraction</h3><input id="fracN" placeholder="Numerator"><input id="fracD" placeholder="Denominator"><button onclick="calcFrac()">Simplify</button><div class="math-result" id="rFrac">Result: -</div></div>
-    <div class="math-card"><h3>21. Logarithm (Log10)</h3><input id="logIn" placeholder="Number"><button onclick="calcLog()">Calculate Log10</button><div class="math-result" id="rLog">Result: -</div></div>
-    <div class="math-card"><h3>22. Natural Log (ln)</h3><input id="lnIn" placeholder="Number"><button onclick="calcLn()">Calculate ln</button><div class="math-result" id="rLn">Result: -</div></div>
-    <div class="math-card"><h3>23. % Change (Old to New)</h3><input id="pcOld" placeholder="Original Value"><input id="pcNew" placeholder="New Value"><button onclick="calcPctChange()">Calculate % Change</button><div class="math-result" id="rPctChange">Result: -</div></div>
-    <div class="math-card"><h3>24. Modulus (A mod B)</h3><input id="modA" placeholder="A"><input id="modB" placeholder="B"><button onclick="calcMod()">Find Remainder</button><div class="math-result" id="rMod">Result: -</div></div>
-    <div class="math-card"><h3>25. Cube Volume</h3><input id="cubeS" placeholder="Side length (s)"><button onclick="calcCube()">Calculate Volume</button><div class="math-result" id="rCube">Result: -</div></div>
-    <div class="math-card"><h3>26. Sphere Volume</h3><input id="sphR" placeholder="Radius (r)"><button onclick="calcSphere()">Calculate Volume</button><div class="math-result" id="rSph">Result: -</div></div>
   </div>
 </div>
 
@@ -213,52 +181,56 @@ label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800
 </section></main></div>
 
 <script>
-// Extended Games Array (25 items) mapped to working HTML5 game URLs
+// Base styling for injected games
+const gBase = `<style>body{margin:0;background:#111;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;overflow:hidden;} canvas{background:#000;border:2px solid #333;box-shadow:0 0 20px rgba(0,0,0,0.5);} button{background:#7c5cff;color:white;border:none;padding:10px 20px;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:20px;}</style>`;
+
+// Custom built games stored as strings
+const customGamesData = {
+  "snake": gBase + `<canvas id="c" width="400" height="400"></canvas><script>const ctx=c.getContext('2d');let s=20,sn=[{x:10,y:10}],dx=0,dy=0,fx=15,fy=15,score=0;setInterval(()=>{if(dx===0&&dy===0)return;let h={x:sn[0].x+dx,y:sn[0].y+dy};if(h.x<0||h.x>=20||h.y<0||h.y>=20||sn.some(p=>p.x===h.x&&p.y===h.y)){sn=[{x:10,y:10}];dx=0;dy=0;score=0;return;}sn.unshift(h);if(h.x===fx&&h.y===fy){score++;fx=Math.floor(Math.random()*20);fy=Math.floor(Math.random()*20);}else{sn.pop();}ctx.clearRect(0,0,400,400);ctx.fillStyle='red';ctx.fillRect(fx*s,fy*s,s-1,s-1);ctx.fillStyle='lime';sn.forEach(p=>ctx.fillRect(p.x*s,p.y*s,s-1,s-1));ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},100);window.onkeydown=e=>{if(e.key==='ArrowUp'&&dy===0){dx=0;dy=-1}if(e.key==='ArrowDown'&&dy===0){dx=0;dy=1}if(e.key==='ArrowLeft'&&dx===0){dx=-1;dy=0}if(e.key==='ArrowRight'&&dx===0){dx=1;dy=0}};ctx.fillStyle='white';ctx.fillText("Press an arrow key to start",120,200);<\/script>`,
+  "pong": gBase + `<canvas id="c" width="500" height="300"></canvas><script>const ctx=c.getContext('2d');let p1=110,p2=110,bx=250,by=150,bdx=3,bdy=3;setInterval(()=>{by+=bdy;bx+=bdx;if(by<=0||by>=290)bdy*=-1;if(bx<=15&&by>p1&&by<p1+80){bdx*=-1;bx=15;}if(bx>=475&&by>p2&&by<p2+80){bdx*=-1;bx=475;}if(bx<0||bx>500){bx=250;by=150;bdx=3*(Math.random()>0.5?1:-1);}p2+=((by-40)-p2)*0.1;ctx.clearRect(0,0,500,300);ctx.fillStyle='white';ctx.fillRect(5,p1,10,80);ctx.fillRect(485,p2,10,80);ctx.fillRect(bx,by,10,10);},16);window.onmousemove=e=>{p1=e.clientY-40;};<\/script>`,
+  "dodge": gBase + `<canvas id="c" width="300" height="400"></canvas><script>const ctx=c.getContext('2d');let px=135,obs=[],score=0,go=false;setInterval(()=>{if(go)return;ctx.clearRect(0,0,300,400);ctx.fillStyle='#7c5cff';ctx.fillRect(px,350,30,30);if(Math.random()<0.05)obs.push({x:Math.random()*270,y:0,w:20+Math.random()*40});ctx.fillStyle='red';obs.forEach((o,i)=>{o.y+=4;ctx.fillRect(o.x,o.y,o.w,20);if(o.y>400){obs.splice(i,1);score++;}if(350<o.y+20&&380>o.y&&px<o.x+o.w&&px+30>o.x)go=true;});ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);if(go)ctx.fillText("GAME OVER - Refresh to restart",60,200);},16);window.onmousemove=e=>{px=e.clientX-15;if(px<0)px=0;if(px>270)px=270;};<\/script>`,
+  "shooter": gBase + `<canvas id="c" width="400" height="500"></canvas><script>const ctx=c.getContext('2d');let px=180,buls=[],ens=[],score=0;setInterval(()=>{ctx.clearRect(0,0,400,500);ctx.fillStyle='cyan';ctx.fillRect(px,450,40,30);if(Math.random()<0.03)ens.push({x:Math.random()*360,y:0});buls.forEach((b,i)=>{b.y-=8;ctx.fillStyle='yellow';ctx.fillRect(b.x,b.y,4,10);if(b.y<0)buls.splice(i,1);});ens.forEach((e,ei)=>{e.y+=2;ctx.fillStyle='red';ctx.fillRect(e.x,e.y,30,30);if(e.y>500)ens.splice(ei,1);buls.forEach((b,bi)=>{if(b.x>e.x&&b.x<e.x+30&&b.y>e.y&&b.y<e.y+30){ens.splice(ei,1);buls.splice(bi,1);score+=10;}});});ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},16);window.onmousemove=e=>{px=e.clientX-20;};window.onclick=()=>buls.push({x:px+18,y:450});<\/script>`,
+  "flappy": gBase + `<canvas id="c" width="300" height="400"></canvas><script>const ctx=c.getContext('2d');let by=200,bv=0,p=[],score=0,go=false;setInterval(()=>{if(go)return;bv+=0.4;by+=bv;ctx.clearRect(0,0,300,400);ctx.fillStyle='yellow';ctx.fillRect(50,by,20,20);if(p.length===0||p[p.length-1].x<150)p.push({x:300,y:Math.random()*200+50});ctx.fillStyle='lime';p.forEach((pi,i)=>{pi.x-=2;ctx.fillRect(pi.x,0,30,pi.y);ctx.fillRect(pi.x,pi.y+100,30,400-pi.y-100);if(pi.x==50)score++;if(pi.x<-30)p.splice(i,1);if(50<pi.x+30&&70>pi.x&&(by<pi.y||by+20>pi.y+100))go=true;});if(by>400||by<0)go=true;ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},16);window.onclick=()=>{bv=-6;};<\/script>`,
+  "tictactoe": gBase + `<style>.row{display:flex;}.c{width:80px;height:80px;background:#222;border:2px solid #555;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;}.c:hover{background:#333}</style><h2>Tic Tac Toe</h2><div id="b"></div><button onclick="rst()">Restart</button><script>let p='X',brd=['','','','','','','','',''];const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];function ck(){for(let c of w)if(brd[c[0]]&&brd[c[0]]===brd[c[1]]&&brd[c[0]]===brd[c[2]])return brd[c[0]];return brd.includes('')?null:'Tie';}function cl(i){if(!brd[i]&&!ck()){brd[i]=p;p=p==='X'?'O':'X';rd();let r=ck();if(r)setTimeout(()=>alert(r==='Tie'?'Tie!':r+' wins!'),10);}}function rd(){let h='';for(let i=0;i<9;i++){if(i%3===0)h+='<div class="row">';h+='<div class="c" onclick="cl('+i+')">'+brd[i]+'</div>';if(i%3===2)h+='</div>';}document.getElementById('b').innerHTML=h;}function rst(){brd=['','','','','','','','',''];p='X';rd();}rd();<\/script>`,
+  "memory": gBase + `<style>.g{display:grid;grid-template-columns:repeat(4,60px);gap:10px}.c{width:60px;height:60px;background:#333;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;border-radius:8px;}</style><h2>Memory Match</h2><div class="g" id="b"></div><button onclick="init()">Restart</button><script>const e=['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];let cds=[],f1=null,f2=null,l=false;function init(){cds=[...e,...e].sort(()=>Math.random()-0.5).map(v=>({v,f:false,m:false}));rd();}function cl(i){if(l||cds[i].f||cds[i].m)return;cds[i].f=true;rd();if(f1===null)f1=i;else{f2=i;l=true;setTimeout(()=>{if(cds[f1].v===cds[f2].v){cds[f1].m=cds[f2].m=true;}else{cds[f1].f=cds[f2].f=false;}f1=f2=null;l=false;rd();if(cds.every(c=>c.m))alert('You Win!');},700);}}function rd(){document.getElementById('b').innerHTML=cds.map((c,i)=>'<div class="c" onclick="cl('+i+')">'+(c.f||c.m?c.v:'❓')+'</div>').join('');}init();<\/script>`,
+  "simon": gBase + `<style>.g{display:grid;grid-template-columns:100px 100px;gap:10px}.c{width:100px;height:100px;border-radius:10px;cursor:pointer;opacity:0.6;}.c:active{opacity:1}</style><h2>Simon Says</h2><p id="s">Level 1</p><div class="g"><div class="c" style="background:red" onclick="g(0)" id="b0"></div><div class="c" style="background:blue" onclick="g(1)" id="b1"></div><div class="c" style="background:green" onclick="g(2)" id="b2"></div><div class="c" style="background:yellow" onclick="g(3)" id="b3"></div></div><button onclick="st()">Start Game</button><script>let seq=[],usr=[],lock=true;function st(){seq=[];usr=[];nx();}function nx(){usr=[];seq.push(Math.floor(Math.random()*4));document.getElementById('s').innerText='Level '+seq.length;lock=true;let i=0;let iv=setInterval(()=>{if(i>0)document.getElementById('b'+seq[i-1]).style.opacity=0.6;if(i===seq.length){clearInterval(iv);lock=false;return;}let b=document.getElementById('b'+seq[i]);b.style.opacity=1;i++;},600);}function g(n){if(lock)return;document.getElementById('b'+n).style.opacity=1;setTimeout(()=>document.getElementById('b'+n).style.opacity=0.6,200);usr.push(n);let ok=true;for(let i=0;i<usr.length;i++)if(usr[i]!==seq[i])ok=false;if(!ok){alert('Game Over! Reached level '+seq.length);lock=true;}else if(usr.length===seq.length){lock=true;setTimeout(nx,1000);}}<\/script>`,
+  "mathrun": gBase + `<style>input{font-size:24px;padding:10px;text-align:center;border-radius:8px;border:none;margin:20px;}</style><h2>Math Run</h2><h1 id="q">1 + 1</h1><input type="number" id="a" autofocus><p>Score: <span id="sc">0</span> | Time: <span id="t">30</span></p><button onclick="st()">Start</button><script>let sc=0,tm=0,ans=0,iv;function st(){sc=0;tm=30;document.getElementById('a').value='';document.getElementById('sc').innerText=sc;nx();clearInterval(iv);iv=setInterval(()=>{tm--;document.getElementById('t').innerText=tm;if(tm<=0){clearInterval(iv);alert('Time up! Score: '+sc);}},1000);}function nx(){let o=['+','-','*'][Math.floor(Math.random()*3)];let n1=Math.floor(Math.random()*12)+1;let n2=Math.floor(Math.random()*12)+1;if(o==='-')n1=Math.max(n1,n2)+(Math.random()*10|0);document.getElementById('q').innerText=n1+' '+o+' '+n2;ans=eval(n1+o+n2);}document.getElementById('a').oninput=e=>{if(tm>0&&parseInt(e.target.value)===ans){sc++;document.getElementById('sc').innerText=sc;e.target.value='';nx();}};<\/script>`,
+  "clicker": gBase + `<style>.b{font-size:60px;cursor:pointer;user-select:none;transition:transform 0.1s;}.b:active{transform:scale(0.95)}</style><h2>Clicker Quest</h2><div class="b" onclick="c()">💎</div><h1 id="s">0 Gems</h1><button onclick="buy()">Buy Auto-Miner (10 Gems)</button><p>Miners: <span id="m">0</span></p><script>let sc=0,mn=0;function c(){sc++;ud();}function buy(){if(sc>=10){sc-=10;mn++;ud();}}function ud(){document.getElementById('s').innerText=sc+' Gems';document.getElementById('m').innerText=mn;}setInterval(()=>{if(mn>0){sc+=mn;ud();}},1000);<\/script>`,
+  "reaction": gBase + `<style>#b{width:300px;height:200px;background:red;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;cursor:pointer;border-radius:12px;user-select:none;}</style><h2>Reaction Test</h2><div id="b" onclick="c()">Click to Start</div><p id="r">Wait for green...</p><script>let st=0,wt=false,rt=false,to;function c(){let b=document.getElementById('b');let r=document.getElementById('r');if(!wt&&!rt){b.style.background='red';b.innerText='Wait...';r.innerText='';wt=true;to=setTimeout(()=>{b.style.background='lime';b.innerText='CLICK!';wt=false;rt=true;st=Date.now();},Math.random()*3000+1000);}else if(wt){clearTimeout(to);wt=false;b.style.background='blue';b.innerText='Too early! Restart';}else if(rt){let time=Date.now()-st;rt=false;b.style.background='blue';b.innerText='Click to Start';r.innerText='Reaction: '+time+'ms';}}<\/script>`,
+  "colorguess": gBase + `<style>.g{display:flex;gap:10px;margin:20px;}.c{width:80px;height:80px;border-radius:50%;cursor:pointer;border:3px solid #333;}</style><h2>Guess the Color (RGB)</h2><h1 id="rgb">RGB(0, 0, 0)</h1><div class="g" id="opts"></div><p id="res">Pick a color</p><button onclick="st()">Next Color</button><script>function rc(){return Math.floor(Math.random()*256);}function st(){let r=rc(),g=rc(),b=rc();let t='rgb('+r+', '+g+', '+b+')';document.getElementById('rgb').innerText=t.toUpperCase();let ans=Math.floor(Math.random()*3);let h='';for(let i=0;i<3;i++){let c=i===ans?t:'rgb('+rc()+','+rc()+','+rc()+')';h+='<div class="c" style="background:'+c+'" onclick="ck('+(i===ans)+')"></div>';}document.getElementById('opts').innerHTML=h;document.getElementById('res').innerText='Pick a color';}function ck(w){document.getElementById('res').innerText=w?'Correct! 🎉':'Wrong! ❌';if(w)setTimeout(st,1000);}st();<\/script>`
+};
+
 const games=[
-  // ACTION (8)
-  ["Asteroids","🚀","Classic space shooter.","action","https://straker.github.io/asteroids/"],
-  ["ZType","⌨️","Type to shoot enemies.","action","https://ztype.phoboslab.org/"],
-  ["HexGL","🏎️","Futuristic racing game.","action","https://hexgl.bkcore.com/play/"],
-  ["Pacman","🟡","Google's Pacman port.","action","https://macek.github.io/google_pacman/"],
-  ["Space Invaders","👾","Retro arcade shooter.","action","https://isolado.github.io/SpaceInvaders/"],
-  ["Mario Clone","🍄","HTML5 platformer.","action","https://jakesgordon.com/javascript/mario/"],
-  ["DOOM","🔫","Classic Doom in browser.","action","https://dos.zone/doom-dec-1993/"],
-  ["Tower Defense","🏰","Defend your base.","action","https://www.silvergames.com/en/tower-defense/iframe"],
-  // PUZZLE (8)
-  ["2048","🔢","Combine tiles to 2048.","puzzle","https://gabrielecirulli.github.io/2048/"],
-  ["Hextris","🛑","Fast-paced hex puzzle.","puzzle","https://hextris.io/"],
-  ["Sudoku","📝","Classic number logic.","puzzle","https://sandiway.arizona.edu/sudoku/"],
-  ["Rubik's Cube","🧊","Cube simulator.","puzzle","https://cuber.obniz.com/"],
-  ["Entanglement","🕸️","Create the longest path.","puzzle","https://entanglement.gopherwoodstudios.com/"],
-  ["Wordle Clone","🔤","Guess the 5-letter word.","puzzle","https://hellowordl.net/"],
-  ["Tic Tac Toe","❌","Classic X and O.","puzzle","https://playtictactoe.org/"],
-  ["Chess","♟️","Play chess logic.","puzzle","https://lichess.org/tv/frame"],
-  // ARCADE (9)
-  ["Flappy Bird","🐦","Tap to fly.","arcade","https://nebezb.com/floppybird/"],
-  ["Tetris","🧱","Clear the lines.","arcade","https://chvin.github.io/react-tetris/"],
-  ["Cookie Clicker","🍪","Click for cookies.","arcade","https://orteil.dashnet.org/cookieclicker/"],
-  ["Dino T-Rex","🦖","No internet dino game.","arcade","https://chromedino.com/"],
-  ["Snake","🐍","Eat apples, grow long.","arcade","https://playsnake.org/"],
-  ["Paper.io","🧻","Capture territory.","arcade","https://paper-io.com/"],
-  ["Slope","⚽","Roll down the slope.","arcade","https://slopegame.io/"],
-  ["Agar.io","🦠","Eat smaller cells.","arcade","https://agar.io/"],
-  ["Breakout","🏏","Break the blocks.","arcade","https://enclavegames.github.io/Monster-Wants-Candy/"]
+  // ACTION (4)
+  ["Neon Snake","🐍","Classic snake game.","action","snake"],
+  ["Cube Dodger","🏎️","Avoid falling blocks.","action","dodge"],
+  ["Space Shooter","🚀","Shoot the invaders.","action","shooter"],
+  ["Pong Dash","🎾","Don't drop the ball.","action","pong"],
+  // PUZZLE (4)
+  ["Memory Match","🃏","Find the pairs.","puzzle","memory"],
+  ["Tic Tac Toe","❌","Classic 3x3 grid.","puzzle","tictactoe"],
+  ["Simon Says","🧠","Remember the pattern.","puzzle","simon"],
+  ["Math Run","🔢","Solve equations fast.","puzzle","mathrun"],
+  // ARCADE (4)
+  ["Flappy Block","🐦","Tap to fly.","arcade","flappy"],
+  ["Clicker Quest","💎","Click for gems.","arcade","clicker"],
+  ["Reaction Test","⚡","Test your reflexes.","arcade","reaction"],
+  ["Color Guesser","🎨","Guess the RGB hex.","arcade","colorguess"]
 ];
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
 // Gameplay Functions
 let lastView = "home";
-function playGame(title, url){
+function playGame(title, id){
   lastView = document.querySelector(".nav.active").dataset.view;
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
   document.getElementById("gameplay").classList.add("active");
   document.getElementById("gameTitle").textContent = "Playing: " + title;
-  document.getElementById("gameFrame").src = url;
-  document.getElementById("gameLink").href = url;
+  document.getElementById("gameFrame").srcdoc = customGamesData[id];
 }
 function closeGame(){
-  document.getElementById("gameFrame").src = "";
+  document.getElementById("gameFrame").srcdoc = "";
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
   document.getElementById(lastView).classList.add("active");
   titleEl.textContent = document.querySelector(`.nav[data-view="${lastView}"]`).textContent.trim().replace(/^.\s*/,"");
@@ -300,8 +272,7 @@ document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
   document.getElementById(b.dataset.view).classList.add("active");
   titleEl.textContent=b.textContent.trim().replace(/^.\s*/,"");
-  // Close any running game background audio
-  if(document.getElementById("gameFrame").src !== "") document.getElementById("gameFrame").src = "";
+  if(document.getElementById("gameFrame").srcdoc !== "") document.getElementById("gameFrame").srcdoc = "";
 });
 
 document.getElementById("save").onclick=()=>{
@@ -355,9 +326,11 @@ document.getElementById("ctxBlock").onclick = () => {
   chatContextMenu.style.display = "none";
 };
 
-document.getElementById("ctxClear").onclick = () => {
-  chatMessages.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Local chat cleared.</div>';
-  chatContextMenu.style.display = "none";
+// Clear Chat Button Logic
+document.getElementById("uiClearChat").onclick = () => {
+  if(confirm("This will clear all messages from your local view. Proceed?")) {
+    chatMessages.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Local chat cleared. (New messages will appear below)</div>';
+  }
 };
 
 window.onclick = (e) => {
@@ -430,33 +403,6 @@ document.querySelectorAll("[data-calc]").forEach(btn=>{
     updateCalc();
   };
 });
-function calcPct(){let a=parseFloat(document.getElementById('p1').value),b=parseFloat(document.getElementById('p2').value);document.getElementById('rPct').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":(a/100)*b);}
-function calcSqrt(){let n=parseFloat(document.getElementById('sqrtIn').value);document.getElementById('rSqrt').innerText="Result: "+(isNaN(n)||n<0?"Invalid":Math.sqrt(n));}
-function calcPow(){let b=parseFloat(document.getElementById('baseIn').value),e=parseFloat(document.getElementById('expIn').value);document.getElementById('rPow').innerText="Result: "+(isNaN(b)||isNaN(e)?"Invalid":Math.pow(b,e));}
-function calcPyt(){let a=parseFloat(document.getElementById('pytA').value),b=parseFloat(document.getElementById('pytB').value);document.getElementById('rPyt').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":Math.sqrt(a*a+b*b));}
-function calcCircle(){let r=parseFloat(document.getElementById('cirR').value);document.getElementById('rCir').innerText="Result: "+(isNaN(r)||r<0?"Invalid":Math.PI*r*r);}
-function calcMean(){let arr=document.getElementById('meanIn').value.split(',').map(Number);let sum=arr.reduce((x,y)=>x+y,0);document.getElementById('rMean').innerText="Result: "+(arr.some(isNaN)||arr.length===0?"Invalid":sum/arr.length);}
-function calcQuad(){let a=parseFloat(document.getElementById('quadA').value),b=parseFloat(document.getElementById('quadB').value),c=parseFloat(document.getElementById('quadC').value);let d=b*b-4*a*c;if(isNaN(d)||a===0){document.getElementById('rQuad').innerText="Result: Invalid";}else if(d<0){document.getElementById('rQuad').innerText="Result: Complex";}else{let x1=(-b+Math.sqrt(d))/(2*a),x2=(-b-Math.sqrt(d))/(2*a);document.getElementById('rQuad').innerText=`Result: x1=${x1}, x2=${x2}`;}}
-function calcTemp(){let f=parseFloat(document.getElementById('fahrIn').value);document.getElementById('rTemp').innerText="Result: "+(isNaN(f)?"Invalid":(f-32)*5/9+" °C");}
-function calcTemp2(){let c=parseFloat(document.getElementById('celsIn').value);document.getElementById('rTemp2').innerText="Result: "+(isNaN(c)?"Invalid":(c*9/5)+32+" °F");}
-function calcSI(){let p=parseFloat(document.getElementById('siP').value),r=parseFloat(document.getElementById('siR').value),t=parseFloat(document.getElementById('siT').value);document.getElementById('rSI').innerText="Result: "+(isNaN(p)||isNaN(r)||isNaN(t)?"Invalid":(p*r*t)/100);}
-function calcSpeed(){let d=parseFloat(document.getElementById('sdDist').value),t=parseFloat(document.getElementById('sdTime').value);document.getElementById('rSpeed').innerText="Result: "+(isNaN(d)||isNaN(t)||t===0?"Invalid":d/t);}
-function calcFact(){let n=parseInt(document.getElementById('factIn').value);if(isNaN(n)||n<0||n>170){document.getElementById('rFact').innerText="Result: Invalid";return;}let f=1;for(let i=2;i<=n;i++)f*=i;document.getElementById('rFact').innerText="Result: "+f;}
-function gcd(a,b){return b==0?a:gcd(b,a%b);}
-function calcGCD(){let a=parseInt(document.getElementById('gcd1').value),b=parseInt(document.getElementById('gcd2').value);document.getElementById('rGCD').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":gcd(a,b));}
-function calcLCM(){let a=parseInt(document.getElementById('lcm1').value),b=parseInt(document.getElementById('lcm2').value);document.getElementById('rLCM').innerText="Result: "+(isNaN(a)||isNaN(b)||a===0||b===0?"Invalid":Math.abs(a*b)/gcd(a,b));}
-function calcBMI(){let w=parseFloat(document.getElementById('bmiKg').value),h=parseFloat(document.getElementById('bmiM').value);document.getElementById('rBMI').innerText="Result: "+(isNaN(w)||isNaN(h)||h===0?"Invalid":w/(h*h));}
-function calcTri(){let b=parseFloat(document.getElementById('triB').value),h=parseFloat(document.getElementById('triH').value);document.getElementById('rTri').innerText="Result: "+(isNaN(b)||isNaN(h)?"Invalid":0.5*b*h);}
-function calcPerim(){let l=parseFloat(document.getElementById('recL').value),w=parseFloat(document.getElementById('recW').value);document.getElementById('rPerim').innerText="Result: "+(isNaN(l)||isNaN(w)?"Invalid":2*(l+w));}
-function calcSlope(){try{let p1=document.getElementById('sl1').value.split(',').map(Number),p2=document.getElementById('sl2').value.split(',').map(Number);let s=(p2[1]-p1[1])/(p2[0]-p1[0]);document.getElementById('rSlope').innerText="Result: "+(isNaN(s)?"Invalid":s);}catch{document.getElementById('rSlope').innerText="Result: Error";}}
-function calcDist(){try{let p1=document.getElementById('pt1').value.split(',').map(Number),p2=document.getElementById('pt2').value.split(',').map(Number);let d=Math.sqrt(Math.pow(p2[0]-p1[0],2)+Math.pow(p2[1]-p1[1],2));document.getElementById('rDist').innerText="Result: "+(isNaN(d)?"Invalid":d);}catch{document.getElementById('rDist').innerText="Result: Error";}}
-function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g}`;}
-function calcLog(){let n=parseFloat(document.getElementById('logIn').value);document.getElementById('rLog').innerText="Result: "+(isNaN(n)||n<=0?"Invalid":Math.log10(n));}
-function calcLn(){let n=parseFloat(document.getElementById('lnIn').value);document.getElementById('rLn').innerText="Result: "+(isNaN(n)||n<=0?"Invalid":Math.log(n));}
-function calcPctChange(){let o=parseFloat(document.getElementById('pcOld').value),n=parseFloat(document.getElementById('pcNew').value);document.getElementById('rPctChange').innerText="Result: "+(isNaN(o)||isNaN(n)||o===0?"Invalid":((n-o)/o)*100+"%");}
-function calcMod(){let a=parseFloat(document.getElementById('modA').value),b=parseFloat(document.getElementById('modB').value);document.getElementById('rMod').innerText="Result: "+(isNaN(a)||isNaN(b)||b===0?"Invalid":a%b);}
-function calcCube(){let s=parseFloat(document.getElementById('cubeS').value);document.getElementById('rCube').innerText="Result: "+(isNaN(s)||s<0?"Invalid":Math.pow(s,3));}
-function calcSphere(){let r=parseFloat(document.getElementById('sphR').value);document.getElementById('rSph').innerText="Result: "+(isNaN(r)||r<0?"Invalid":(4/3)*Math.PI*Math.pow(r,3));}
 
 // Init
 renderGames();
