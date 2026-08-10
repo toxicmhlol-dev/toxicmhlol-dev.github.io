@@ -9,41 +9,69 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
-*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg)}
-.app{display:flex;height:100vh}.side{width:235px;background:#0c111c;border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column}
-.logo{font-size:20px;font-weight:800;padding:5px 10px 22px}.logo b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7c5cff,#19c3ff);margin-right:8px}
-label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padding:10px 12px 6px}
-.nav{border:0;background:transparent;color:#aeb9ca;text-align:left;padding:11px 12px;border-radius:10px;margin:2px 0;cursor:pointer}.nav:hover,.nav.active{background:#1a2440;color:white}
-.spacer{flex:1}.mini{border-top:1px solid var(--border);padding:14px 6px;display:flex;gap:9px;align-items:center}.avatar{width:38px;height:38px;border-radius:50%;background:#2a3760;display:grid;place-items:center;font-weight:800;flex:none}.miniName{font-size:13px;font-weight:700}
+body[data-theme="light"]{--bg:#e4e8ec;--panel:#ffffff;--panel2:#f0f2f5;--border:#cdd5e0;--text:#1a1e23;--muted:#64748b;--accent:#3b82f6}
+body[data-theme="faded"]{--bg:#1a1a1a;--panel:#242424;--panel2:#2d2d2d;--border:#3d3d3d;--text:#e0e0e0;--muted:#999999;--accent:#777777}
+body[data-theme="hacker"]{--bg:#000000;--panel:#050505;--panel2:#0a0a0a;--border:#003300;--text:#00ff00;--muted:#008800;--accent:#00ff00}
+body[data-theme="mocha"]{--bg:#3b2f2f;--panel:#4a3b3b;--panel2:#5c4a4a;--border:#705a5a;--text:#f4e8e8;--muted:#bdaeae;--accent:#d2a679}
+
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);transition:background 0.3s, color 0.3s}
+.app{display:flex;height:100vh}.side{width:235px;background:var(--panel);border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column;transition:background 0.3s}
+.logo{font-size:20px;font-weight:800;padding:5px 10px 22px}.logo b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#19c3ff);margin-right:8px;color:#fff}
+label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800;padding:10px 12px 6px}
+.nav{border:0;background:transparent;color:var(--muted);text-align:left;padding:11px 12px;border-radius:10px;margin:2px 0;cursor:pointer}.nav:hover,.nav.active{background:var(--panel2);color:var(--text)}
+.spacer{flex:1}.mini{border-top:1px solid var(--border);padding:14px 6px;display:flex;gap:9px;align-items:center}.avatar{width:38px;height:38px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-weight:800;flex:none}.miniName{font-size:13px;font-weight:700}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}.top{height:66px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}.title{font-size:20px;font-weight:800}.online{font-size:12px;color:#7de5a6}
 .content{padding:24px;overflow:auto;flex:1}.view{display:none;max-width:1100px;margin:auto}.view.active{display:block}
-.hero,.settings{background:linear-gradient(135deg,#151d35,#121927);border:1px solid var(--border);border-radius:16px;padding:25px;margin-bottom:20px}.hero h1{margin:0 0 7px}.hero p,.settings p{color:var(--muted)}
-.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:15px}.game{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px}.thumb{height:115px;border-radius:10px;background:#202a43;display:grid;place-items:center;font-size:40px;margin-bottom:10px}.game h3{margin:0 0 5px}.game p{font-size:12px;color:var(--muted);height:34px}.play,.save,.send{border:0;background:var(--accent);color:white;font-weight:800;border-radius:9px;padding:10px;cursor:pointer}.play{width:100%}
+.hero,.settings{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:25px;margin-bottom:20px}.hero h1{margin:0 0 7px}.hero p,.settings p{color:var(--muted)}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:15px}.game{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px}.thumb{height:115px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-size:40px;margin-bottom:10px}.game h3{margin:0 0 5px}.game p{font-size:12px;color:var(--muted);height:34px}.play,.save,.send{border:0;background:var(--accent);color:white;font-weight:800;border-radius:9px;padding:10px;cursor:pointer}.play{width:100%}
+
+/* Gameplay specific */
+#gameplay{margin:-24px;height:calc(100% + 48px);display:none;flex-direction:column;max-width:100%}
+#gameplay.active{display:flex}
+.game-header{padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.back-btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:bold}
+.back-btn:hover{background:var(--border)}
+.game-frame{flex:1;border:none;width:100%;background:#000}
+.game-fallback{text-align:center;padding:8px;font-size:12px;background:var(--bg);color:var(--muted);border-bottom:1px solid var(--border)}
+.game-fallback a{color:var(--accent);text-decoration:none;font-weight:bold}
+
 .notes-list{display:grid;gap:12px;max-width:600px;margin:20px auto}
 .note-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:16px}
-.note-card h3{margin:0 0 7px}.note-card p{white-space:pre-wrap;color:#c5cedd;margin:0 0 12px;line-height:1.5}.note-actions{display:flex;justify-content:flex-end}
+.note-card h3{margin:0 0 7px}.note-card p{white-space:pre-wrap;color:var(--text);margin:0 0 12px;line-height:1.5}.note-actions{display:flex;justify-content:flex-end}
 .delete-note{border:0;background:#39202a;color:#ff9aaa;border-radius:8px;padding:7px 11px;cursor:pointer}
 
 /* Chat Styles */
-.chat{height:calc(100vh - 160px);border:1px solid var(--border);border-radius:15px;overflow:hidden;background:#111827;display:flex;flex-direction:column}
+.chat{height:calc(100vh - 160px);border:1px solid var(--border);border-radius:15px;overflow:hidden;background:var(--panel);display:flex;flex-direction:column;position:relative}
 .chathead{padding:14px 17px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.chathead small{color:var(--muted)}
-.messages{flex:1;overflow:auto;padding:18px}.msg{display:flex;gap:9px;margin-bottom:15px}.msg .avatar{width:34px;height:34px;font-size:12px}.meta{font-size:12px;color:#8290a7;margin-bottom:4px}.bubble{background:var(--panel2);padding:9px 12px;border-radius:5px 12px 12px 12px;max-width:min(650px,75vw);word-break:break-word}
-.composer{display:flex;gap:8px;padding:11px;border-top:1px solid var(--border)}.composer input{flex:1;background:#0b111d;color:white;border:1px solid var(--border);padding:11px;border-radius:9px;outline:0}.send{padding:0 18px}
+.messages{flex:1;overflow:auto;padding:18px}.msg{display:flex;gap:9px;margin-bottom:15px;cursor:context-menu}.msg .avatar{width:34px;height:34px;font-size:12px}.meta{font-size:12px;color:var(--muted);margin-bottom:4px}.bubble{background:var(--panel2);padding:9px 12px;border-radius:5px 12px 12px 12px;max-width:min(650px,75vw);word-break:break-word}
+.composer{display:flex;gap:8px;padding:11px;border-top:1px solid var(--border)}.composer input{flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0}.send{padding:0 18px}
+
+/* Context Menu */
+.context-menu{display:none;position:absolute;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:1000;box-shadow:0 6px 20px rgba(0,0,0,0.6);min-width:160px}
+.context-menu button{display:block;width:100%;background:transparent;border:0;color:var(--text);text-align:left;padding:9px 12px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
+.context-menu button:hover{background:var(--border)}
+.context-menu .danger{color:#ff9aaa}
 
 .math-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;margin-top:20px}
 .math-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}
 .math-card h3{margin:0 0 10px;font-size:16px;color:var(--text)}
-.math-card input,.math-card select{width:100%;background:#0b111d;color:white;border:1px solid var(--border);padding:9px;border-radius:8px;outline:0;margin-bottom:8px}
+.math-card input,.math-card select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:9px;border-radius:8px;outline:0;margin-bottom:8px}
 .math-card button{width:100%;border:0;background:var(--accent);color:white;font-weight:700;border-radius:8px;padding:8px;cursor:pointer;margin-top:4px}
-.math-result{margin-top:10px;padding:8px;background:#080d16;border-radius:8px;font-size:13px;color:#7de5a6;border:1px solid var(--border);word-break:break-all}
+.math-result{margin-top:10px;padding:8px;background:var(--bg);border-radius:8px;font-size:13px;color:#7de5a6;border:1px solid var(--border);word-break:break-all}
 
 .calculator{max-width:390px;margin:auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
-.calc-display{width:100%;height:65px;background:#080d16;color:white;border:1px solid var(--border);border-radius:10px;padding:10px;text-align:right;font-size:27px;margin-bottom:12px}
+.calc-display{width:100%;height:65px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:right;font-size:27px;margin-bottom:12px}
 .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.calc-grid button{height:58px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:white;font-size:18px;font-weight:700;cursor:pointer}
-.calc-grid button:hover{background:#26334d}.calc-grid .equals{background:var(--accent);border-color:var(--accent)}
+.calc-grid button{height:58px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);font-size:18px;font-weight:700;cursor:pointer}
+.calc-grid button:hover{background:var(--border)}.calc-grid .equals{background:var(--accent);color:white;border-color:var(--accent)}
 .settings{max-width:600px;margin:auto}
-.status{font-size:11px;color:#7de5a6;margin-top:3px}.hint{font-size:12px;color:#77859c;margin-top:12px}
+.status{font-size:11px;color:#7de5a6;margin-top:3px}.hint{font-size:12px;color:var(--muted);margin-top:12px}
+
+/* Setting Inputs */
+.field{margin-bottom: 15px;}
+.field span{display:block;margin-bottom:6px;font-size:13px;font-weight:600;}
+.field input, .field select, .field textarea {width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0;font-family:inherit}
+
 @media(max-width:700px){.side{width:70px;padding:14px 7px}.logo{font-size:0;text-align:center}.logo b{margin:0}.nav{font-size:0;text-align:center}.nav::first-letter{font-size:18px}.mini{justify-content:center}.mini div:not(.avatar){display:none}.content{padding:14px}.top{padding:0 14px}}
 </style>
 </head>
@@ -66,25 +94,41 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
 <main class="main">
 <header class="top"><div class="title" id="title">Home</div><div class="online" id="connection">● Ready</div></header>
 <section class="content">
+
 <div class="view active" id="home"><div class="hero"><h1>Welcome to GameHub 🎮</h1><p>Choose a category and play.</p></div><div class="games" id="homeGames"></div></div>
 <div class="view" id="action"><div class="hero"><h1>⚔️ Action</h1><p>Fast-paced games.</p></div><div class="games" id="actionGames"></div></div>
 <div class="view" id="puzzle"><div class="hero"><h1>🧩 Puzzle</h1><p>Brain games.</p></div><div class="games" id="puzzleGames"></div></div>
 <div class="view" id="arcade"><div class="hero"><h1>👾 Arcade</h1><p>Classic quick games.</p></div><div class="games" id="arcadeGames"></div></div>
+
+<!-- The Embedded Gameplay View -->
+<div class="view" id="gameplay">
+  <div class="game-header">
+    <button class="back-btn" onclick="closeGame()">⬅ Back to Games</button>
+    <div id="gameTitle" style="font-weight:700;">Loading...</div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="game-fallback">If the game doesn't load or is blocked by the server, <a href="#" id="gameLink" target="_blank">Click Here</a> to play in a new tab.</div>
+  <iframe class="game-frame" id="gameFrame" src="" allowfullscreen></iframe>
+</div>
 
 <div class="view" id="chat">
   <div class="hero">
     <h1>💬 Chromebook Cloud Chat</h1>
     <p>Live cross-device chat via Firebase Cloud Database.</p>
   </div>
-  <div class="chat">
+  <div class="chat" id="chatContainer">
     <div class="chathead">
-      <small>Status: Firebase Cloud Sync</small>
+      <small>Status: Firebase Sync (Right-click any profile for options)</small>
       <span id="chatStatusBadge" style="font-size:11px; color:#7de5a6;">Connected Live</span>
     </div>
     <div class="messages" id="chatMessages"></div>
     <div class="composer">
       <input id="chatInput" placeholder="Type a message..." maxlength="200">
       <button class="send" id="sendChat">Send</button>
+    </div>
+    <div class="context-menu" id="chatContextMenu">
+      <button id="ctxBlock">🚫 Block User</button>
+      <button class="danger" id="ctxClear">🗑️ Clear Chat</button>
     </div>
   </div>
 </div>
@@ -93,7 +137,7 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
   <div class="hero"><h1>📝 Notes</h1><p>Create and save notes directly in your browser.</p></div>
   <div class="settings">
     <div class="field"><span>Note title</span><input id="noteTitle" maxlength="80" placeholder="My note"></div>
-    <div class="field"><span>Note</span><textarea id="noteText" maxlength="5000" placeholder="Write your note here..." style="width:100%;min-height:150px;resize:vertical;background:#0b111d;color:white;border:1px solid var(--border);padding:11px;border-radius:9px;outline:0;font:inherit"></textarea></div>
+    <div class="field"><span>Note</span><textarea id="noteText" maxlength="5000" placeholder="Write your note here..." style="min-height:150px;resize:vertical;"></textarea></div>
     <button class="save" id="addNote">Add Note</button>
   </div>
   <div class="notes-list" id="notesList"></div>
@@ -101,7 +145,6 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
 
 <div class="view" id="math">
   <div class="hero"><h1>➗ Advanced Math Hub</h1><p>Standard calculator plus 25+ specific math calculators and tools.</p></div>
-  
   <div class="calculator" style="margin-bottom:30px;">
     <input id="calcDisplay" class="calc-display" readonly value="0">
     <div class="calc-grid">
@@ -112,7 +155,6 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
       <button data-value="(">(</button><button data-value="0">0</button><button data-value=")">)</button><button data-calc="equals" class="equals">=</button>
     </div>
   </div>
-
   <h2 style="margin-top:20px;">25+ Quick Math & Conversion Tools</h2>
   <div class="math-grid">
     <div class="math-card"><h3>1. Percentage (%)</h3><input id="p1" placeholder="What is X%"><input id="p2" placeholder="Of this number"><button onclick="calcPct()">Calculate</button><div class="math-result" id="rPct">Result: -</div></div>
@@ -144,26 +186,102 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
   </div>
 </div>
 
-<div class="view" id="settings"><div class="settings"><h2>⚙️ Profile</h2><p>Your name and emoji are used across GameHub.</p><div class="field"><span>Display name</span><input id="name" style="width:100%;background:#0b111d;color:white;border:1px solid var(--border);padding:11px;border-radius:9px;outline:0"></div><div class="field"><span>Profile emoji</span><select id="emoji" style="width:100%;background:#0b111d;color:white;border:1px solid var(--border);padding:11px;border-radius:9px;outline:0"><option>😀</option><option>😎</option><option>👾</option><option>🎮</option><option>🦊</option><option>🐸</option><option>🤖</option><option>🐱</option><option>🐼</option><option>🚀</option></select></div><button class="save" id="save">Save Profile</button><div class="hint">Your profile is stored in this browser.</div></div></div>
+<div class="view" id="settings">
+  <div class="settings">
+    <h2>⚙️ Profile & Settings</h2>
+    <p>Customize your look across GameHub.</p>
+    <div class="field"><span>Display name</span><input id="name" maxlength="20"></div>
+    <div class="field"><span>Profile emoji</span>
+      <select id="emoji">
+        <option>😀</option><option>😎</option><option>👾</option><option>🎮</option><option>🦊</option>
+        <option>🐸</option><option>🤖</option><option>🐱</option><option>🐼</option><option>🚀</option>
+      </select>
+    </div>
+    <div class="field"><span>Theme</span>
+      <select id="themeSelect">
+        <option value="default">Default Dark</option>
+        <option value="light">Light Mode</option>
+        <option value="faded">Faded Black</option>
+        <option value="hacker">Hacker (Neon Green)</option>
+        <option value="mocha">Mocha</option>
+      </select>
+    </div>
+    <button class="save" id="save">Save Settings</button>
+    <div class="hint">Your profile and theme are stored securely in this browser.</div>
+  </div>
+</div>
 </section></main></div>
 
 <script>
+// Extended Games Array (25 items) mapped to working HTML5 game URLs
 const games=[
-["Neon Runner","🏃","Dodge obstacles.","action"],["Space Defender","🚀","Protect your ship.","action"],["Dungeon Dash","⚔️","Survive the dungeon.","action"],
-["Color Match","🎨","Match the colors.","puzzle"],["2048 Mini","🔢","Combine tiles.","puzzle"],["Memory Flip","🃏","Find matching pairs.","puzzle"],
-["Block Breaker","🧱","Break the blocks.","arcade"],["Snake","🐍","Grow without crashing.","arcade"],["Star Catcher","⭐","Catch falling stars.","arcade"]];
+  // ACTION (8)
+  ["Asteroids","🚀","Classic space shooter.","action","https://straker.github.io/asteroids/"],
+  ["ZType","⌨️","Type to shoot enemies.","action","https://ztype.phoboslab.org/"],
+  ["HexGL","🏎️","Futuristic racing game.","action","https://hexgl.bkcore.com/play/"],
+  ["Pacman","🟡","Google's Pacman port.","action","https://macek.github.io/google_pacman/"],
+  ["Space Invaders","👾","Retro arcade shooter.","action","https://isolado.github.io/SpaceInvaders/"],
+  ["Mario Clone","🍄","HTML5 platformer.","action","https://jakesgordon.com/javascript/mario/"],
+  ["DOOM","🔫","Classic Doom in browser.","action","https://dos.zone/doom-dec-1993/"],
+  ["Tower Defense","🏰","Defend your base.","action","https://www.silvergames.com/en/tower-defense/iframe"],
+  // PUZZLE (8)
+  ["2048","🔢","Combine tiles to 2048.","puzzle","https://gabrielecirulli.github.io/2048/"],
+  ["Hextris","🛑","Fast-paced hex puzzle.","puzzle","https://hextris.io/"],
+  ["Sudoku","📝","Classic number logic.","puzzle","https://sandiway.arizona.edu/sudoku/"],
+  ["Rubik's Cube","🧊","Cube simulator.","puzzle","https://cuber.obniz.com/"],
+  ["Entanglement","🕸️","Create the longest path.","puzzle","https://entanglement.gopherwoodstudios.com/"],
+  ["Wordle Clone","🔤","Guess the 5-letter word.","puzzle","https://hellowordl.net/"],
+  ["Tic Tac Toe","❌","Classic X and O.","puzzle","https://playtictactoe.org/"],
+  ["Chess","♟️","Play chess logic.","puzzle","https://lichess.org/tv/frame"],
+  // ARCADE (9)
+  ["Flappy Bird","🐦","Tap to fly.","arcade","https://nebezb.com/floppybird/"],
+  ["Tetris","🧱","Clear the lines.","arcade","https://chvin.github.io/react-tetris/"],
+  ["Cookie Clicker","🍪","Click for cookies.","arcade","https://orteil.dashnet.org/cookieclicker/"],
+  ["Dino T-Rex","🦖","No internet dino game.","arcade","https://chromedino.com/"],
+  ["Snake","🐍","Eat apples, grow long.","arcade","https://playsnake.org/"],
+  ["Paper.io","🧻","Capture territory.","arcade","https://paper-io.com/"],
+  ["Slope","⚽","Roll down the slope.","arcade","https://slopegame.io/"],
+  ["Agar.io","🦠","Eat smaller cells.","arcade","https://agar.io/"],
+  ["Breakout","🏏","Break the blocks.","arcade","https://enclavegames.github.io/Monster-Wants-Candy/"]
+];
+
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+
+// Gameplay Functions
+let lastView = "home";
+function playGame(title, url){
+  lastView = document.querySelector(".nav.active").dataset.view;
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  document.getElementById("gameplay").classList.add("active");
+  document.getElementById("gameTitle").textContent = "Playing: " + title;
+  document.getElementById("gameFrame").src = url;
+  document.getElementById("gameLink").href = url;
+}
+function closeGame(){
+  document.getElementById("gameFrame").src = "";
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  document.getElementById(lastView).classList.add("active");
+  titleEl.textContent = document.querySelector(`.nav[data-view="${lastView}"]`).textContent.trim().replace(/^.\s*/,"");
+}
+
 function renderGames(){
   ["home","action","puzzle","arcade"].forEach(cat=>{
-    document.getElementById(cat+"Games").innerHTML=games.filter(g=>cat==="home"||g[3]===cat).map(g=>`<div class="game"><div class="thumb">${g[1]}</div><h3>${esc(g[0])}</h3><p>${esc(g[2])}</p><button class="play" onclick="alert('${esc(g[0])} launched!')">Play</button></div>`).join("");
+    document.getElementById(cat+"Games").innerHTML=games.filter(g=>cat==="home"||g[3]===cat).map(g=>
+      `<div class="game"><div class="thumb">${g[1]}</div><h3>${esc(g[0])}</h3><p>${esc(g[2])}</p><button class="play" onclick="playGame('${esc(g[0])}', '${g[4]}')">Play Game</button></div>`
+    ).join("");
   });
 }
 
-let profile=JSON.parse(localStorage.getItem("gamehubProfile")||"null")||{name:"User"+Math.floor(1000+Math.random()*9000),emoji:"😀"};
+// Profile & Theme Logic
+let profile=JSON.parse(localStorage.getItem("gamehubProfile")||"null")||{name:"User"+Math.floor(1000+Math.random()*9000),emoji:"😀",theme:"default"};
+let blockedUsers=JSON.parse(localStorage.getItem("gamehubBlocked")||"[]");
+let selectedUserToBlock=null;
+
 const miniName=document.getElementById("miniName");
 const miniAvatar=document.getElementById("miniAvatar");
 const nameInput=document.getElementById("name");
 const emojiSelect=document.getElementById("emoji");
+const themeSelect=document.getElementById("themeSelect");
 const titleEl=document.getElementById("title");
 
 function renderProfile(){
@@ -171,18 +289,23 @@ function renderProfile(){
   miniAvatar.textContent=profile.emoji;
   nameInput.value=profile.name;
   emojiSelect.value=profile.emoji;
+  themeSelect.value=profile.theme || "default";
+  document.body.dataset.theme = profile.theme || "default";
 }
 
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{
+  if (b.dataset.view === "gameplay") return;
   document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
   b.classList.add("active");
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
   document.getElementById(b.dataset.view).classList.add("active");
   titleEl.textContent=b.textContent.trim().replace(/^.\s*/,"");
+  // Close any running game background audio
+  if(document.getElementById("gameFrame").src !== "") document.getElementById("gameFrame").src = "";
 });
 
 document.getElementById("save").onclick=()=>{
-  profile={name:nameInput.value.trim()||"User"+Math.floor(1000+Math.random()*9000),emoji:emojiSelect.value};
+  profile={name:nameInput.value.trim()||"User"+Math.floor(1000+Math.random()*9000),emoji:emojiSelect.value,theme:themeSelect.value};
   localStorage.setItem("gamehubProfile",JSON.stringify(profile));
   renderProfile();
 };
@@ -202,54 +325,67 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const chatMessages = document.getElementById("chatMessages");
 const chatInput = document.getElementById("chatInput");
+const chatContextMenu = document.getElementById("chatContextMenu");
 
 function appendMessage(sender, emoji, text) {
+  if (blockedUsers.includes(sender)) return;
   const msgDiv = document.createElement("div");
   msgDiv.className = "msg";
-  msgDiv.innerHTML = `
-    <div class="avatar">${emoji}</div>
-    <div>
-      <div class="meta">${esc(sender)}</div>
-      <div class="bubble">${esc(text)}</div>
-    </div>
-  `;
+  msgDiv.innerHTML = `<div class="avatar">${emoji}</div><div><div class="meta">${esc(sender)}</div><div class="bubble">${esc(text)}</div></div>`;
+  
+  msgDiv.oncontextmenu = (e) => {
+    e.preventDefault();
+    selectedUserToBlock = sender;
+    const chatContainerRect = document.getElementById("chatContainer").getBoundingClientRect();
+    chatContextMenu.style.display = "block";
+    chatContextMenu.style.left = (e.clientX - chatContainerRect.left) + "px";
+    chatContextMenu.style.top = (e.clientY - chatContainerRect.top) + "px";
+  };
   chatMessages.appendChild(msgDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+document.getElementById("ctxBlock").onclick = () => {
+  if (selectedUserToBlock && !blockedUsers.includes(selectedUserToBlock)) {
+    blockedUsers.push(selectedUserToBlock);
+    localStorage.setItem("gamehubBlocked", JSON.stringify(blockedUsers));
+    alert(`Blocked user: ${selectedUserToBlock}`);
+    location.reload();
+  }
+  chatContextMenu.style.display = "none";
+};
+
+document.getElementById("ctxClear").onclick = () => {
+  chatMessages.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Local chat cleared.</div>';
+  chatContextMenu.style.display = "none";
+};
+
+window.onclick = (e) => {
+  if(!e.target.closest('.msg')) chatContextMenu.style.display = "none";
+};
+
 document.getElementById("sendChat").onclick = async () => {
   const text = chatInput.value.trim();
   if (!text) return;
-  
   try {
     await db.collection("gamehub_messages").add({
-      sender: profile.name,
-      emoji: profile.emoji,
-      text: text,
+      sender: profile.name, emoji: profile.emoji, text: text,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     chatInput.value = "";
   } catch (err) {
-    alert("Error sending message. Ensure Firestore database is created in Firebase Console.");
+    alert("Chat error: Database may be unavailable.");
   }
 };
+chatInput.onkeydown = (e) => { if (e.key === "Enter") document.getElementById("sendChat").click(); };
 
-chatInput.onkeydown = (e) => {
-  if (e.key === "Enter") document.getElementById("sendChat").click();
-};
-
-// Real-time listener for incoming messages (using safe desc ordering + reverse)
-db.collection("gamehub_messages")
-  .orderBy("timestamp", "desc")
-  .limit(50)
-  .onSnapshot(snapshot => {
+db.collection("gamehub_messages").orderBy("timestamp", "desc").limit(50).onSnapshot(snapshot => {
     chatMessages.innerHTML = "";
-    const docs = snapshot.docs.reverse();
-    docs.forEach(doc => {
+    snapshot.docs.reverse().forEach(doc => {
       const data = doc.data();
       appendMessage(data.sender || "Anon", data.emoji || "😀", data.text);
     });
-  });
+});
 
 // Notes
 let notes = JSON.parse(localStorage.getItem("gamehubNotes") || "[]");
@@ -270,7 +406,7 @@ document.getElementById("addNote").onclick=()=>{
   renderNotes();
 };
 
-// Standard calculator logic
+// Math Tools logic
 let expression="";
 const display=document.getElementById("calcDisplay");
 function updateCalc(){display.value=expression || "0";}
@@ -294,36 +430,35 @@ document.querySelectorAll("[data-calc]").forEach(btn=>{
     updateCalc();
   };
 });
-
-// Math Toolkit Functions
-function calcPct(){let a=parseFloat(document.getElementById('p1').value),b=parseFloat(document.getElementById('p2').value);document.getElementById('rPct').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid input":(a/100)*b);}
-function calcSqrt(){let n=parseFloat(document.getElementById('sqrtIn').value);document.getElementById('rSqrt').innerText="Result: "+(isNaN(n)||n<0?"Invalid input":Math.sqrt(n));}
-function calcPow(){let b=parseFloat(document.getElementById('baseIn').value),e=parseFloat(document.getElementById('expIn').value);document.getElementById('rPow').innerText="Result: "+(isNaN(b)||isNaN(e)?"Invalid input":Math.pow(b,e));}
-function calcPyt(){let a=parseFloat(document.getElementById('pytA').value),b=parseFloat(document.getElementById('pytB').value);document.getElementById('rPyt').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid input":Math.sqrt(a*a+b*b));}
-function calcCircle(){let r=parseFloat(document.getElementById('cirR').value);document.getElementById('rCir').innerText="Result: "+(isNaN(r)||r<0?"Invalid input":Math.PI*r*r);}
-function calcMean(){let arr=document.getElementById('meanIn').value.split(',').map(Number);let sum=arr.reduce((x,y)=>x+y,0);document.getElementById('rMean').innerText="Result: "+(arr.some(isNaN)||arr.length===0?"Invalid input":sum/arr.length);}
-function calcQuad(){let a=parseFloat(document.getElementById('quadA').value),b=parseFloat(document.getElementById('quadB').value),c=parseFloat(document.getElementById('quadC').value);let d=b*b-4*a*c;if(isNaN(d)||a===0){document.getElementById('rQuad').innerText="Result: Invalid or a=0";}else if(d<0){document.getElementById('rQuad').innerText="Result: Complex roots";}else{let x1=(-b+Math.sqrt(d))/(2*a),x2=(-b-Math.sqrt(d))/(2*a);document.getElementById('rQuad').innerText=`Result: x1 = ${x1}, x2 = ${x2}`;}}
-function calcTemp(){let f=parseFloat(document.getElementById('fahrIn').value);document.getElementById('rTemp').innerText="Result: "+(isNaN(f)?"Invalid input":(f-32)*5/9+" °C");}
-function calcTemp2(){let c=parseFloat(document.getElementById('celsIn').value);document.getElementById('rTemp2').innerText="Result: "+(isNaN(c)?"Invalid input":(c*9/5)+32+" °F");}
-function calcSI(){let p=parseFloat(document.getElementById('siP').value),r=parseFloat(document.getElementById('siR').value),t=parseFloat(document.getElementById('siT').value);document.getElementById('rSI').innerText="Result: "+(isNaN(p)||isNaN(r)||isNaN(t)?"Invalid input":(p*r*t)/100);}
-function calcSpeed(){let d=parseFloat(document.getElementById('sdDist').value),t=parseFloat(document.getElementById('sdTime').value);document.getElementById('rSpeed').innerText="Result: "+(isNaN(d)||isNaN(t)||t===0?"Invalid input":d/t);}
-function calcFact(){let n=parseInt(document.getElementById('factIn').value);if(isNaN(n)||n<0||n>170){document.getElementById('rFact').innerText="Result: Invalid (0-170)";return;}let f=1;for(let i=2;i<=n;i++)f*=i;document.getElementById('rFact').innerText="Result: "+f;}
+function calcPct(){let a=parseFloat(document.getElementById('p1').value),b=parseFloat(document.getElementById('p2').value);document.getElementById('rPct').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":(a/100)*b);}
+function calcSqrt(){let n=parseFloat(document.getElementById('sqrtIn').value);document.getElementById('rSqrt').innerText="Result: "+(isNaN(n)||n<0?"Invalid":Math.sqrt(n));}
+function calcPow(){let b=parseFloat(document.getElementById('baseIn').value),e=parseFloat(document.getElementById('expIn').value);document.getElementById('rPow').innerText="Result: "+(isNaN(b)||isNaN(e)?"Invalid":Math.pow(b,e));}
+function calcPyt(){let a=parseFloat(document.getElementById('pytA').value),b=parseFloat(document.getElementById('pytB').value);document.getElementById('rPyt').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":Math.sqrt(a*a+b*b));}
+function calcCircle(){let r=parseFloat(document.getElementById('cirR').value);document.getElementById('rCir').innerText="Result: "+(isNaN(r)||r<0?"Invalid":Math.PI*r*r);}
+function calcMean(){let arr=document.getElementById('meanIn').value.split(',').map(Number);let sum=arr.reduce((x,y)=>x+y,0);document.getElementById('rMean').innerText="Result: "+(arr.some(isNaN)||arr.length===0?"Invalid":sum/arr.length);}
+function calcQuad(){let a=parseFloat(document.getElementById('quadA').value),b=parseFloat(document.getElementById('quadB').value),c=parseFloat(document.getElementById('quadC').value);let d=b*b-4*a*c;if(isNaN(d)||a===0){document.getElementById('rQuad').innerText="Result: Invalid";}else if(d<0){document.getElementById('rQuad').innerText="Result: Complex";}else{let x1=(-b+Math.sqrt(d))/(2*a),x2=(-b-Math.sqrt(d))/(2*a);document.getElementById('rQuad').innerText=`Result: x1=${x1}, x2=${x2}`;}}
+function calcTemp(){let f=parseFloat(document.getElementById('fahrIn').value);document.getElementById('rTemp').innerText="Result: "+(isNaN(f)?"Invalid":(f-32)*5/9+" °C");}
+function calcTemp2(){let c=parseFloat(document.getElementById('celsIn').value);document.getElementById('rTemp2').innerText="Result: "+(isNaN(c)?"Invalid":(c*9/5)+32+" °F");}
+function calcSI(){let p=parseFloat(document.getElementById('siP').value),r=parseFloat(document.getElementById('siR').value),t=parseFloat(document.getElementById('siT').value);document.getElementById('rSI').innerText="Result: "+(isNaN(p)||isNaN(r)||isNaN(t)?"Invalid":(p*r*t)/100);}
+function calcSpeed(){let d=parseFloat(document.getElementById('sdDist').value),t=parseFloat(document.getElementById('sdTime').value);document.getElementById('rSpeed').innerText="Result: "+(isNaN(d)||isNaN(t)||t===0?"Invalid":d/t);}
+function calcFact(){let n=parseInt(document.getElementById('factIn').value);if(isNaN(n)||n<0||n>170){document.getElementById('rFact').innerText="Result: Invalid";return;}let f=1;for(let i=2;i<=n;i++)f*=i;document.getElementById('rFact').innerText="Result: "+f;}
 function gcd(a,b){return b==0?a:gcd(b,a%b);}
-function calcGCD(){let a=parseInt(document.getElementById('gcd1').value),b=parseInt(document.getElementById('gcd2').value);document.getElementById('rGCD').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid input":gcd(a,b));}
-function calcLCM(){let a=parseInt(document.getElementById('lcm1').value),b=parseInt(document.getElementById('lcm2').value);document.getElementById('rLCM').innerText="Result: "+(isNaN(a)||isNaN(b)||a===0||b===0?"Invalid input":Math.abs(a*b)/gcd(a,b));}
-function calcBMI(){let w=parseFloat(document.getElementById('bmiKg').value),h=parseFloat(document.getElementById('bmiM').value);document.getElementById('rBMI').innerText="Result: "+(isNaN(w)||isNaN(h)||h===0?"Invalid input":w/(h*h));}
-function calcTri(){let b=parseFloat(document.getElementById('triB').value),h=parseFloat(document.getElementById('triH').value);document.getElementById('rTri').innerText="Result: "+(isNaN(b)||isNaN(h)?"Invalid input":0.5*b*h);}
-function calcPerim(){let l=parseFloat(document.getElementById('recL').value),w=parseFloat(document.getElementById('recW').value);document.getElementById('rPerim').innerText="Result: "+(isNaN(l)||isNaN(w)?"Invalid input":2*(l+w));}
-function calcSlope(){try{let p1=document.getElementById('sl1').value.split(',').map(Number),p2=document.getElementById('sl2').value.split(',').map(Number);let s=(p2[1]-p1[1])/(p2[0]-p1[0]);document.getElementById('rSlope').innerText="Result: "+(isNaN(s)?"Invalid input":s);}catch{document.getElementById('rSlope').innerText="Result: Error";}}
-function calcDist(){try{let p1=document.getElementById('pt1').value.split(',').map(Number),p2=document.getElementById('pt2').value.split(',').map(Number);let d=Math.sqrt(Math.pow(p2[0]-p1[0],2)+Math.pow(p2[1]-p1[1],2));document.getElementById('rDist').innerText="Result: "+(isNaN(d)?"Invalid input":d);}catch{document.getElementById('rDist').innerText="Result: Error";}}
-function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g}`;;}
-function calcLog(){let n=parseFloat(document.getElementById('logIn').value);document.getElementById('rLog').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log10(n));}
-function calcLn(){let n=parseFloat(document.getElementById('lnIn').value);document.getElementById('rLn').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log(n));}
-function calcPctChange(){let o=parseFloat(document.getElementById('pcOld').value),n=parseFloat(document.getElementById('pcNew').value);document.getElementById('rPctChange').innerText="Result: "+(isNaN(o)||isNaN(n)||o===0?"Invalid input":((n-o)/o)*100+"%");}
-function calcMod(){let a=parseFloat(document.getElementById('modA').value),b=parseFloat(document.getElementById('modB').value);document.getElementById('rMod').innerText="Result: "+(isNaN(a)||isNaN(b)||b===0?"Invalid input":a%b);}
-function calcCube(){let s=parseFloat(document.getElementById('cubeS').value);document.getElementById('rCube').innerText="Result: "+(isNaN(s)||s<0?"Invalid input":Math.pow(s,3));}
-function calcSphere(){let r=parseFloat(document.getElementById('sphR').value);document.getElementById('rSph').innerText="Result: "+(isNaN(r)||r<0?"Invalid input":(4/3)*Math.PI*Math.pow(r,3));}
+function calcGCD(){let a=parseInt(document.getElementById('gcd1').value),b=parseInt(document.getElementById('gcd2').value);document.getElementById('rGCD').innerText="Result: "+(isNaN(a)||isNaN(b)?"Invalid":gcd(a,b));}
+function calcLCM(){let a=parseInt(document.getElementById('lcm1').value),b=parseInt(document.getElementById('lcm2').value);document.getElementById('rLCM').innerText="Result: "+(isNaN(a)||isNaN(b)||a===0||b===0?"Invalid":Math.abs(a*b)/gcd(a,b));}
+function calcBMI(){let w=parseFloat(document.getElementById('bmiKg').value),h=parseFloat(document.getElementById('bmiM').value);document.getElementById('rBMI').innerText="Result: "+(isNaN(w)||isNaN(h)||h===0?"Invalid":w/(h*h));}
+function calcTri(){let b=parseFloat(document.getElementById('triB').value),h=parseFloat(document.getElementById('triH').value);document.getElementById('rTri').innerText="Result: "+(isNaN(b)||isNaN(h)?"Invalid":0.5*b*h);}
+function calcPerim(){let l=parseFloat(document.getElementById('recL').value),w=parseFloat(document.getElementById('recW').value);document.getElementById('rPerim').innerText="Result: "+(isNaN(l)||isNaN(w)?"Invalid":2*(l+w));}
+function calcSlope(){try{let p1=document.getElementById('sl1').value.split(',').map(Number),p2=document.getElementById('sl2').value.split(',').map(Number);let s=(p2[1]-p1[1])/(p2[0]-p1[0]);document.getElementById('rSlope').innerText="Result: "+(isNaN(s)?"Invalid":s);}catch{document.getElementById('rSlope').innerText="Result: Error";}}
+function calcDist(){try{let p1=document.getElementById('pt1').value.split(',').map(Number),p2=document.getElementById('pt2').value.split(',').map(Number);let d=Math.sqrt(Math.pow(p2[0]-p1[0],2)+Math.pow(p2[1]-p1[1],2));document.getElementById('rDist').innerText="Result: "+(isNaN(d)?"Invalid":d);}catch{document.getElementById('rDist').innerText="Result: Error";}}
+function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g}`;}
+function calcLog(){let n=parseFloat(document.getElementById('logIn').value);document.getElementById('rLog').innerText="Result: "+(isNaN(n)||n<=0?"Invalid":Math.log10(n));}
+function calcLn(){let n=parseFloat(document.getElementById('lnIn').value);document.getElementById('rLn').innerText="Result: "+(isNaN(n)||n<=0?"Invalid":Math.log(n));}
+function calcPctChange(){let o=parseFloat(document.getElementById('pcOld').value),n=parseFloat(document.getElementById('pcNew').value);document.getElementById('rPctChange').innerText="Result: "+(isNaN(o)||isNaN(n)||o===0?"Invalid":((n-o)/o)*100+"%");}
+function calcMod(){let a=parseFloat(document.getElementById('modA').value),b=parseFloat(document.getElementById('modB').value);document.getElementById('rMod').innerText="Result: "+(isNaN(a)||isNaN(b)||b===0?"Invalid":a%b);}
+function calcCube(){let s=parseFloat(document.getElementById('cubeS').value);document.getElementById('rCube').innerText="Result: "+(isNaN(s)||s<0?"Invalid":Math.pow(s,3));}
+function calcSphere(){let r=parseFloat(document.getElementById('sphR').value);document.getElementById('rSph').innerText="Result: "+(isNaN(r)||r<0?"Invalid":(4/3)*Math.PI*Math.pow(r,3));}
 
+// Init
 renderGames();
 renderProfile();
 renderNotes();
