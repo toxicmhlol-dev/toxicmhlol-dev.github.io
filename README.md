@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>GameHub — Ultimate Edition</title>
-<!-- Gun.js for Serverless Real-time Sync -->
-<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+<!-- Firebase SDKs via CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
 *{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg)}
@@ -72,13 +73,13 @@ label{font-size:11px;color:#68758b;text-transform:uppercase;font-weight:800;padd
 
 <div class="view" id="chat">
   <div class="hero">
-    <h1>💬 Chromebook Cross-Device Chat</h1>
-    <p>Chat live across Chromebooks, laptops, and phones on your Wi-Fi network!</p>
+    <h1>💬 Chromebook Cloud Chat</h1>
+    <p>Live cross-device chat via Firebase Cloud Database.</p>
   </div>
   <div class="chat">
     <div class="chathead">
-      <small>Status: Decentralized Peer Mesh</small>
-      <span id="chatStatusBadge" style="font-size:11px; color:#f1c40f;">Connecting to relay...</span>
+      <small>Status: Firebase Cloud Sync</small>
+      <span id="chatStatusBadge" style="font-size:11px; color:#7de5a6;">Connected Live</span>
     </div>
     <div class="messages" id="chatMessages"></div>
     <div class="composer">
@@ -186,31 +187,21 @@ document.getElementById("save").onclick=()=>{
   renderProfile();
 };
 
-// --- REAL CHAT ENGINE WITH MULTI-PEER RELAYS ---
-const gun = Gun({
-  peers: [
-    'https://gun-manhattan.herokuapp.com/gun',
-    'https://peer.gun.eco/gun',
-    'https://relay.peer.ooo/gun'
-  ]
-});
+// --- FIREBASE CLOUD CHAT CONFIGURATION ---
+// Replace these with your own free Firebase web app configuration keys
+const firebaseConfig = {
+  apiKey: "AIzaSyYOUR_API_KEY_HERE",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
 
-const chatRoom = gun.get('gamehub_chromebook_room_2026_v3');
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 const chatMessages = document.getElementById("chatMessages");
 const chatInput = document.getElementById("chatInput");
-const chatStatusBadge = document.getElementById("chatStatusBadge");
-const seenMessages = new Set();
-
-// True connection listener using Gun's internal peer status
-gun.on('hi', peer => {
-  chatStatusBadge.textContent = "Connected Live";
-  chatStatusBadge.style.color = "#7de5a6";
-});
-
-gun.on('bye', peer => {
-  chatStatusBadge.textContent = "Reconnecting...";
-  chatStatusBadge.style.color = "#f1c40f";
-});
 
 function appendMessage(sender, emoji, text) {
   const msgDiv = document.createElement("div");
@@ -226,29 +217,38 @@ function appendMessage(sender, emoji, text) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-document.getElementById("sendChat").onclick = () => {
+document.getElementById("sendChat").onclick = async () => {
   const text = chatInput.value.trim();
   if (!text) return;
   
-  chatRoom.set({
-    sender: profile.name,
-    emoji: profile.emoji,
-    text: text,
-    timestamp: Date.now()
-  });
-  
-  chatInput.value = "";
+  try {
+    await db.collection("gamehub_messages").add({
+      sender: profile.name,
+      emoji: profile.emoji,
+      text: text,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    chatInput.value = "";
+  } catch (err) {
+    alert("Error sending message. Check Firebase configuration keys.");
+  }
 };
 
 chatInput.onkeydown = (e) => {
   if (e.key === "Enter") document.getElementById("sendChat").click();
 };
 
-chatRoom.map().on((data, id) => {
-  if (!data || !data.text || seenMessages.has(id)) return;
-  seenMessages.add(id);
-  appendMessage(data.sender || "Anon", data.emoji || "😀", data.text);
-});
+// Real-time listener for incoming messages ordered by time
+db.collection("gamehub_messages")
+  .orderBy("timestamp", "asc")
+  .limitToLast(50)
+  .onSnapshot(snapshot => {
+    chatMessages.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      appendMessage(data.sender || "Anon", data.emoji || "😀", data.text);
+    });
+  });
 
 // Notes
 let notes = JSON.parse(localStorage.getItem("gamehubNotes") || "[]");
@@ -315,7 +315,7 @@ function calcTri(){let b=parseFloat(document.getElementById('triB').value),h=par
 function calcPerim(){let l=parseFloat(document.getElementById('recL').value),w=parseFloat(document.getElementById('recW').value);document.getElementById('rPerim').innerText="Result: "+(isNaN(l)||isNaN(w)?"Invalid input":2*(l+w));}
 function calcSlope(){try{let p1=document.getElementById('sl1').value.split(',').map(Number),p2=document.getElementById('sl2').value.split(',').map(Number);let s=(p2[1]-p1[1])/(p2[0]-p1[0]);document.getElementById('rSlope').innerText="Result: "+(isNaN(s)?"Invalid input":s);}catch{document.getElementById('rSlope').innerText="Result: Error";}}
 function calcDist(){try{let p1=document.getElementById('pt1').value.split(',').map(Number),p2=document.getElementById('pt2').value.split(',').map(Number);let d=Math.sqrt(Math.pow(p2[0]-p1[0],2)+Math.pow(p2[1]-p1[1],2));document.getElementById('rDist').innerText="Result: "+(isNaN(d)?"Invalid input":d);}catch{document.getElementById('rDist').innerText="Result: Error";}}
-function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g}`;}
+function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g};}
 function calcLog(){let n=parseFloat(document.getElementById('logIn').value);document.getElementById('rLog').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log10(n));}
 function calcLn(){let n=parseFloat(document.getElementById('lnIn').value);document.getElementById('rLn').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log(n));}
 function calcPctChange(){let o=parseFloat(document.getElementById('pcOld').value),n=parseFloat(document.getElementById('pcNew').value);document.getElementById('rPctChange').innerText="Result: "+(isNaN(o)||isNaN(n)||o===0?"Invalid input":((n-o)/o)*100+"%");}
