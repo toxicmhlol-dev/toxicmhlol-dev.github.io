@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>GameHub — Ultimate Edition</title>
-<!-- Firebase SDKs via CDN -->
+<!-- Firebase SDKs (Compat Version for easy integration) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
@@ -188,14 +188,14 @@ document.getElementById("save").onclick=()=>{
 };
 
 // --- FIREBASE CLOUD CHAT CONFIGURATION ---
-// Replace these with your own free Firebase web app configuration keys
 const firebaseConfig = {
-  apiKey: "AIzaSyYOUR_API_KEY_HERE",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyAF7B7qYDrUi-C5_6LCjQfoXRrH95QmIio",
+  authDomain: "v14a-bb967.firebaseapp.com",
+  projectId: "v14a-bb967",
+  storageBucket: "v14a-bb967.firebasestorage.app",
+  messagingSenderId: "226123648400",
+  appId: "1:226123648400:web:089323e070661a87c4b715",
+  measurementId: "G-R9Q24182LC"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -230,7 +230,7 @@ document.getElementById("sendChat").onclick = async () => {
     });
     chatInput.value = "";
   } catch (err) {
-    alert("Error sending message. Check Firebase configuration keys.");
+    alert("Error sending message. Ensure Firestore database is created in Firebase Console.");
   }
 };
 
@@ -315,7 +315,7 @@ function calcTri(){let b=parseFloat(document.getElementById('triB').value),h=par
 function calcPerim(){let l=parseFloat(document.getElementById('recL').value),w=parseFloat(document.getElementById('recW').value);document.getElementById('rPerim').innerText="Result: "+(isNaN(l)||isNaN(w)?"Invalid input":2*(l+w));}
 function calcSlope(){try{let p1=document.getElementById('sl1').value.split(',').map(Number),p2=document.getElementById('sl2').value.split(',').map(Number);let s=(p2[1]-p1[1])/(p2[0]-p1[0]);document.getElementById('rSlope').innerText="Result: "+(isNaN(s)?"Invalid input":s);}catch{document.getElementById('rSlope').innerText="Result: Error";}}
 function calcDist(){try{let p1=document.getElementById('pt1').value.split(',').map(Number),p2=document.getElementById('pt2').value.split(',').map(Number);let d=Math.sqrt(Math.pow(p2[0]-p1[0],2)+Math.pow(p2[1]-p1[1],2));document.getElementById('rDist').innerText="Result: "+(isNaN(d)?"Invalid input":d);}catch{document.getElementById('rDist').innerText="Result: Error";}}
-function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g};}
+function calcFrac(){let n=parseInt(document.getElementById('fracN').value),d=parseInt(document.getElementById('fracD').value);if(isNaN(n)||isNaN(d)||d===0){document.getElementById('rFrac').innerText="Result: Invalid";return;}let g=gcd(Math.abs(n),Math.abs(d));document.getElementById('rFrac').innerText=`Result: ${n/g} / ${d/g}`;;}
 function calcLog(){let n=parseFloat(document.getElementById('logIn').value);document.getElementById('rLog').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log10(n));}
 function calcLn(){let n=parseFloat(document.getElementById('lnIn').value);document.getElementById('rLn').innerText="Result: "+(isNaN(n)||n<=0?"Invalid input":Math.log(n));}
 function calcPctChange(){let o=parseFloat(document.getElementById('pcOld').value),n=parseFloat(document.getElementById('pcNew').value);document.getElementById('rPctChange').innerText="Result: "+(isNaN(o)||isNaN(n)||o===0?"Invalid input":((n-o)/o)*100+"%");}
