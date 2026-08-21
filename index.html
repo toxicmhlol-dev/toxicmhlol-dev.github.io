@@ -1,414 +1,1167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>V0ID</title>
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<style>
-:root{--bg:#0b0f17;--panel:#121927;--panel2:#182235;--border:#263249;--text:#f4f7fb;--muted:#93a1b8;--accent:#7c5cff}
-body[data-theme="light"]{--bg:#e4e8ec;--panel:#ffffff;--panel2:#f0f2f5;--border:#cdd5e0;--text:#1a1e23;--muted:#64748b;--accent:#3b82f6}
-body[data-theme="faded"]{--bg:#1a1a1a;--panel:#242424;--panel2:#2d2d2d;--border:#3d3d3d;--text:#e0e0e0;--muted:#999999;--accent:#777777}
-body[data-theme="hacker"]{--bg:#000000;--panel:#050505;--panel2:#0a0a0a;--border:#003300;--text:#00ff00;--muted:#008800;--accent:#00ff00}
-body[data-theme="mocha"]{--bg:#3b2f2f;--panel:#4a3b3b;--panel2:#5c4a4a;--border:#705a5a;--text:#f4e8e8;--muted:#bdaeae;--accent:#d2a679}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Classroom</title>
+    <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
+    <!-- Gun.js for automatic peer-to-peer global chat -->
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <style>
+        :root {
+            --bg-color: #050507;
+            --window-bg: rgba(18, 18, 24, 0.92);
+            --window-border: rgba(255, 255, 255, 0.22);
+            --text-main: #ffffff;
+            --text-muted: #d1d5db;
+            --accent-color: #3b82f6;
+            --dock-bg: rgba(25, 25, 35, 0.85);
+            --blur: blur(24px);
+            --radius-window: 14px;
+            --radius-element: 8px;
+        }
 
-*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);transition:background 0.3s, color 0.3s}
-.app{display:flex;height:100vh}.side{width:235px;background:var(--panel);border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column;transition:background 0.3s}
-.logo{font-size:20px;font-weight:800;padding:5px 10px 22px}.logo b{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#19c3ff);margin-right:8px;color:#fff}
-label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800;padding:10px 12px 6px}
-.nav{border:0;background:transparent;color:var(--muted);text-align:left;padding:11px 12px;border-radius:10px;margin:2px 0;cursor:pointer}.nav:hover,.nav.active{background:var(--panel2);color:var(--text)}
-.spacer{flex:1}.mini{border-top:1px solid var(--border);padding:14px 6px;display:flex;gap:9px;align-items:center}.avatar{width:38px;height:38px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-weight:800;flex:none}.miniName{font-size:13px;font-weight:700}
-.main{flex:1;display:flex;flex-direction:column;min-width:0}.top{height:66px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}.title{font-size:20px;font-weight:800}.online{font-size:12px;color:#7de5a6}
-.content{padding:24px;overflow:auto;flex:1}.view{display:none;max-width:1100px;margin:auto}.view.active{display:block}
-.hero,.settings{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:25px;margin-bottom:20px}.hero h1{margin:0 0 7px}.hero p,.settings p{color:var(--muted)}
-.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:15px}.game{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px}.thumb{height:115px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-size:40px;margin-bottom:10px}.game h3{margin:0 0 5px}.game p{font-size:12px;color:var(--muted);height:34px}.play,.save,.send{border:0;background:var(--accent);color:white;font-weight:800;border-radius:9px;padding:10px;cursor:pointer}.play{width:100%}
+        [data-theme="light"] {
+            --bg-color: #e5e7eb;
+            --window-bg: rgba(255, 255, 255, 0.9);
+            --window-border: rgba(0, 0, 0, 0.1);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --dock-bg: rgba(255, 255, 255, 0.8);
+        }
 
-/* Gameplay specific */
-#gameplay{margin:-24px;height:calc(100% + 48px);display:none;flex-direction:column;max-width:100%}
-#gameplay.active{display:flex}
-.game-header{padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.back-btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:bold}
-.back-btn:hover{background:var(--border)}
-.game-frame{flex:1;border:none;width:100%;background:#000}
+        [data-theme="black"] {
+            --bg-color: #000000;
+            --window-bg: rgba(10, 10, 12, 0.96);
+            --window-border: rgba(255, 255, 255, 0.25);
+            --text-main: #ffffff;
+            --text-muted: #e0e0e0;
+            --dock-bg: rgba(12, 12, 16, 0.9);
+        }
 
-.notes-list{display:grid;gap:12px;max-width:600px;margin:20px auto}
-.note-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:16px}
-.note-card h3{margin:0 0 7px}.note-card p{white-space:pre-wrap;color:var(--text);margin:0 0 12px;line-height:1.5}.note-actions{display:flex;justify-content:flex-end}
-.delete-note{border:0;background:#39202a;color:#ff9aaa;border-radius:8px;padding:7px 11px;cursor:pointer}
+        [data-theme="mono"] {
+            --bg-color: #262626;
+            --window-bg: rgba(38, 38, 38, 0.9);
+            --window-border: rgba(255, 255, 255, 0.3);
+            --text-main: #ffffff;
+            --text-muted: #d4d4d4;
+            --dock-bg: rgba(30, 30, 30, 0.85);
+            --accent-color: #737373;
+        }
 
-/* Chat Styles */
-.chat{height:calc(100vh - 160px);border:1px solid var(--border);border-radius:15px;overflow:hidden;background:var(--panel);display:flex;flex-direction:column;position:relative}
-.chathead{padding:14px 17px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.chathead small{color:var(--muted)}
-.messages{flex:1;overflow:auto;padding:18px}.msg{display:flex;gap:9px;margin-bottom:15px;cursor:context-menu}.msg .avatar{width:34px;height:34px;font-size:12px}.meta{font-size:12px;color:var(--muted);margin-bottom:4px}.bubble{background:var(--panel2);padding:9px 12px;border-radius:5px 12px 12px 12px;max-width:min(650px,75vw);word-break:break-word}
-.composer{display:flex;gap:8px;padding:11px;border-top:1px solid var(--border)}.composer input{flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0}.send{padding:0 18px}
-.clear-chat-btn{background:#d93850;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;margin-right:10px;}
-.clear-chat-btn:hover{background:#b82a3e;}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
 
-/* Context Menu */
-.context-menu{display:none;position:absolute;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:1000;box-shadow:0 6px 20px rgba(0,0,0,0.6);min-width:160px}
-.context-menu button{display:block;width:100%;background:transparent;border:0;color:var(--text);text-align:left;padding:9px 12px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
-.context-menu button:hover{background:var(--border)}
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #16161f 0%, #08080c 55%, #000000 100%);
+            background-size: cover;
+            background-position: center;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+        }
 
-.math-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;margin-top:20px}
-.math-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}
-.math-card h3{margin:0 0 10px;font-size:16px;color:var(--text)}
-.math-card input,.math-card select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:9px;border-radius:8px;outline:0;margin-bottom:8px}
-.math-card button{width:100%;border:0;background:var(--accent);color:white;font-weight:700;border-radius:8px;padding:8px;cursor:pointer;margin-top:4px}
-.math-result{margin-top:10px;padding:8px;background:var(--bg);border-radius:8px;font-size:13px;color:#7de5a6;border:1px solid var(--border);word-break:break-all}
-.calculator{max-width:390px;margin:auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
-.calc-display{width:100%;height:65px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:right;font-size:27px;margin-bottom:12px}
-.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.calc-grid button{height:58px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);font-size:18px;font-weight:700;cursor:pointer}
-.calc-grid button:hover{background:var(--border)}.calc-grid .equals{background:var(--accent);color:white;border-color:var(--accent)}
-.settings{max-width:600px;margin:auto}
-.status{font-size:11px;color:#7de5a6;margin-top:3px}.hint{font-size:12px;color:var(--muted);margin-top:12px}
-.field{margin-bottom: 15px;}
-.field span{display:block;margin-bottom:6px;font-size:13px;font-weight:600;}
-.field input, .field select, .field textarea {width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:9px;outline:0;font-family:inherit}
+        /* --- TOP BAR --- */
+        .top-bar {
+            height: 32px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 9999;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
 
-@media(max-width:700px){.side{width:70px;padding:14px 7px}.logo{font-size:0;text-align:center}.logo b{margin:0}.nav{font-size:0;text-align:center}.nav::first-letter{font-size:18px}.mini{justify-content:center}.mini div:not(.avatar){display:none}.content{padding:14px}.top{padding:0 14px}}
-</style>
+        .top-bar .left-items, .top-bar .right-items {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .system-menu-btn {
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .system-menu-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* --- DESKTOP AREA --- */
+        .desktop-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-icon {
+            position: absolute;
+            width: 76px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: grab;
+            border-radius: 10px;
+            padding: 6px;
+            transition: background 0.2s;
+        }
+        .app-icon:active { cursor: grabbing; }
+        .app-icon:hover { background: rgba(255, 255, 255, 0.12); }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+        }
+
+        .app-icon span {
+            font-size: 11px;
+            text-align: center;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 1);
+            color: #ffffff;
+            font-weight: 600;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* App Icon Gradients */
+        .bg-settings { background: linear-gradient(135deg, #4b5563, #1f2937); }
+        .bg-paint { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .bg-chat { background: linear-gradient(135deg, #10b981, #059669); }
+        .bg-notepad { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .bg-files { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .bg-terminal { background: linear-gradient(135deg, #111827, #030712); border: 1px solid rgba(255,255,255,0.25); }
+
+        /* --- DOCK / TASKBAR --- */
+        .dock {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dock-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 8px 12px;
+            border-radius: 22px;
+            display: flex;
+            gap: 12px;
+            z-index: 9998;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .dock-icon {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .dock-icon:active { cursor: grabbing; }
+        .dock-icon:hover { transform: scale(1.15) translateY(-4px); }
+        .dock-icon.dragging { opacity: 0.4; }
+
+        .dock-icon .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+        }
+        
+        .dock-dot {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: none;
+        }
+        .dock-icon.running .dock-dot { display: block; }
+
+        /* --- CONTEXT MENU --- */
+        .context-menu {
+            position: fixed;
+            width: 200px;
+            background: rgba(20, 20, 28, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 100000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .context-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #ffffff;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+        .context-item:hover { background: var(--accent-color); color: white; }
+        .context-divider { height: 1px; background: rgba(255, 255, 255, 0.15); margin: 4px 0; }
+
+        /* --- WINDOW SYSTEM --- */
+        .window {
+            position: absolute;
+            top: 60px;
+            left: 100px;
+            width: 840px;
+            height: 580px;
+            background: var(--window-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--window-border);
+            border-radius: var(--radius-window);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 100;
+        }
+        .window.active { display: flex; z-index: 101; }
+
+        .title-bar {
+            height: 42px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: grab;
+        }
+        .title-bar:active { cursor: grabbing; }
+
+        .window-controls { display: flex; gap: 8px; flex: 1; }
+        .win-btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: opacity 0.2s; }
+        .win-btn:hover { opacity: 0.8; }
+        .btn-close { background: #ff5f56; }
+        .btn-min { background: #ffbd2e; }
+        .btn-max { background: #27c93f; }
+
+        .window-title { flex: 2; text-align: center; font-size: 13px; font-weight: 600; color: #ffffff; }
+        .window-spacer { flex: 1; }
+        .window-content { display: flex; flex: 1; overflow: hidden; color: var(--text-main); }
+
+        /* --- SETTINGS APP --- */
+        .settings-sidebar {
+            width: 230px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .settings-sidebar h3 { font-size: 16px; margin-bottom: 16px; padding-left: 8px; color: #ffffff; }
+        .tab-btn {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+            border-radius: var(--radius-element); cursor: pointer; font-size: 13px; color: #ffffff; transition: 0.2s;
+        }
+        .tab-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .tab-btn.active { background: var(--accent-color); color: white; font-weight: 600; }
+
+        .settings-main { flex: 1; padding: 28px 36px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-content h2 { margin-bottom: 24px; font-size: 22px; color: #ffffff; }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .toggle-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .toggle-row:last-child { border-bottom: none; }
+
+        /* Switch UI */
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-switch {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.3); transition: .3s; border-radius: 26px;
+        }
+        .slider-switch:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider-switch { background-color: var(--accent-color); }
+        input:checked + .slider-switch:before { transform: translateX(20px); }
+
+        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+        .option-card {
+            background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
+            padding: 14px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 13px; color: #ffffff;
+        }
+        .option-card:hover { border-color: var(--accent-color); }
+        .option-card.active { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.25); }
+
+        /* --- NOTEPAD APP --- */
+        .notepad-area {
+            width: 100%; height: 100%; background: transparent; border: none;
+            color: #ffffff; padding: 16px; font-size: 14px; resize: none; outline: none;
+            line-height: 1.5;
+        }
+
+        /* --- PAINT APP --- */
+        .paint-toolbar {
+            height: 44px; background: rgba(255,255,255,0.05); display: flex; align-items: center;
+            gap: 14px; padding: 0 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); font-size: 13px;
+        }
+        .paint-canvas { background: white; cursor: crosshair; display: block; width: 100%; flex: 1; }
+
+        /* --- FILES APP --- */
+        .files-sidebar { width: 180px; border-right: 1px solid rgba(255, 255, 255, 0.15); padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #ffffff; }
+        .files-main { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 16px; align-content: flex-start; overflow-y: auto; }
+        .file-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; border-radius: 8px; cursor: pointer; color: #ffffff; }
+        .file-item:hover { background: rgba(255,255,255,0.12); }
+        .file-icon { font-size: 32px; }
+        .file-name { font-size: 12px; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; color: #ffffff; }
+
+        /* --- CHAT APP --- */
+        .chat-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        .chat-toolbar {
+            padding: 8px 16px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-msg { background: rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; max-width: 75%; font-size: 13px; line-height: 1.4; color: #ffffff; border: 1px solid rgba(255,255,255,0.1); }
+        .chat-msg.self { background: var(--accent-color); color: white; align-self: flex-end; border: none; }
+        .chat-input-bar { padding: 12px 16px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255, 255, 255, 0.15); display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 12px; color: #ffffff; outline: none; font-size: 13px; }
+        .os-btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: opacity 0.2s; }
+        .os-btn:hover { opacity: 0.85; }
+        .os-btn.danger { background: rgba(239, 68, 68, 0.9); }
+
+        select, input[type="text"], input[type="file"] { background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; padding: 8px 12px; border-radius: 6px; font-size: 13px; outline: none; }
+        select option { background: #111115; color: #ffffff; }
+    </style>
 </head>
 <body>
-<div class="app">
-<aside class="side">
-  <div class="logo"><b>🎮</b><span>V0ID</span></div>
-  <label>Categories</label>
-  <button class="nav active" data-view="home">🏠 Home</button>
-  <button class="nav" data-view="action">⚔️ Action</button>
-  <button class="nav" data-view="puzzle">🧩 Puzzle</button>
-  <button class="nav" data-view="arcade">👾 Arcade</button>
-  <button class="nav" data-view="chat">💬 Chat</button>
-  <button class="nav" data-view="notes">📝 Notes</button>
-  <button class="nav" data-view="math">➗ Math Hub</button>
-  <div class="spacer"></div>
-  <button class="nav" data-view="settings">⚙️ Settings</button>
-  <div class="mini"><div class="avatar" id="miniAvatar">😀</div><div><div class="miniName" id="miniName"></div><div class="status">Online</div></div></div>
-</aside>
-<main class="main">
-<header class="top"><div class="title" id="title">Home</div><div class="online" id="connection">● Ready</div></header>
-<section class="content">
 
-<div class="view active" id="home"><div class="hero"><h1>Welcome to GameHub 🎮</h1><p>Choose a category and play original, built-in games.</p></div><div class="games" id="homeGames"></div></div>
-<div class="view" id="action"><div class="hero"><h1>⚔️ Action</h1><p>Fast-paced games.</p></div><div class="games" id="actionGames"></div></div>
-<div class="view" id="puzzle"><div class="hero"><h1>🧩 Puzzle</h1><p>Brain games.</p></div><div class="games" id="puzzleGames"></div></div>
-<div class="view" id="arcade"><div class="hero"><h1>👾 Arcade</h1><p>Classic quick games.</p></div><div class="games" id="arcadeGames"></div></div>
-
-<!-- The Embedded Gameplay View -->
-<div class="view" id="gameplay">
-  <div class="game-header">
-    <button class="back-btn" onclick="closeGame()">⬅ Back to Games</button>
-    <div id="gameTitle" style="font-weight:700;">Loading...</div>
-    <div style="width:120px;"></div>
-  </div>
-  <iframe class="game-frame" id="gameFrame" srcdoc="" allowfullscreen></iframe>
-</div>
-
-<div class="view" id="chat">
-  <div class="hero">
-    <h1>💬 Chromebook Cloud Chat</h1>
-    <p>Live cross-device chat via Firebase Cloud Database.</p>
-  </div>
-  <div class="chat" id="chatContainer">
-    <div class="chathead">
-      <small>Status: Firebase Sync (Right-click profile to block)</small>
-      <div>
-        <button class="clear-chat-btn" id="uiClearChat">🗑️ Clear Local Chat</button>
-        <span id="chatStatusBadge" style="font-size:11px; color:#7de5a6;">Connected Live</span>
-      </div>
+    <!-- TOP TASKBAR -->
+    <div class="top-bar">
+        <div class="left-items">
+            <strong>V0ID OS</strong>
+            <span id="current-app-name" style="color: var(--text-muted);">Finder</span>
+        </div>
+        <div class="right-items">
+            <div class="system-menu-btn" onclick="openWindow('settings-window')">⚙️ Control Panel</div>
+            <span id="clock">Mon Aug 10 12:00 PM</span>
+        </div>
     </div>
-    <div class="messages" id="chatMessages"></div>
-    <div class="composer">
-      <input id="chatInput" placeholder="Type a message..." maxlength="200">
-      <button class="send" id="sendChat">Send</button>
+
+    <!-- DESKTOP AREA -->
+    <div class="desktop-area" id="desktop-area" oncontextmenu="showContextMenu(event)">
+        <div class="app-icon" id="desktop-icon-settings" data-app="settings" style="top: 20px; left: 20px;">
+            <div class="icon-box bg-settings">⚙️</div>
+            <span>Settings</span>
+        </div>
+        <div class="app-icon" id="desktop-icon-files" data-app="files" style="top: 120px; left: 20px;">
+            <div class="icon-box bg-files">📁</div>
+            <span>Files</span>
+        </div>
+        <div class="app-icon" id="desktop-icon-notepad" data-app="notepad" style="top: 220px; left: 20px;">
+            <div class="icon-box bg-notepad">📝</div>
+            <span>Notepad</span>
+        </div>
+        <div class="app-icon" id="desktop-icon-paint" data-app="paint" style="top: 320px; left: 20px;">
+            <div class="icon-box bg-paint">🎨</div>
+            <span>Paint</span>
+        </div>
+        <div class="app-icon" id="desktop-icon-chat" data-app="chat" style="top: 420px; left: 20px;">
+            <div class="icon-box bg-chat">💬</div>
+            <span>Global Chat</span>
+        </div>
+        <div class="app-icon" id="desktop-icon-terminal" data-app="terminal" style="top: 520px; left: 20px;">
+            <div class="icon-box bg-terminal">💻</div>
+            <span>Terminal</span>
+        </div>
     </div>
-    <div class="context-menu" id="chatContextMenu">
-      <button id="ctxBlock" style="color:#ff9aaa;">🚫 Block User</button>
+
+    <!-- RIGHT CLICK CONTEXT MENU -->
+    <div class="context-menu" id="desktop-context-menu">
+        <div class="context-item" onclick="createNewFolder()">📁 New Folder</div>
+        <div class="context-item" onclick="createNewTextFile()">📄 New Text File</div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="openWindow('settings-window'); switchTabDirect('tab-wallpaper')">🖼️ Change Wallpaper</div>
+        <div class="context-item" onclick="resetIconPositions(); location.reload()">🔄 Reset Icon Positions</div>
     </div>
-  </div>
-</div>
 
-<div class="view" id="notes">
-  <div class="hero"><h1>📝 Notes</h1><p>Create and save notes directly in your browser.</p></div>
-  <div class="settings">
-    <div class="field"><span>Note title</span><input id="noteTitle" maxlength="80" placeholder="My note"></div>
-    <div class="field"><span>Note</span><textarea id="noteText" maxlength="5000" placeholder="Write your note here..." style="min-height:150px;resize:vertical;"></textarea></div>
-    <button class="save" id="addNote">Add Note</button>
-  </div>
-  <div class="notes-list" id="notesList"></div>
-</div>
-
-<div class="view" id="math">
-  <div class="hero"><h1>➗ Advanced Math Hub</h1><p>Standard calculator plus quick conversion tools.</p></div>
-  <div class="calculator" style="margin-bottom:30px;">
-    <input id="calcDisplay" class="calc-display" readonly value="0">
-    <div class="calc-grid">
-      <button data-calc="clear">C</button><button data-calc="back">⌫</button><button data-value="%">%</button><button data-value="/">÷</button>
-      <button data-value="7">7</button><button data-value="8">8</button><button data-value="9">9</button><button data-value="*">×</button>
-      <button data-value="4">4</button><button data-value="5">5</button><button data-value="6">6</button><button data-value="-">−</button>
-      <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button data-value="+">+</button>
-      <button data-value="(">(</button><button data-value="0">0</button><button data-value=")">)</button><button data-calc="equals" class="equals">=</button>
+    <!-- DOCK / TASKBAR -->
+    <div class="dock" id="dock-container">
+        <div class="dock-icon" draggable="true" data-app="settings" onclick="openWindow('settings-window')" id="dock-settings" oncontextmenu="promptCloseApp('settings-window', event)">
+            <div class="icon-box bg-settings">⚙️</div>
+            <div class="dock-dot"></div>
+        </div>
+        <div class="dock-icon" draggable="true" data-app="files" onclick="openWindow('files-window')" id="dock-files" oncontextmenu="promptCloseApp('files-window', event)">
+            <div class="icon-box bg-files">📁</div>
+            <div class="dock-dot"></div>
+        </div>
+        <div class="dock-icon" draggable="true" data-app="notepad" onclick="openWindow('notepad-window')" id="dock-notepad" oncontextmenu="promptCloseApp('notepad-window', event)">
+            <div class="icon-box bg-notepad">📝</div>
+            <div class="dock-dot"></div>
+        </div>
+        <div class="dock-icon" draggable="true" data-app="paint" onclick="openWindow('paint-window')" id="dock-paint" oncontextmenu="promptCloseApp('paint-window', event)">
+            <div class="icon-box bg-paint">🎨</div>
+            <div class="dock-dot"></div>
+        </div>
+        <div class="dock-icon" draggable="true" data-app="chat" onclick="openWindow('chat-window')" id="dock-chat" oncontextmenu="promptCloseApp('chat-window', event)">
+            <div class="icon-box bg-chat">💬</div>
+            <div class="dock-dot"></div>
+        </div>
+        <div class="dock-icon" draggable="true" data-app="terminal" onclick="openWindow('terminal-window')" id="dock-terminal" oncontextmenu="promptCloseApp('terminal-window', event)">
+            <div class="icon-box bg-terminal">💻</div>
+            <div class="dock-dot"></div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="view" id="settings">
-  <div class="settings">
-    <h2>⚙️ Profile & Settings</h2>
-    <p>Customize your look across GameHub.</p>
-    <div class="field"><span>Display name</span><input id="name" maxlength="20"></div>
-    <div class="field"><span>Profile emoji</span>
-      <select id="emoji">
-        <option>😀</option><option>😎</option><option>👾</option><option>🎮</option><option>🦊</option>
-        <option>🐸</option><option>🤖</option><option>🐱</option><option>🐼</option><option>🚀</option>
-      </select>
+    <!-- SETTINGS WINDOW -->
+    <div class="window" id="settings-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'settings-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('settings-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('settings-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">V0ID Settings</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content">
+            <div class="settings-sidebar">
+                <h3>Settings</h3>
+                <div class="tab-btn active" onclick="switchTab(event, 'tab-appearance')">Appearance</div>
+                <div class="tab-btn" onclick="switchTab(event, 'tab-wallpaper')" id="btn-tab-wallpaper">Wallpaper</div>
+                <div class="tab-btn" onclick="switchTab(event, 'tab-cloaking')">Cloaking & Panic</div>
+                <div class="tab-btn" onclick="switchTab(event, 'tab-about')">About V0ID</div>
+            </div>
+            <div class="settings-main">
+                <div class="tab-content active" id="tab-appearance">
+                    <h2>Appearance & Themes</h2>
+                    <div class="settings-panel">
+                        <label style="font-size: 13px; color: var(--text-muted);">System Theme Mode</label>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="setTheme('light')">Light</div>
+                            <div class="option-card active" onclick="setTheme('black')">Black</div>
+                            <div class="option-card" onclick="setTheme('mono')">Mono</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-wallpaper">
+                    <h2>Wallpaper Changer</h2>
+                    <div class="settings-panel" style="display: flex; flex-direction: column; gap: 14px;">
+                        <label style="font-size: 13px; color: var(--text-muted);">Choose Default Preset:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="os-btn" onclick="setWallpaperPreset('fade')">Sleek Black Fade (Default)</button>
+                            <button class="os-btn" onclick="setWallpaperPreset('midnight')">Midnight Gradient</button>
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 6px 0;">
+                        <label style="font-size: 13px; color: var(--text-muted);">Upload Image (PNG / JPG / HTML):</label>
+                        <input type="file" id="wallpaper-file-input" accept="image/*,text/html" onchange="handleWallpaperUpload(event)">
+                        <label style="font-size: 13px; color: var(--text-muted);">Or paste Image/HTML URL:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="wallpaper-url-input" placeholder="https://example.com/image.jpg" style="flex:1;">
+                            <button class="os-btn" onclick="applyWallpaperURL()">Apply URL</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-cloaking">
+                    <h2>Cloaking & Panic Key</h2>
+                    <div class="settings-panel">
+                        <div class="toggle-row">
+                            <span>Cloak this tab (Disguise title/favicon)</span>
+                            <label class="switch"><input type="checkbox" id="cloak-tab-toggle" onchange="toggleTabCloak(this.checked)"><span class="slider-switch"></span></label>
+                        </div>
+                        <div class="toggle-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                            <span>Panic Key Shortcut (Press to trigger redirection)</span>
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <input type="text" id="panic-key-input" value="Escape" style="width: 120px;" readonly onclick="this.value='Press any key...'; captureNextKey(this)">
+                                <input type="text" id="panic-url-input" value="about:blank" style="flex:1;" placeholder="Redirect URL (default about:blank)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-about">
+                    <h2>About V0ID OS</h2>
+                    <div class="settings-panel">
+                        <p style="font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #ffffff;">V0ID OS v2.0 "Eclipse"</p>
+                        <p style="color: var(--text-muted); font-size: 13px;">A lightning-fast, highly polished web desktop simulation with zero local dependencies and complete multi-user support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="field"><span>Theme</span>
-      <select id="themeSelect">
-        <option value="default">Default Dark</option>
-        <option value="light">Light Mode</option>
-        <option value="faded">Faded Black</option>
-        <option value="hacker">Hacker (Neon Green)</option>
-        <option value="mocha">Mocha</option>
-      </select>
+
+    <!-- FILES WINDOW -->
+    <div class="window" id="files-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'files-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('files-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('files-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">File Explorer</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content">
+            <div class="files-sidebar">
+                <strong>Locations</strong>
+                <span style="cursor: pointer; opacity: 0.9;" onclick="renderFiles()">📁 Desktop</span>
+                <span style="cursor: pointer; opacity: 0.9;" onclick="renderFiles()">📄 Documents</span>
+            </div>
+            <div class="files-main" id="files-grid-container">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
     </div>
-    <button class="save" id="save">Save Settings</button>
-    <div class="hint">Your profile and theme are stored securely in this browser.</div>
-  </div>
-</div>
-</section></main></div>
 
-<script>
-// Base styling for injected games
-const gBase = `<style>body{margin:0;background:#111;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;overflow:hidden;} canvas{background:#000;border:2px solid #333;box-shadow:0 0 20px rgba(0,0,0,0.5);} button{background:#7c5cff;color:white;border:none;padding:10px 20px;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:20px;}</style>`;
+    <!-- NOTEPAD WINDOW -->
+    <div class="window" id="notepad-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'notepad-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('notepad-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('notepad-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">Notepad</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content">
+            <textarea class="notepad-area" id="notepad-text" placeholder="Type your notes here..."></textarea>
+        </div>
+    </div>
 
-// Custom built games stored as strings
-const customGamesData = {
-  "snake": gBase + `<canvas id="c" width="400" height="400"></canvas><script>const ctx=c.getContext('2d');let s=20,sn=[{x:10,y:10}],dx=0,dy=0,fx=15,fy=15,score=0;setInterval(()=>{if(dx===0&&dy===0)return;let h={x:sn[0].x+dx,y:sn[0].y+dy};if(h.x<0||h.x>=20||h.y<0||h.y>=20||sn.some(p=>p.x===h.x&&p.y===h.y)){sn=[{x:10,y:10}];dx=0;dy=0;score=0;return;}sn.unshift(h);if(h.x===fx&&h.y===fy){score++;fx=Math.floor(Math.random()*20);fy=Math.floor(Math.random()*20);}else{sn.pop();}ctx.clearRect(0,0,400,400);ctx.fillStyle='red';ctx.fillRect(fx*s,fy*s,s-1,s-1);ctx.fillStyle='lime';sn.forEach(p=>ctx.fillRect(p.x*s,p.y*s,s-1,s-1));ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},100);window.onkeydown=e=>{if(e.key==='ArrowUp'&&dy===0){dx=0;dy=-1}if(e.key==='ArrowDown'&&dy===0){dx=0;dy=1}if(e.key==='ArrowLeft'&&dx===0){dx=-1;dy=0}if(e.key==='ArrowRight'&&dx===0){dx=1;dy=0}};ctx.fillStyle='white';ctx.fillText("Press an arrow key to start",120,200);<\/script>`,
-  "pong": gBase + `<canvas id="c" width="500" height="300"></canvas><script>const ctx=c.getContext('2d');let p1=110,p2=110,bx=250,by=150,bdx=3,bdy=3;setInterval(()=>{by+=bdy;bx+=bdx;if(by<=0||by>=290)bdy*=-1;if(bx<=15&&by>p1&&by<p1+80){bdx*=-1;bx=15;}if(bx>=475&&by>p2&&by<p2+80){bdx*=-1;bx=475;}if(bx<0||bx>500){bx=250;by=150;bdx=3*(Math.random()>0.5?1:-1);}p2+=((by-40)-p2)*0.1;ctx.clearRect(0,0,500,300);ctx.fillStyle='white';ctx.fillRect(5,p1,10,80);ctx.fillRect(485,p2,10,80);ctx.fillRect(bx,by,10,10);},16);window.onmousemove=e=>{p1=e.clientY-40;};<\/script>`,
-  "dodge": gBase + `<canvas id="c" width="300" height="400"></canvas><script>const ctx=c.getContext('2d');let px=135,obs=[],score=0,go=false;setInterval(()=>{if(go)return;ctx.clearRect(0,0,300,400);ctx.fillStyle='#7c5cff';ctx.fillRect(px,350,30,30);if(Math.random()<0.05)obs.push({x:Math.random()*270,y:0,w:20+Math.random()*40});ctx.fillStyle='red';obs.forEach((o,i)=>{o.y+=4;ctx.fillRect(o.x,o.y,o.w,20);if(o.y>400){obs.splice(i,1);score++;}if(350<o.y+20&&380>o.y&&px<o.x+o.w&&px+30>o.x)go=true;});ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);if(go)ctx.fillText("GAME OVER - Refresh to restart",60,200);},16);window.onmousemove=e=>{px=e.clientX-15;if(px<0)px=0;if(px>270)px=270;};<\/script>`,
-  "shooter": gBase + `<canvas id="c" width="400" height="500"></canvas><script>const ctx=c.getContext('2d');let px=180,buls=[],ens=[],score=0;setInterval(()=>{ctx.clearRect(0,0,400,500);ctx.fillStyle='cyan';ctx.fillRect(px,450,40,30);if(Math.random()<0.03)ens.push({x:Math.random()*360,y:0});buls.forEach((b,i)=>{b.y-=8;ctx.fillStyle='yellow';ctx.fillRect(b.x,b.y,4,10);if(b.y<0)buls.splice(i,1);});ens.forEach((e,ei)=>{e.y+=2;ctx.fillStyle='red';ctx.fillRect(e.x,e.y,30,30);if(e.y>500)ens.splice(ei,1);buls.forEach((b,bi)=>{if(b.x>e.x&&b.x<e.x+30&&b.y>e.y&&b.y<e.y+30){ens.splice(ei,1);buls.splice(bi,1);score+=10;}});});ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},16);window.onmousemove=e=>{px=e.clientX-20;};window.onclick=()=>buls.push({x:px+18,y:450});<\/script>`,
-  "flappy": gBase + `<canvas id="c" width="300" height="400"></canvas><script>const ctx=c.getContext('2d');let by=200,bv=0,p=[],score=0,go=false;setInterval(()=>{if(go)return;bv+=0.4;by+=bv;ctx.clearRect(0,0,300,400);ctx.fillStyle='yellow';ctx.fillRect(50,by,20,20);if(p.length===0||p[p.length-1].x<150)p.push({x:300,y:Math.random()*200+50});ctx.fillStyle='lime';p.forEach((pi,i)=>{pi.x-=2;ctx.fillRect(pi.x,0,30,pi.y);ctx.fillRect(pi.x,pi.y+100,30,400-pi.y-100);if(pi.x==50)score++;if(pi.x<-30)p.splice(i,1);if(50<pi.x+30&&70>pi.x&&(by<pi.y||by+20>pi.y+100))go=true;});if(by>400||by<0)go=true;ctx.fillStyle='white';ctx.fillText("Score: "+score,10,20);},16);window.onclick=()=>{bv=-6;};<\/script>`,
-  "tictactoe": gBase + `<style>.row{display:flex;}.c{width:80px;height:80px;background:#222;border:2px solid #555;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;}.c:hover{background:#333}</style><h2>Tic Tac Toe</h2><div id="b"></div><button onclick="rst()">Restart</button><script>let p='X',brd=['','','','','','','','',''];const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];function ck(){for(let c of w)if(brd[c[0]]&&brd[c[0]]===brd[c[1]]&&brd[c[0]]===brd[c[2]])return brd[c[0]];return brd.includes('')?null:'Tie';}function cl(i){if(!brd[i]&&!ck()){brd[i]=p;p=p==='X'?'O':'X';rd();let r=ck();if(r)setTimeout(()=>alert(r==='Tie'?'Tie!':r+' wins!'),10);}}function rd(){let h='';for(let i=0;i<9;i++){if(i%3===0)h+='<div class="row">';h+='<div class="c" onclick="cl('+i+')">'+brd[i]+'</div>';if(i%3===2)h+='</div>';}document.getElementById('b').innerHTML=h;}function rst(){brd=['','','','','','','','',''];p='X';rd();}rd();<\/script>`,
-  "memory": gBase + `<style>.g{display:grid;grid-template-columns:repeat(4,60px);gap:10px}.c{width:60px;height:60px;background:#333;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;border-radius:8px;}</style><h2>Memory Match</h2><div class="g" id="b"></div><button onclick="init()">Restart</button><script>const e=['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];let cds=[],f1=null,f2=null,l=false;function init(){cds=[...e,...e].sort(()=>Math.random()-0.5).map(v=>({v,f:false,m:false}));rd();}function cl(i){if(l||cds[i].f||cds[i].m)return;cds[i].f=true;rd();if(f1===null)f1=i;else{f2=i;l=true;setTimeout(()=>{if(cds[f1].v===cds[f2].v){cds[f1].m=cds[f2].m=true;}else{cds[f1].f=cds[f2].f=false;}f1=f2=null;l=false;rd();if(cds.every(c=>c.m))alert('You Win!');},700);}}function rd(){document.getElementById('b').innerHTML=cds.map((c,i)=>'<div class="c" onclick="cl('+i+')">'+(c.f||c.m?c.v:'❓')+'</div>').join('');}init();<\/script>`,
-  "simon": gBase + `<style>.g{display:grid;grid-template-columns:100px 100px;gap:10px}.c{width:100px;height:100px;border-radius:10px;cursor:pointer;opacity:0.6;}.c:active{opacity:1}</style><h2>Simon Says</h2><p id="s">Level 1</p><div class="g"><div class="c" style="background:red" onclick="g(0)" id="b0"></div><div class="c" style="background:blue" onclick="g(1)" id="b1"></div><div class="c" style="background:green" onclick="g(2)" id="b2"></div><div class="c" style="background:yellow" onclick="g(3)" id="b3"></div></div><button onclick="st()">Start Game</button><script>let seq=[],usr=[],lock=true;function st(){seq=[];usr=[];nx();}function nx(){usr=[];seq.push(Math.floor(Math.random()*4));document.getElementById('s').innerText='Level '+seq.length;lock=true;let i=0;let iv=setInterval(()=>{if(i>0)document.getElementById('b'+seq[i-1]).style.opacity=0.6;if(i===seq.length){clearInterval(iv);lock=false;return;}let b=document.getElementById('b'+seq[i]);b.style.opacity=1;i++;},600);}function g(n){if(lock)return;document.getElementById('b'+n).style.opacity=1;setTimeout(()=>document.getElementById('b'+n).style.opacity=0.6,200);usr.push(n);let ok=true;for(let i=0;i<usr.length;i++)if(usr[i]!==seq[i])ok=false;if(!ok){alert('Game Over! Reached level '+seq.length);lock=true;}else if(usr.length===seq.length){lock=true;setTimeout(nx,1000);}}<\/script>`,
-  "mathrun": gBase + `<style>input{font-size:24px;padding:10px;text-align:center;border-radius:8px;border:none;margin:20px;}</style><h2>Math Run</h2><h1 id="q">1 + 1</h1><input type="number" id="a" autofocus><p>Score: <span id="sc">0</span> | Time: <span id="t">30</span></p><button onclick="st()">Start</button><script>let sc=0,tm=0,ans=0,iv;function st(){sc=0;tm=30;document.getElementById('a').value='';document.getElementById('sc').innerText=sc;nx();clearInterval(iv);iv=setInterval(()=>{tm--;document.getElementById('t').innerText=tm;if(tm<=0){clearInterval(iv);alert('Time up! Score: '+sc);}},1000);}function nx(){let o=['+','-','*'][Math.floor(Math.random()*3)];let n1=Math.floor(Math.random()*12)+1;let n2=Math.floor(Math.random()*12)+1;if(o==='-')n1=Math.max(n1,n2)+(Math.random()*10|0);document.getElementById('q').innerText=n1+' '+o+' '+n2;ans=eval(n1+o+n2);}document.getElementById('a').oninput=e=>{if(tm>0&&parseInt(e.target.value)===ans){sc++;document.getElementById('sc').innerText=sc;e.target.value='';nx();}};<\/script>`,
-  "clicker": gBase + `<style>.b{font-size:60px;cursor:pointer;user-select:none;transition:transform 0.1s;}.b:active{transform:scale(0.95)}</style><h2>Clicker Quest</h2><div class="b" onclick="c()">💎</div><h1 id="s">0 Gems</h1><button onclick="buy()">Buy Auto-Miner (10 Gems)</button><p>Miners: <span id="m">0</span></p><script>let sc=0,mn=0;function c(){sc++;ud();}function buy(){if(sc>=10){sc-=10;mn++;ud();}}function ud(){document.getElementById('s').innerText=sc+' Gems';document.getElementById('m').innerText=mn;}setInterval(()=>{if(mn>0){sc+=mn;ud();}},1000);<\/script>`,
-  "reaction": gBase + `<style>#b{width:300px;height:200px;background:red;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;cursor:pointer;border-radius:12px;user-select:none;}</style><h2>Reaction Test</h2><div id="b" onclick="c()">Click to Start</div><p id="r">Wait for green...</p><script>let st=0,wt=false,rt=false,to;function c(){let b=document.getElementById('b');let r=document.getElementById('r');if(!wt&&!rt){b.style.background='red';b.innerText='Wait...';r.innerText='';wt=true;to=setTimeout(()=>{b.style.background='lime';b.innerText='CLICK!';wt=false;rt=true;st=Date.now();},Math.random()*3000+1000);}else if(wt){clearTimeout(to);wt=false;b.style.background='blue';b.innerText='Too early! Restart';}else if(rt){let time=Date.now()-st;rt=false;b.style.background='blue';b.innerText='Click to Start';r.innerText='Reaction: '+time+'ms';}}<\/script>`,
-  "colorguess": gBase + `<style>.g{display:flex;gap:10px;margin:20px;}.c{width:80px;height:80px;border-radius:50%;cursor:pointer;border:3px solid #333;}</style><h2>Guess the Color (RGB)</h2><h1 id="rgb">RGB(0, 0, 0)</h1><div class="g" id="opts"></div><p id="res">Pick a color</p><button onclick="st()">Next Color</button><script>function rc(){return Math.floor(Math.random()*256);}function st(){let r=rc(),g=rc(),b=rc();let t='rgb('+r+', '+g+', '+b+')';document.getElementById('rgb').innerText=t.toUpperCase();let ans=Math.floor(Math.random()*3);let h='';for(let i=0;i<3;i++){let c=i===ans?t:'rgb('+rc()+','+rc()+','+rc()+')';h+='<div class="c" style="background:'+c+'" onclick="ck('+(i===ans)+')"></div>';}document.getElementById('opts').innerHTML=h;document.getElementById('res').innerText='Pick a color';}function ck(w){document.getElementById('res').innerText=w?'Correct! 🎉':'Wrong! ❌';if(w)setTimeout(st,1000);}st();<\/script>`
-};
+    <!-- PAINT WINDOW -->
+    <div class="window" id="paint-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'paint-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('paint-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('paint-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">Paint Studio</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content" style="flex-direction: column;">
+            <div class="paint-toolbar">
+                <label>Color: <input type="color" id="paint-color" value="#ffffff"></label>
+                <label>Brush Size: <input type="range" id="paint-size" min="1" max="30" value="4"></label>
+                <button class="os-btn" onclick="clearCanvas()" style="padding: 4px 10px; font-size: 12px;">Clear Canvas</button>
+            </div>
+            <canvas class="paint-canvas" id="paint-canvas"></canvas>
+        </div>
+    </div>
 
-const games=[
-  // ACTION (4)
-  ["Neon Snake","🐍","Classic snake game.","action","snake"],
-  ["Cube Dodger","🏎️","Avoid falling blocks.","action","dodge"],
-  ["Space Shooter","🚀","Shoot the invaders.","action","shooter"],
-  ["Pong Dash","🎾","Don't drop the ball.","action","pong"],
-  // PUZZLE (4)
-  ["Memory Match","🃏","Find the pairs.","puzzle","memory"],
-  ["Tic Tac Toe","❌","Classic 3x3 grid.","puzzle","tictactoe"],
-  ["Simon Says","🧠","Remember the pattern.","puzzle","simon"],
-  ["Math Run","🔢","Solve equations fast.","puzzle","mathrun"],
-  // ARCADE (4)
-  ["Flappy Block","🐦","Tap to fly.","arcade","flappy"],
-  ["Clicker Quest","💎","Click for gems.","arcade","clicker"],
-  ["Reaction Test","⚡","Test your reflexes.","arcade","reaction"],
-  ["Color Guesser","🎨","Guess the RGB hex.","arcade","colorguess"]
-];
+    <!-- CHAT ROOM WINDOW -->
+    <div class="window" id="chat-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'chat-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('chat-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('chat-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">V0ID Global Chat</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content" style="flex-direction: column;">
+            <div class="chat-toolbar" style="display: flex; gap: 8px; justify-content: space-between;">
+                <span style="font-size: 13px; color: var(--text-muted); align-self: center; margin-left: 8px;">🟡 Connecting to P2P Network...</span>
+                <button class="os-btn danger" onclick="clearChat()">Clear Local View</button>
+            </div>
+            <div class="chat-messages" id="chat-messages" style="flex:1;">
+                <div class="chat-msg" style="color: #10b981; border-color: rgba(16,185,129,0.3);">
+                    <strong>Welcome to V0ID Multiplayer Chat!</strong><br>
+                    Automatically connecting to decentralized relays...
+                </div>
+            </div>
+            <div class="chat-input-bar">
+                <input type="text" class="chat-input" id="chat-input-box" placeholder="Type a message to everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button class="os-btn" id="chat-send-btn" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
 
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    <!-- TERMINAL WINDOW -->
+    <div class="window" id="terminal-window">
+        <div class="title-bar" onmousedown="startDrag(event, 'terminal-window')">
+            <div class="window-controls">
+                <button class="win-btn btn-close" onclick="closeWindow('terminal-window')"></button>
+                <button class="win-btn btn-min" onclick="minimizeWindow('terminal-window')"></button>
+                <button class="win-btn btn-max"></button>
+            </div>
+            <div class="window-title">Terminal</div>
+            <div class="window-spacer"></div>
+        </div>
+        <div class="window-content" style="background: #050507; color: #10b981; font-family: monospace; padding: 16px; font-size: 13px; flex-direction: column; justify-content: flex-end;">
+            <div id="terminal-output" style="overflow-y:auto; margin-bottom: 10px; display:flex; flex-direction:column; gap:4px;">
+                <div>V0ID Shell v2.0. Type 'help' for available commands.</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <span>v0id@desktop:~$</span>
+                <input type="text" id="terminal-input" style="background:transparent; border:none; color:white; outline:none; flex:1; font-family:monospace;" onkeydown="handleTerminalCommand(event)">
+            </div>
+        </div>
+    </div>
 
-// Gameplay Functions
-let lastView = "home";
-function playGame(title, id){
-  lastView = document.querySelector(".nav.active").dataset.view;
-  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  document.getElementById("gameplay").classList.add("active");
-  document.getElementById("gameTitle").textContent = "Playing: " + title;
-  document.getElementById("gameFrame").srcdoc = customGamesData[id];
-}
-function closeGame(){
-  document.getElementById("gameFrame").srcdoc = "";
-  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  document.getElementById(lastView).classList.add("active");
-  titleEl.textContent = document.querySelector(`.nav[data-view="${lastView}"]`).textContent.trim().replace(/^.\s*/,"");
-}
+    <script>
+        /* --- CLOCK --- */
+        setInterval(() => {
+            const now = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('clock').innerText = now.toLocaleDateString('en-US', options);
+        }, 1000);
 
-function renderGames(){
-  ["home","action","puzzle","arcade"].forEach(cat=>{
-    document.getElementById(cat+"Games").innerHTML=games.filter(g=>cat==="home"||g[3]===cat).map(g=>
-      `<div class="game"><div class="thumb">${g[1]}</div><h3>${esc(g[0])}</h3><p>${esc(g[2])}</p><button class="play" onclick="playGame('${esc(g[0])}', '${g[4]}')">Play Game</button></div>`
-    ).join("");
-  });
-}
+        /* --- DRAGGABLE DESKTOP ICONS (WITH CLICK/DRAG SEPARATION) --- */
+        let draggedDesktopIcon = null;
+        let desktopOffsetX = 0;
+        let desktopOffsetY = 0;
+        let hasMoved = false;
+        let startMouseX = 0;
+        let startMouseY = 0;
 
-// Profile & Theme Logic
-let profile=JSON.parse(localStorage.getItem("gamehubProfile")||"null")||{name:"User"+Math.floor(1000+Math.random()*9000),emoji:"😀",theme:"default"};
-let blockedUsers=JSON.parse(localStorage.getItem("gamehubBlocked")||"[]");
-let selectedUserToBlock=null;
+        function loadDesktopIconPositions() {
+            const savedPositions = JSON.parse(localStorage.getItem('v0id_desktop_positions')) || {};
+            document.querySelectorAll('.desktop-area .app-icon').forEach(icon => {
+                const id = icon.id;
+                if (savedPositions[id]) {
+                    icon.style.top = savedPositions[id].top;
+                    icon.style.left = savedPositions[id].left;
+                }
+                icon.addEventListener('mousedown', startDragDesktopIcon);
+            });
+        }
 
-const miniName=document.getElementById("miniName");
-const miniAvatar=document.getElementById("miniAvatar");
-const nameInput=document.getElementById("name");
-const emojiSelect=document.getElementById("emoji");
-const themeSelect=document.getElementById("themeSelect");
-const titleEl=document.getElementById("title");
+        function startDragDesktopIcon(e) {
+            if (e.button !== 0) return; // Only left click
+            draggedDesktopIcon = e.currentTarget;
+            const rect = draggedDesktopIcon.getBoundingClientRect();
+            desktopOffsetX = e.clientX - rect.left;
+            desktopOffsetY = e.clientY - rect.top;
 
-function renderProfile(){
-  miniName.textContent=profile.name;
-  miniAvatar.textContent=profile.emoji;
-  nameInput.value=profile.name;
-  emojiSelect.value=profile.emoji;
-  themeSelect.value=profile.theme || "default";
-  document.body.dataset.theme = profile.theme || "default";
-}
+            startMouseX = e.clientX;
+            startMouseY = e.clientY;
+            hasMoved = false;
 
-document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{
-  if (b.dataset.view === "gameplay") return;
-  document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  document.getElementById(b.dataset.view).classList.add("active");
-  titleEl.textContent=b.textContent.trim().replace(/^.\s*/,"");
-  if(document.getElementById("gameFrame").srcdoc !== "") document.getElementById("gameFrame").srcdoc = "";
-});
+            bringDesktopIconToFront(draggedDesktopIcon);
 
-document.getElementById("save").onclick=()=>{
-  profile={name:nameInput.value.trim()||"User"+Math.floor(1000+Math.random()*9000),emoji:emojiSelect.value,theme:themeSelect.value};
-  localStorage.setItem("gamehubProfile",JSON.stringify(profile));
-  renderProfile();
-};
+            document.addEventListener('mousemove', dragDesktopIcon);
+            document.addEventListener('mouseup', stopDragDesktopIcon);
+            e.stopPropagation();
+        }
 
-// --- FIREBASE CLOUD CHAT CONFIGURATION ---
-const firebaseConfig = {
-  apiKey: "AIzaSyAF7B7qYDrUi-C5_6LCjQfoXRrH95QmIio",
-  authDomain: "v14a-bb967.firebaseapp.com",
-  projectId: "v14a-bb967",
-  storageBucket: "v14a-bb967.firebasestorage.app",
-  messagingSenderId: "226123648400",
-  appId: "1:226123648400:web:089323e070661a87c4b715",
-  measurementId: "G-R9Q24182LC"
-};
+        function dragDesktopIcon(e) {
+            if (!draggedDesktopIcon) return;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-const chatContextMenu = document.getElementById("chatContextMenu");
+            // Check if user has moved the mouse past a tiny threshold (5px) to count as a drag
+            const distance = Math.hypot(e.clientX - startMouseX, e.clientY - startMouseY);
+            if (distance > 5) {
+                hasMoved = true;
+            }
 
-function appendMessage(sender, emoji, text) {
-  if (blockedUsers.includes(sender)) return;
-  const msgDiv = document.createElement("div");
-  msgDiv.className = "msg";
-  msgDiv.innerHTML = `<div class="avatar">${emoji}</div><div><div class="meta">${esc(sender)}</div><div class="bubble">${esc(text)}</div></div>`;
-  
-  msgDiv.oncontextmenu = (e) => {
-    e.preventDefault();
-    selectedUserToBlock = sender;
-    const chatContainerRect = document.getElementById("chatContainer").getBoundingClientRect();
-    chatContextMenu.style.display = "block";
-    chatContextMenu.style.left = (e.clientX - chatContainerRect.left) + "px";
-    chatContextMenu.style.top = (e.clientY - chatContainerRect.top) + "px";
-  };
-  chatMessages.appendChild(msgDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+            if (hasMoved) {
+                const desktopArea = document.getElementById('desktop-area');
+                const dRect = desktopArea.getBoundingClientRect();
 
-document.getElementById("ctxBlock").onclick = () => {
-  if (selectedUserToBlock && !blockedUsers.includes(selectedUserToBlock)) {
-    blockedUsers.push(selectedUserToBlock);
-    localStorage.setItem("gamehubBlocked", JSON.stringify(blockedUsers));
-    alert(`Blocked user: ${selectedUserToBlock}`);
-    location.reload();
-  }
-  chatContextMenu.style.display = "none";
-};
+                let newX = e.clientX - dRect.left - desktopOffsetX;
+                let newY = e.clientY - dRect.top - desktopOffsetY;
 
-// Clear Chat Button Logic
-document.getElementById("uiClearChat").onclick = () => {
-  if(confirm("This will clear all messages from your local view. Proceed?")) {
-    chatMessages.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Local chat cleared. (New messages will appear below)</div>';
-  }
-};
+                newX = Math.max(0, Math.min(newX, dRect.width - 80));
+                newY = Math.max(0, Math.min(newY, dRect.height - 90));
 
-window.onclick = (e) => {
-  if(!e.target.closest('.msg')) chatContextMenu.style.display = "none";
-};
+                draggedDesktopIcon.style.left = `${newX}px`;
+                draggedDesktopIcon.style.top = `${newY}px`;
+            }
+        }
 
-document.getElementById("sendChat").onclick = async () => {
-  const text = chatInput.value.trim();
-  if (!text) return;
-  try {
-    await db.collection("gamehub_messages").add({
-      sender: profile.name, emoji: profile.emoji, text: text,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    chatInput.value = "";
-  } catch (err) {
-    alert("Chat error: Database may be unavailable.");
-  }
-};
-chatInput.onkeydown = (e) => { if (e.key === "Enter") document.getElementById("sendChat").click(); };
+        function stopDragDesktopIcon(e) {
+            if (draggedDesktopIcon) {
+                if (hasMoved) {
+                    // Save custom position if it was actually dragged
+                    let savedPositions = JSON.parse(localStorage.getItem('v0id_desktop_positions')) || {};
+                    savedPositions[draggedDesktopIcon.id] = {
+                        top: draggedDesktopIcon.style.top,
+                        left: draggedDesktopIcon.style.left
+                    };
+                    localStorage.setItem('v0id_desktop_positions', JSON.stringify(savedPositions));
+                } else {
+                    // It was just a click, open the app!
+                    const appId = draggedDesktopIcon.getAttribute('data-app');
+                    if (appId) {
+                        openWindow(appId + '-window');
+                    }
+                }
+            }
+            draggedDesktopIcon = null;
+            document.removeEventListener('mousemove', dragDesktopIcon);
+            document.removeEventListener('mouseup', stopDragDesktopIcon);
+        }
 
-db.collection("gamehub_messages").orderBy("timestamp", "desc").limit(50).onSnapshot(snapshot => {
-    chatMessages.innerHTML = "";
-    snapshot.docs.reverse().forEach(doc => {
-      const data = doc.data();
-      appendMessage(data.sender || "Anon", data.emoji || "😀", data.text);
-    });
-});
+        function bringDesktopIconToFront(icon) {
+            document.querySelectorAll('.desktop-area .app-icon').forEach(i => i.style.zIndex = 1);
+            icon.style.zIndex = 10;
+        }
 
-// Notes
-let notes = JSON.parse(localStorage.getItem("gamehubNotes") || "[]");
-function renderNotes(){
-  const list=document.getElementById("notesList");
-  if(!notes.length){list.innerHTML='<div style="color:var(--muted);text-align:center;">No notes yet. Add your first note above.</div>';return;}
-  list.innerHTML=notes.map((n,i)=>`<div class="note-card"><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p><div class="note-actions"><button class="delete-note" onclick="deleteNote(${i})">Delete</button></div></div>`).join("");
-}
-function deleteNote(i){notes.splice(i,1);localStorage.setItem("gamehubNotes",JSON.stringify(notes));renderNotes();}
-document.getElementById("addNote").onclick=()=>{
-  const title=document.getElementById("noteTitle").value.trim() || "Untitled Note";
-  const text=document.getElementById("noteText").value.trim();
-  if(!text) return;
-  notes.unshift({title,text});
-  localStorage.setItem("gamehubNotes",JSON.stringify(notes));
-  document.getElementById("noteTitle").value="";
-  document.getElementById("noteText").value="";
-  renderNotes();
-};
+        function resetIconPositions() {
+            localStorage.removeItem('v0id_desktop_positions');
+        }
 
-// Math Tools logic
-let expression="";
-const display=document.getElementById("calcDisplay");
-function updateCalc(){display.value=expression || "0";}
-function calculate(){
-  try{
-    let exp=expression.replace(/%/g,"/100");
-    if(!/^[0-9+\-*/().\s.]+$/.test(exp)) throw new Error();
-    const result=Function('"use strict"; return ('+exp+')')();
-    if(!Number.isFinite(result)) throw new Error();
-    expression=String(Math.round(result*1000000000000)/1000000000000);
-    updateCalc();
-  }catch{display.value="Error";expression="";setTimeout(updateCalc,800);}
-}
-document.querySelectorAll("[data-value]").forEach(btn=>{btn.onclick=()=>{expression+=btn.dataset.value;updateCalc();};});
-document.querySelectorAll("[data-calc]").forEach(btn=>{
-  btn.onclick=()=>{
-    const action=btn.dataset.calc;
-    if(action==="clear") expression="";
-    if(action==="back") expression=expression.slice(0,-1);
-    if(action==="equals") calculate();
-    updateCalc();
-  };
-});
+        loadDesktopIconPositions();
 
-// Init
-renderGames();
-renderProfile();
-renderNotes();
-updateCalc();
-</script>
+        /* --- DRAGGABLE / REORDERABLE DOCK ICONS --- */
+        const dockContainer = document.getElementById('dock-container');
+        let draggedDockItem = null;
+
+        dockContainer.querySelectorAll('.dock-icon').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedDockItem = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                draggedDockItem = null;
+                saveDockOrder();
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(dockContainer, e.clientX);
+                if (afterElement == null) {
+                    dockContainer.appendChild(draggedDockItem);
+                } else {
+                    dockContainer.insertBefore(draggedDockItem, afterElement);
+                }
+            });
+        });
+
+        function getDragAfterElement(container, x) {
+            const draggableElements = [...container.querySelectorAll('.dock-icon:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = x - box.left - box.width / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveDockOrder() {
+            const order = [];
+            dockContainer.querySelectorAll('.dock-icon').forEach(el => {
+                order.push(el.id);
+            });
+            localStorage.setItem('v0id_dock_order', JSON.stringify(order));
+        }
+
+        function loadDockOrder() {
+            const savedOrder = JSON.parse(localStorage.getItem('v0id_dock_order'));
+            if (savedOrder) {
+                savedOrder.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) dockContainer.appendChild(el);
+                });
+            }
+        }
+        loadDockOrder();
+
+        /* --- WINDOW & APP MANAGEMENT --- */
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            if (!win) return;
+            win.classList.add('active');
+            bringToFront(win);
+            
+            const dockId = 'dock-' + id.replace('-window', '');
+            const dockEl = document.getElementById(dockId);
+            if (dockEl) dockEl.classList.add('running');
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById(id);
+            if (win) win.classList.remove('active');
+            const dockId = 'dock-' + id.replace('-window', '');
+            const dockEl = document.getElementById(dockId);
+            if (dockEl) dockEl.classList.remove('running');
+        }
+
+        function minimizeWindow(id) {
+            closeWindow(id);
+        }
+
+        function promptCloseApp(id, e) {
+            e.preventDefault();
+            if (confirm("Close application?")) {
+                closeWindow(id);
+            }
+        }
+
+        function bringToFront(win) {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
+            win.style.zIndex = 105;
+        }
+
+        /* --- WINDOW DRAGGING --- */
+        let activeWindow = null, startX = 0, startY = 0, initialX = 0, initialY = 0;
+
+        function startDrag(e, id) {
+            if (e.target.classList.contains('win-btn')) return;
+            activeWindow = document.getElementById(id);
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = activeWindow.getBoundingClientRect();
+            initialX = rect.left;
+            initialY = rect.top;
+            
+            bringToFront(activeWindow);
+
+            document.addEventListener('mousemove', dragWindow);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function dragWindow(e) {
+            if (!activeWindow) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            activeWindow.style.left = `${initialX + dx}px`;
+            activeWindow.style.top = `${initialY + dy}px`;
+        }
+
+        function stopDrag() {
+            document.removeEventListener('mousemove', dragWindow);
+            document.removeEventListener('mouseup', stopDrag);
+            activeWindow = null;
+        }
+
+        /* --- CONTEXT MENU --- */
+        const contextMenu = document.getElementById('desktop-context-menu');
+        function showContextMenu(e) {
+            e.preventDefault();
+            contextMenu.style.display = 'flex';
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        }
+        window.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        /* --- VIRTUAL FILES SYSTEM --- */
+        let virtualFiles = JSON.parse(localStorage.getItem('v0id_files')) || [
+            { name: 'Welcome.txt', type: 'text', content: 'Welcome to V0ID OS. You can create files and notes right here!' },
+            { name: 'Projects', type: 'folder', content: '' }
+        ];
+
+        function saveFiles() {
+            localStorage.setItem('v0id_files', JSON.stringify(virtualFiles));
+        }
+
+        function renderFiles() {
+            const container = document.getElementById('files-grid-container');
+            container.innerHTML = '';
+            virtualFiles.forEach((file) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div class="file-icon">${file.type === 'folder' ? '📁' : '📄'}</div>
+                    <span class="file-name">${file.name}</span>
+                `;
+                item.ondblclick = () => {
+                    if (file.type === 'text') {
+                        openWindow('notepad-window');
+                        document.getElementById('notepad-text').value = file.content;
+                    }
+                };
+                container.appendChild(item);
+            });
+        }
+        renderFiles();
+
+        function createNewFolder() {
+            const name = prompt("Enter folder name:", "New Folder");
+            if (name) {
+                virtualFiles.push({ name, type: 'folder', content: '' });
+                saveFiles();
+                renderFiles();
+            }
+        }
+
+        function createNewTextFile() {
+            const name = prompt("Enter file name:", "Document.txt");
+            if (name) {
+                virtualFiles.push({ name, type: 'text', content: '' });
+                saveFiles();
+                renderFiles();
+            }
+        }
+
+        /* --- SETTINGS TABS & THEMES --- */
+        function switchTab(e, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function switchTabDirect(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            if(tabId === 'tab-wallpaper') {
+                document.getElementById('btn-tab-wallpaper').classList.add('active');
+            }
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function setTheme(theme) {
+            if (theme === 'black') {
+                document.body.removeAttribute('data-theme');
+                document.body.setAttribute('data-theme', 'black');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        /* --- WALLPAPER MANAGER --- */
+        function setWallpaperPreset(type) {
+            if (type === 'fade') {
+                document.body.style.background = 'radial-gradient(circle at 50% 30%, #16161f 0%, #08080c 55%, #000000 100%)';
+                document.body.style.backgroundSize = 'cover';
+            } else if (type === 'midnight') {
+                document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
+                document.body.style.backgroundSize = 'cover';
+            }
+        }
+
+        function applyWallpaperURL() {
+            const url = document.getElementById('wallpaper-url-input').value;
+            if (url) {
+                document.body.style.background = `url('${url}') no-repeat center center fixed`;
+                document.body.style.backgroundSize = 'cover';
+            }
+        }
+
+        function handleWallpaperUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (file.type === 'text/html') {
+                    document.body.style.background = `url('data:text/html;base64,${btoa(e.target.result)}')`;
+                } else {
+                    document.body.style.background = `url('${e.target.result}') no-repeat center center fixed`;
+                    document.body.style.backgroundSize = 'cover';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* --- NOTEPAD PERSISTENCE --- */
+        const notepad = document.getElementById('notepad-text');
+        notepad.value = localStorage.getItem('v0id_notes') || '';
+        notepad.addEventListener('input', () => {
+            localStorage.setItem('v0id_notes', notepad.value);
+        });
+
+        /* --- PAINT APP --- */
+        const canvas = document.getElementById('paint-canvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            if(!parent) return;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight - 44;
+            ctx.fillStyle = '#08080c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 150);
+
+        canvas.addEventListener('mousedown', () => painting = true);
+        canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
+        canvas.addEventListener('mousemove', drawCanvas);
+
+        function drawCanvas(e) {
+            if (!painting) return;
+            ctx.lineWidth = document.getElementById('paint-size').value;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = document.getElementById('paint-color').value;
+
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#08080c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        /* --- CHAT ROOM (ROBUST MULTIPLAYER VIA GUN.JS) --- */
+        const gun = Gun({
+            peers: [
+                'https://peer.wallie.io/gun',
+                'https://relay.peer.ooo/gun',
+                'https://maddiex.glitch.me/gun',
+                'https://gun-rs.iris.to/gun'
+            ],
+            localStorage: false
+        });
+
+        const chatRoom = gun.get('v0id_os_global_chat_room_v2');
+        const mySessionId = Math.random().toString(36).substring(2, 10);
+        const sessionStartTime = Date.now();
+        const loadedMessages = new Set();
+
+        function appendChatMessage(text, isSelf, isSystem = false) {
+            const container = document.getElementById('chat-messages');
+            const msg = document.createElement('div');
+            msg.className = isSystem ? 'chat-msg' : (isSelf ? 'chat-msg self' : 'chat-msg');
+            if (isSystem) msg.style.color = '#ffbd2e';
+            msg.innerText = text;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        gun.on('hi', peer => {
+            const statusEl = document.querySelector('.chat-toolbar span');
+            if(statusEl) statusEl.innerText = '🟢 Connected to P2P Network';
+        });
+
+        chatRoom.map().once((data, id) => {
+            if (data && data.text && data.timestamp) {
+                if (data.timestamp >= sessionStartTime && !loadedMessages.has(id)) {
+                    loadedMessages.add(id);
+                    const isSelf = data.senderId === mySessionId;
+                    appendChatMessage(data.text, isSelf);
+                }
+            }
+        });
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input-box');
+            const text = input.value.trim();
+            if (!text) return;
+
+            chatRoom.set({
+                text: text,
+                timestamp: Date.now(),
+                senderId: mySessionId
+            });
+
+            input.value = '';
+        }
+
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = '';
+        }
+
+        /* --- TERMINAL --- */
+        function handleTerminalCommand(e) {
+            if (e.key === 'Enter') {
+                const input = e.target;
+                const cmd = input.value.trim();
+                const output = document.getElementById('terminal-output');
+                
+                const line = document.createElement('div');
+                line.innerText = `v0id@desktop:~$ ${cmd}`;
+                output.appendChild(line);
+
+                if (cmd === 'help') {
+                    const res = document.createElement('div');
+                    res.innerText = "Available commands: clear, ls, date, about, reboot";
+                    output.appendChild(res);
+                } else if (cmd === 'clear') {
+                    output.innerHTML = '';
+                } else if (cmd === 'ls') {
+                    const res = document.createElement('div');
+                    res.innerText = "Desktop/ Documents/ System/ Settings.config";
+                    output.appendChild(res);
+                } else if (cmd === 'date') {
+                    const res = document.createElement('div');
+                    res.innerText = new Date().toString();
+                    output.appendChild(res);
+                } else if (cmd === 'reboot') {
+                    location.reload();
+                } else if (cmd !== '') {
+                    const res = document.createElement('div');
+                    res.innerText = `Command not found: ${cmd}`;
+                    output.appendChild(res);
+                }
+                input.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        }
+
+        /* --- CLOAKING & PANIC KEY --- */
+        let currentPanicKey = 'Escape';
+
+        function captureNextKey(inputEl) {
+            const listener = (e) => {
+                e.preventDefault();
+                currentPanicKey = e.key;
+                inputEl.value = e.key;
+                window.removeEventListener('keydown', listener);
+            };
+            window.addEventListener('keydown', listener);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === currentPanicKey) {
+                const targetUrl = document.getElementById('panic-url-input').value || 'about:blank';
+                window.location.replace(targetUrl);
+            }
+        });
+
+        function toggleTabCloak(enabled) {
+            if (enabled) {
+                document.title = 'Home - Classroom';
+            } else {
+                document.title = 'Home - Classroom';
+            }
+        }
+    </script>
 </body>
 </html>
