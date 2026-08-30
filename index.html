@@ -89,6 +89,59 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .window-title{position:absolute;left:50%;transform:translateX(-50%);color:#dedee2;font-size:13px;font-weight:600;pointer-events:none}
 .window-content{flex:1;min-height:0;overflow:hidden}
 
+/* ===== Chat App ===== */
+.chat-shell{
+  width:100%;height:100%;display:flex;flex-direction:column;min-height:0;background:#14161a;
+}
+.chat-tabs{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:10px;background:#202127;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.chat-tab,.chat-clear,.chat-join{
+  border:0;border-radius:10px;padding:8px 14px;color:#aeb4bf;background:#2a2d34;cursor:pointer;font-size:12px;font-weight:600;
+}
+.chat-tab:hover,.chat-clear:hover,.chat-join:hover{background:#353a44;color:#fff}
+.chat-tab.active{background:linear-gradient(135deg,#397cf6,#6b55eb);color:#fff}
+.chat-clear{margin-left:auto;background:rgba(255,70,70,.12);color:#ff9a96}
+.chat-toolbar{
+  flex:0 0 29px;display:flex;align-items:center;padding:0 12px;background:#181a1f;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.chat-status{color:#8d95a2;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lan-controls{
+  display:none;flex:0 0 auto;gap:8px;padding:9px 12px;background:#181a1f;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.lan-controls input{
+  flex:1;min-width:0;height:34px;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:#292c34;color:#fff;padding:0 10px;outline:none;user-select:text;
+}
+.lan-controls input:focus{border-color:#5e8cff}
+.messages{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:15px;background:#14161a;
+}
+.messages::-webkit-scrollbar{width:8px}
+.messages::-webkit-scrollbar-thumb{background:#363b45;border-radius:8px}
+.message{
+  display:flex;align-items:flex-start;gap:9px;max-width:86%;margin:0 0 12px;
+}
+.message.mine{margin-left:auto;flex-direction:row-reverse}
+.message-avatar{
+  flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#343944,#23262e);font-size:19px;
+}
+.message-body{min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.message.mine .message-body{align-items:flex-end}
+.message-name{margin:0 0 4px;color:#aeb5c2;font-size:10px;font-weight:650;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.message-text{padding:9px 12px;border-radius:13px;color:#f0f2f6;background:#292c34;white-space:pre-wrap;word-break:break-word;user-select:text;line-height:1.35}
+.message.mine .message-text{background:linear-gradient(135deg,#3b65a4,#494181)}
+.composer{
+  flex:0 0 auto;display:flex;gap:7px;padding:10px;background:#202228;border-top:1px solid rgba(255,255,255,.07);
+}
+.composer input{
+  flex:1;min-width:0;height:40px;padding:0 12px;color:#fff;background:#2a2d34;border:1px solid rgba(255,255,255,.09);border-radius:10px;outline:none;user-select:text;
+}
+.composer input:focus{border-color:#5e8cff}
+.send-button{
+  min-width:68px;height:40px;border:0;border-radius:10px;color:#fff;background:#397cf6;cursor:pointer;font-weight:600;
+}
+.send-button:disabled{opacity:.55;cursor:default}
+
 /* ===== Web App ===== */
 .web-app{width:100%;height:100%;display:flex;flex-direction:column;background:#f4f5f7;color:#13151a}
 .web-toolbar{
@@ -176,6 +229,30 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 #toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,15px);padding:10px 15px;color:white;background:rgba(25,25,27,.95);border:1px solid rgba(255,255,255,.09);border-radius:11px;box-shadow:0 12px 35px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:200000;font-size:12px}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* ===== APP-SPECIFIC FIXES ===== */
+.void-window .window-content{overflow:hidden}
+.void-window .void-page{height:100%;overflow-y:auto;padding:20px}
+.void-window .profile-card{display:grid;grid-template-columns:1fr;gap:10px;padding:18px;margin:0 0 14px}
+.void-window .profile-avatar{width:76px;height:76px;margin:0 auto 2px}
+.void-window .profile-info{text-align:center}
+.void-window .void-section{padding:15px;margin-bottom:12px}
+.void-window .emoji-picker{grid-template-columns:repeat(8,minmax(0,1fr));max-height:190px;overflow-y:auto;padding-right:2px}
+.void-window .emoji-choice{height:38px;font-size:20px}
+.void-window .name-input{width:100%;height:40px}
+.void-window .small-button{margin-top:0}
+.void-window .blocked-user{min-width:0}
+.void-window .blocked-user-name{min-width:0}
+
+.calculator-window{width:390px;height:500px;min-width:340px;min-height:430px}
+.calculator-window .window-content{overflow:auto}
+.calculator-window #calculatorGrid{grid-template-columns:repeat(4,1fr)!important;gap:7px!important}
+.calculator-window .calc-key{height:56px;min-height:56px;padding:0;border-radius:10px;font-size:16px}
+.calculator-window #calcDisplay{height:62px;font-size:25px}
+
+@media(max-width:700px){
+  .calculator-window{width:calc(100vw - 24px)!important;height:500px!important;min-width:0}
+}
+
 @media(max-width:700px){
   .desktop-icons{left:7px;top:7px}
   .desktop-app{width:72px}
@@ -184,6 +261,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   .web-action{display:none}
   .clock{display:none}
 }
+
+/* Chat hard overrides */
+.chat-shell .chat-tabs{display:flex!important}
+.chat-shell .lan-controls{display:none}
+.chat-shell .messages{flex:1 1 auto!important;min-height:0!important}
+.chat-shell .composer{display:flex!important;flex:0 0 auto!important}
+
 </style>
 </head>
 
@@ -445,65 +529,45 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 <!-- ==================== CHAT WINDOW ==================== -->
 
 <section class="window" id="chatWindow">
-
   <div class="titlebar">
     <div class="traffic">
-      <button class="close" data-close="chatWindow"></button>
-      <button class="minimize" data-minimize="chatWindow"></button>
-      <button class="maximize" data-maximize="chatWindow"></button>
+      <button class="close" data-close="chatWindow" type="button"></button>
+      <button class="minimize" data-minimize="chatWindow" type="button"></button>
+      <button class="maximize" data-maximize="chatWindow" type="button"></button>
     </div>
     <div class="window-title">Chat</div>
   </div>
 
   <div class="window-content">
-
-    <div style="height:100%;display:flex;flex-direction:column">
-
-      <div class="chat-tabs" style="display:flex;gap:7px;padding:11px;background:#202127">
-        <button class="chat-tab" id="globalTab">Global</button>
-        <button class="chat-tab" id="lanTab">LAN</button>
+    <div class="chat-shell">
+      <div class="chat-tabs">
+        <button class="chat-tab active" id="globalTab" type="button">Global</button>
+        <button class="chat-tab" id="lanTab" type="button">LAN</button>
+        <button class="chat-clear" id="clearChatBtn" type="button">Clear Chat</button>
       </div>
 
-      <div class="chat-toolbar" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:#1b1d22;border-bottom:1px solid rgba(255,255,255,.07)">
-        <div class="chat-status" id="chatStatus" style="flex:1;color:#969ca8;font-size:11px">
-          Firebase chat ready
-        </div>
-
-        <button class="small-button clear-button" id="clearChatBtn" style="padding:7px 11px;color:white;background:rgba(255,70,70,.14);border:1px solid rgba(255,70,70,.22);border-radius:9px;cursor:pointer">
-          Clear Chat
-        </button>
+      <div class="chat-toolbar">
+        <div class="chat-status" id="chatStatus">Connecting to Firebase…</div>
       </div>
 
-      <div id="lanControls" style="display:none">
-        <div style="display:flex;gap:7px;padding:10px 12px">
-          <input id="lanRoom" maxlength="32" placeholder="LAN room ID"
-                 style="flex:1;padding:9px 10px;color:white;background:#292c35;border:1px solid rgba(255,255,255,.1);border-radius:9px;outline:none">
-          <button class="small-button" id="joinLanBtn">Join</button>
-        </div>
+      <div class="lan-controls" id="lanControls">
+        <input id="lanRoom" maxlength="32" autocomplete="off" placeholder="LAN room code">
+        <button class="chat-join" id="joinLanBtn" type="button">Join</button>
       </div>
 
-      <div class="messages" id="messages"
-           style="flex:1;min-height:0;overflow-y:auto;padding:16px;background:#14161a"></div>
+      <div class="messages" id="messages" aria-live="polite"></div>
 
-      <form class="composer" id="messageForm"
-            style="display:flex;gap:7px;padding:10px;background:#202228;border-top:1px solid rgba(255,255,255,.07)">
-        <input id="messageInput" maxlength="1000" autocomplete="off" placeholder="Message..."
-               style="flex:1;min-width:0;padding:10px 12px;color:white;background:#2a2d34;border:1px solid rgba(255,255,255,.09);border-radius:10px;outline:none">
-        <button class="send-button" type="submit"
-                style="padding:0 16px;color:white;background:#397cf6;border-radius:10px;cursor:pointer;font-weight:600">
-          Send
-        </button>
+      <form class="composer" id="messageForm" autocomplete="off">
+        <input id="messageInput" maxlength="1000" autocomplete="off" placeholder="Message…">
+        <button class="send-button" id="sendMessageBtn" type="submit">Send</button>
       </form>
-
     </div>
-
   </div>
-
 </section>
 
 <!-- ==================== V0ID ID ==================== -->
 
-<section class="window" id="voidWindow">
+<section class="window void-window" id="voidWindow">
 
   <div class="titlebar">
     <div class="traffic">
@@ -604,7 +668,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
 <!-- ==================== CALCULATOR ==================== -->
 
-<section class="window" id="calculatorWindow">
+<section class="window calculator-window" id="calculatorWindow">
 
   <div class="titlebar">
     <div class="traffic">
@@ -2746,7 +2810,6 @@ let expression =
  */
 
 const PROXY_BASE = "https://proxy.corsfix.com/?";
-const PROXY_URL_PARAM = "https://proxy.corsfix.com/?url=";
 
 const WEB_HISTORY_KEY =
   "homeClassroomWebHistory";
@@ -3066,13 +3129,77 @@ function rewritePageURLs(
 
 async function fetchWebPage(url){
 
-  const directURL = PROXY_URL_PARAM + encodeURIComponent(url);
-  return {
-    body: "",
-    proxy: "Corsfix",
-    contentType: "text/html",
-    directURL
-  };
+  /* Primary: isomorphic-git public proxy. Current project docs still publish this endpoint. */
+  const proxies = [
+    {
+      name: "isomorphic-git CORS Proxy",
+      build: target =>
+        "https://cors.isomorphic-git.org/" + target,
+      read: response => response.text()
+    },
+    {
+      name: "CodeTabs",
+      build: target =>
+        "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(target),
+      read: response => response.text()
+    },
+    {
+      name: "ThingProxy",
+      build: target =>
+        "https://thingproxy.freeboard.io/fetch/" + target,
+      read: response => response.text()
+    }
+  ];
+
+  const errors = [];
+
+  for(const proxy of proxies){
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
+    try{
+      setWebStatus("Loading with " + proxy.name + "...");
+
+      const response = await fetch(
+        proxy.build(url),
+        {
+          method: "GET",
+          mode: "cors",
+          redirect: "follow",
+          signal: controller.signal,
+          cache: "no-store",
+          credentials: "omit"
+        }
+      );
+
+      if(!response.ok){
+        throw new Error("HTTP " + response.status);
+      }
+
+      const body = await proxy.read(response);
+
+      if(typeof body !== "string" || !body.trim()){
+        throw new Error("empty response");
+      }
+
+      return {
+        body,
+        proxy: proxy.name,
+        contentType: response.headers.get("content-type") || ""
+      };
+
+    }catch(error){
+      errors.push(
+        proxy.name + ": " +
+        (error.name === "AbortError" ? "timeout" : error.message)
+      );
+    }finally{
+      clearTimeout(timer);
+    }
+  }
+
+  throw new Error("Free proxies failed. " + errors.join(" | "));
 }
 function escapeWebAttribute(value){
   return String(value)
@@ -3260,37 +3387,75 @@ async function loadWebURL(input, addHistory = true){
 
   try{
 
-    const frame = document.getElementById("webFrame");
-    const directURL = PROXY_URL_PARAM + encodeURIComponent(url);
+    const result =
+      await fetchWebPage(url);
 
-    frame.srcdoc = "";
+    const type =
+      String(result.contentType || "")
+        .toLowerCase();
+
+    const looksHTML =
+      type.includes("text/html") ||
+      /<!doctype|<html[\\s>]|<body[\\s>]/i.test(result.body);
+
+    if(looksHTML){
+
+      /* No DOMParser: render the prepared document immediately. */
+      frame.srcdoc =
+        prepareWebHTML(
+          result.body,
+          url
+        );
+
+    }else{
+
+      const escaped =
+        String(result.body)
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;");
+
+      frame.srcdoc = `
+<!doctype html>
+<html>
+<body style="
+  margin:0;
+  padding:24px;
+  color:#111;
+  background:#fff;
+  font-family:ui-monospace,monospace;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+">${escaped}</body>
+</html>`;
+
+    }
+
     frame.style.display = "block";
-    frame.src = directURL;
 
+    /* Do not wait for iframe.onload; resource loads can be indefinite. */
     setWebStatus(
-      "Opening through Corsfix • " + new URL(url).hostname
+      "Loaded via " +
+      result.proxy +
+      " • " +
+      new URL(url).hostname
     );
-
-    frame.onload = () => {
-      setWebStatus(
-        "Loaded through Corsfix • " + new URL(url).hostname
-      );
-    };
-
-    frame.onerror = () => {
-      showWebError(
-        "The proxy or target site could not be displayed."
-      );
-      setWebStatus("Web page failed to display");
-    };
 
   }catch(error){
 
-    console.error("Web navigation error:", error);
-    showWebError(
-      error.message || "The Web page could not be opened."
+    console.error(
+      "Web proxy error:",
+      error
     );
-    setWebStatus("Web error");
+
+    showWebError(
+      error.message ||
+      "The free proxy could not fetch this page."
+    );
+
+    setWebStatus(
+      "Proxy error"
+    );
   }
 }
 function setWebStatus(
@@ -3653,35 +3818,64 @@ document.getElementById(
   "webTestProxy"
 ).addEventListener(
   "click",
-  () => {
+  async () => {
 
-    const testURL = "https://example.com/";
-    const frame = document.getElementById("webFrame");
-    const proxyURL = PROXY_URL_PARAM + encodeURIComponent(testURL);
+    setWebStatus(
+      "Testing proxy..."
+    );
 
-    hideWebError();
-    document.getElementById("webHome").style.display = "none";
-    frame.style.display = "block";
-    setWebStatus("Testing Corsfix directly...");
 
-    let finished = false;
+    try{
 
-    const timer = setTimeout(() => {
-      if(finished) return;
-      finished = true;
-      showWebError("Corsfix did not finish loading the test page within 8 seconds. The proxy may be busy or the target may be unavailable.");
-      setWebStatus("Proxy test timed out");
-    }, 8000);
+      const testURL =
+        "https://example.com/";
 
-    frame.onload = () => {
-      if(finished) return;
-      finished = true;
-      clearTimeout(timer);
-      setWebStatus("Corsfix proxy test loaded");
-      showToast("Corsfix responded to the browser");
-    };
 
-    frame.src = proxyURL;
+      const result =
+        await fetchWebPage(
+          testURL
+        );
+
+
+      if(
+        !result.body
+      ){
+
+        throw new Error(
+          "Empty response"
+        );
+
+      }
+
+
+      setWebStatus(
+        "Proxy test passed"
+      );
+
+
+      showToast(
+        "Proxy is responding"
+      );
+
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+
+      setWebStatus(
+        "Proxy test failed"
+      );
+
+
+      showWebError(
+        "Proxy test failed: " +
+        error.message
+      );
+
+    }
+
   }
 );
 
