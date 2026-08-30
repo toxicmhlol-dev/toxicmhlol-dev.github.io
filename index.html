@@ -1,1167 +1,3827 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Classroom</title>
-    <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
-    <!-- Gun.js for automatic peer-to-peer global chat -->
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-    <style>
-        :root {
-            --bg-color: #050507;
-            --window-bg: rgba(18, 18, 24, 0.92);
-            --window-border: rgba(255, 255, 255, 0.22);
-            --text-main: #ffffff;
-            --text-muted: #d1d5db;
-            --accent-color: #3b82f6;
-            --dock-bg: rgba(25, 25, 35, 0.85);
-            --blur: blur(24px);
-            --radius-window: 14px;
-            --radius-element: 8px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home - Classroom</title>
+<link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
 
-        [data-theme="light"] {
-            --bg-color: #e5e7eb;
-            --window-bg: rgba(255, 255, 255, 0.9);
-            --window-border: rgba(0, 0, 0, 0.1);
-            --text-main: #111827;
-            --text-muted: #4b5563;
-            --dock-bg: rgba(255, 255, 255, 0.8);
-        }
+<style>
+:root{
+  --text:#f5f5f7;--muted:#9da3ae;--blue:#3478f6;
+  --border:rgba(255,255,255,.11);--red:#ff5f57;
+  --yellow:#febc2e;--green:#28c840;
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{
+  overflow:hidden;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 15%,rgba(255,255,255,.11),transparent 30%),
+    radial-gradient(ellipse at 85% 80%,rgba(255,255,255,.07),transparent 35%),
+    linear-gradient(125deg,#020202 0%,#111 25%,#050505 50%,#181818 75%,#020202 100%);
+}
+button,input,textarea{font:inherit}button{border:0}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #6ea8ff;outline-offset:2px}
 
-        [data-theme="black"] {
-            --bg-color: #000000;
-            --window-bg: rgba(10, 10, 12, 0.96);
-            --window-border: rgba(255, 255, 255, 0.25);
-            --text-main: #ffffff;
-            --text-muted: #e0e0e0;
-            --dock-bg: rgba(12, 12, 16, 0.9);
-        }
+/* ===== Desktop ===== */
+#desktop{position:absolute;inset:0 0 74px 0;overflow:hidden}
+#desktop::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0,rgba(255,255,255,.012) 1px,transparent 1px,transparent 4px);
+  opacity:.45
+}
+.desktop-icons{position:absolute;left:18px;top:18px;z-index:10;display:flex;flex-direction:column;gap:10px}
+.desktop-app{
+  width:82px;min-height:86px;padding:5px;color:#fff;background:transparent;border-radius:13px;
+  cursor:pointer;text-align:center;text-shadow:0 2px 7px #000;transition:background .15s,transform .12s
+}
+.desktop-app:hover{background:rgba(255,255,255,.10)}
+.desktop-app:active{transform:scale(.95)}
+.app-icon{
+  width:56px;height:56px;margin:auto;display:grid;place-items:center;overflow:hidden;position:relative;
+  border-radius:16px;box-shadow:0 9px 22px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.30)
+}
+.app-icon svg{width:34px;height:34px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.icon-chat{background:linear-gradient(135deg,#42b5ff,#5b67ff,#784cff)}
+.icon-void{background:linear-gradient(135deg,#ff61ca,#a153ff,#555fff)}
+.icon-notes{background:linear-gradient(135deg,#ffe66d,#ffad32,#ff6d5a)}
+.icon-calculator{background:linear-gradient(135deg,#52ed9d,#16b98a,#168ec2)}
+.icon-about{background:linear-gradient(135deg,#65dc91,#1ca967,#258576)}
+.icon-web{background:linear-gradient(135deg,#4dd6ff,#3478f6,#635bff)}
+.desktop-label{margin-top:6px;width:80px;text-align:center;color:#fff;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-        [data-theme="mono"] {
-            --bg-color: #262626;
-            --window-bg: rgba(38, 38, 38, 0.9);
-            --window-border: rgba(255, 255, 255, 0.3);
-            --text-main: #ffffff;
-            --text-muted: #d4d4d4;
-            --dock-bg: rgba(30, 30, 30, 0.85);
-            --accent-color: #737373;
-        }
+/* ===== Taskbar ===== */
+#taskbar{
+  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:10000;
+  height:62px;padding:7px 12px;display:flex;align-items:center;gap:7px;
+  background:rgba(17,18,21,.84);border:1px solid rgba(255,255,255,.13);border-radius:20px;
+  backdrop-filter:blur(25px) saturate(140%);-webkit-backdrop-filter:blur(25px) saturate(140%);
+  box-shadow:0 18px 55px rgba(0,0,0,.55)
+}
+.task-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:13px;cursor:pointer;transition:.14s}
+.task-icon:hover{transform:translateY(-5px);filter:brightness(1.12)}
+.task-icon svg{width:27px;height:27px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.task-separator{width:1px;height:34px;margin:0 5px;background:rgba(255,255,255,.14)}
+.clock{min-width:82px;color:#ddd;font-size:12px;text-align:center}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-        }
+/* ===== Windows ===== */
+.window{
+  position:absolute;width:min(1000px,calc(100vw - 50px));height:min(720px,calc(100vh - 100px));
+  min-width:340px;min-height:260px;left:50%;top:48%;transform:translate(-50%,-50%);
+  z-index:100;display:none;flex-direction:column;overflow:hidden;
+  background:rgba(24,25,29,.95);border:1px solid rgba(255,255,255,.12);border-radius:17px;
+  box-shadow:0 30px 100px rgba(0,0,0,.68);
+  backdrop-filter:blur(30px) saturate(130%);-webkit-backdrop-filter:blur(30px) saturate(130%)
+}
+.window.active{display:flex}
+.window.maximized{left:10px;top:10px;width:calc(100vw - 20px);height:calc(100vh - 84px);transform:none;border-radius:14px}
+.titlebar{
+  position:relative;height:50px;min-height:50px;display:flex;align-items:center;padding:0 15px;
+  background:rgba(40,41,45,.83);border-bottom:1px solid rgba(255,255,255,.08);
+  cursor:grab;touch-action:none;user-select:none
+}
+.titlebar:active{cursor:grabbing}
+.traffic{display:flex;gap:8px}
+.traffic button{width:13px;height:13px;padding:0;border-radius:50%;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.32)}
+.close{background:var(--red)}.minimize{background:var(--yellow)}.maximize{background:var(--green)}
+.window-title{position:absolute;left:50%;transform:translateX(-50%);color:#dedee2;font-size:13px;font-weight:600;pointer-events:none}
+.window-content{flex:1;min-height:0;overflow:hidden}
 
-        body {
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background: radial-gradient(circle at 50% 30%, #16161f 0%, #08080c 55%, #000000 100%);
-            background-size: cover;
-            background-position: center;
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-        }
+/* ===== Web App ===== */
+.web-app{width:100%;height:100%;display:flex;flex-direction:column;background:#f4f5f7;color:#13151a}
+.web-toolbar{
+  display:flex;align-items:center;gap:6px;padding:8px;background:#202329;border-bottom:1px solid rgba(0,0,0,.35)
+}
+.web-nav{
+  width:34px;height:34px;display:grid;place-items:center;border-radius:9px;
+  background:#2f333b;color:#e7e9ee;cursor:pointer;font-size:16px
+}
+.web-nav:hover{background:#3a3f48}
+.web-nav:disabled{opacity:.35;cursor:default}
+.web-address-wrap{flex:1;position:relative}
+.web-address{
+  width:100%;height:34px;padding:0 38px 0 34px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.10);background:#2c3038;color:#fff;outline:none;user-select:text
+}
+.web-address:focus{border-color:#5e8cff;background:#30353e}
+.web-globe{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#8d96a4;pointer-events:none}
+.web-go{
+  position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:7px;border:0;
+  color:white;background:#397cf6;cursor:pointer
+}
+.web-action{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;color:#ddd;background:#2f333b;cursor:pointer}
+.web-action:hover{background:#3a3f48}
+.web-status{
+  min-height:25px;padding:5px 10px;background:#17191d;color:#9198a5;font-size:10px;
+  border-bottom:1px solid rgba(0,0,0,.3)
+}
+.web-stage{position:relative;flex:1;min-height:0;background:white}
+#webFrame{width:100%;height:100%;border:0;background:white;display:none}
+#webHome{
+  position:absolute;inset:0;overflow:auto;padding:35px;background:
+  radial-gradient(circle at 20% 20%,rgba(75,125,255,.12),transparent 30%),#f7f8fa;
+  color:#14161b;display:flex;align-items:center;justify-content:center
+}
+.web-home-inner{width:min(800px,100%)}
+.web-brand{text-align:center;margin-bottom:22px}
+.web-brand-mark{
+  width:74px;height:74px;margin:0 auto 14px;display:grid;place-items:center;border-radius:21px;
+  background:linear-gradient(135deg,#42b5ff,#5f56ef);box-shadow:0 15px 40px rgba(61,94,240,.25)
+}
+.web-brand-mark svg{width:40px;height:40px;fill:none;stroke:white;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.web-brand h1{margin:0 0 6px;font-size:31px}
+.web-brand p{margin:0;color:#747b86}
+.web-search{display:flex;gap:8px;padding:8px;border:1px solid #dadde3;border-radius:14px;background:white;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.web-search input{flex:1;min-width:0;border:0;outline:0;padding:11px;color:#111;background:white;font-size:15px;user-select:text}
+.web-search button{padding:0 17px;border-radius:10px;color:white;background:#3478f6;cursor:pointer}
+.web-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.web-card{
+  padding:16px;border:1px solid #dde0e6;border-radius:13px;background:#fff;text-align:left;cursor:pointer
+}
+.web-card:hover{border-color:#b9c7eb;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.web-card strong{display:block;margin-bottom:4px}.web-card small{color:#7b818c}
+.web-error{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:25px;background:#f7f8fa;color:#15171b
+}
+.web-error.show{display:flex}
+.web-error-box{width:min(560px,100%);padding:25px;border:1px solid #dedfe4;border-radius:15px;background:white;box-shadow:0 15px 45px rgba(0,0,0,.08)}
+.web-error-box h2{margin-top:0}.web-error-box p{color:#6b717c;line-height:1.5}
+.web-error-box button{padding:9px 13px;border-radius:9px;background:#3478f6;color:white;cursor:pointer}
 
-        /* --- TOP BAR --- */
-        .top-bar {
-            height: 32px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(12px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 9999;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        }
+/* ===== V0ID ===== */
+.void-page{height:100%;overflow:auto;padding:25px}
+.profile-card{display:flex;align-items:center;gap:16px;padding:18px;margin-bottom:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07);border-radius:16px}
+.profile-avatar{width:76px;height:76px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(135deg,#9b5cff,#ed4fb7);font-size:43px}
+.profile-info{flex:1}.profile-name{font-size:21px;font-weight:700}.profile-id{margin-top:4px;color:#858a95;font-size:11px}
+.void-section{padding:17px;margin-bottom:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:15px}
+.void-section h3{margin:0 0 13px;font-size:13px}.emoji-picker{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.emoji-choice{height:41px;color:white;background:#292c34;border-radius:9px;font-size:21px;cursor:pointer}
+.emoji-choice.selected{background:linear-gradient(135deg,#437df8,#6a55eb)}
+.name-input{width:100%;padding:10px 11px;margin-bottom:8px;color:white;background:#292c34;border:1px solid rgba(255,255,255,.09);border-radius:10px;outline:none;user-select:text}
+.note{margin-top:7px;color:#727783;font-size:10px}.blocked-user{display:flex;align-items:center;gap:10px;padding:9px 10px;margin-bottom:6px;background:rgba(255,255,255,.045);border-radius:9px}
+.blocked-user-name{overflow:hidden;color:#d9dce3;text-overflow:ellipsis;white-space:nowrap}.blocked-user .small-button{margin-left:auto}
 
-        .top-bar .left-items, .top-bar .right-items {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+/* Notes / About */
+.notes-wrapper{width:100%;height:100%;padding:14px;background:#15171b}
+#notesArea{width:100%;height:100%;padding:16px;resize:none;color:#f3f4f6;background:#202228;border:1px solid rgba(255,255,255,.08);border-radius:13px;outline:none;font-size:15px;line-height:1.55;user-select:text}
+.about-page{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
+.about-symbol{width:90px;height:90px;display:grid;place-items:center;margin-bottom:18px;background:linear-gradient(135deg,#35d17f,#118e62);border-radius:23px;box-shadow:0 15px 35px rgba(0,0,0,.35)}
+.about-symbol svg{width:47px;height:47px;stroke:white;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.about-page p{max-width:500px;color:#979ca8;line-height:1.6}
 
-        .system-menu-btn {
-            cursor: pointer;
-            padding: 2px 8px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .system-menu-btn:hover { background: rgba(255, 255, 255, 0.2); }
+/* Context / toast */
+#contextMenu{position:fixed;display:none;min-width:190px;padding:6px;z-index:100000;background:rgba(29,30,35,.98);border:1px solid rgba(255,255,255,.11);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.65);backdrop-filter:blur(18px)}
+.context-item{padding:9px 11px;color:#eee;border-radius:8px;cursor:pointer;font-size:13px}.context-item:hover{background:rgba(255,255,255,.09)}.context-danger{color:#ff6b65}
+#toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,15px);padding:10px 15px;color:white;background:rgba(25,25,27,.95);border:1px solid rgba(255,255,255,.09);border-radius:11px;box-shadow:0 12px 35px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:200000;font-size:12px}
+#toast.show{opacity:1;transform:translate(-50%,0)}
 
-        /* --- DESKTOP AREA --- */
-        .desktop-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .app-icon {
-            position: absolute;
-            width: 76px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: grab;
-            border-radius: 10px;
-            padding: 6px;
-            transition: background 0.2s;
-        }
-        .app-icon:active { cursor: grabbing; }
-        .app-icon:hover { background: rgba(255, 255, 255, 0.12); }
-
-        .icon-box {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            font-size: 24px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            pointer-events: none;
-        }
-
-        .app-icon span {
-            font-size: 11px;
-            text-align: center;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 1);
-            color: #ffffff;
-            font-weight: 600;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        /* App Icon Gradients */
-        .bg-settings { background: linear-gradient(135deg, #4b5563, #1f2937); }
-        .bg-paint { background: linear-gradient(135deg, #ef4444, #f97316); }
-        .bg-chat { background: linear-gradient(135deg, #10b981, #059669); }
-        .bg-notepad { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .bg-files { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .bg-terminal { background: linear-gradient(135deg, #111827, #030712); border: 1px solid rgba(255,255,255,0.25); }
-
-        /* --- DOCK / TASKBAR --- */
-        .dock {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dock-bg);
-            backdrop-filter: var(--blur);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            padding: 8px 12px;
-            border-radius: 22px;
-            display: flex;
-            gap: 12px;
-            z-index: 9998;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-        }
-
-        .dock-icon {
-            position: relative;
-            width: 48px;
-            height: 48px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .dock-icon:active { cursor: grabbing; }
-        .dock-icon:hover { transform: scale(1.15) translateY(-4px); }
-        .dock-icon.dragging { opacity: 0.4; }
-
-        .dock-icon .icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-        }
-        
-        .dock-dot {
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            background: #ffffff;
-            border-radius: 50%;
-            display: none;
-        }
-        .dock-icon.running .dock-dot { display: block; }
-
-        /* --- CONTEXT MENU --- */
-        .context-menu {
-            position: fixed;
-            width: 200px;
-            background: rgba(20, 20, 28, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 10px;
-            padding: 6px;
-            display: none;
-            flex-direction: column;
-            gap: 2px;
-            z-index: 100000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        }
-        .context-item {
-            padding: 8px 12px;
-            font-size: 13px;
-            color: #ffffff;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.15s;
-        }
-        .context-item:hover { background: var(--accent-color); color: white; }
-        .context-divider { height: 1px; background: rgba(255, 255, 255, 0.15); margin: 4px 0; }
-
-        /* --- WINDOW SYSTEM --- */
-        .window {
-            position: absolute;
-            top: 60px;
-            left: 100px;
-            width: 840px;
-            height: 580px;
-            background: var(--window-bg);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--window-border);
-            border-radius: var(--radius-window);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 100;
-        }
-        .window.active { display: flex; z-index: 101; }
-
-        .title-bar {
-            height: 42px;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            cursor: grab;
-        }
-        .title-bar:active { cursor: grabbing; }
-
-        .window-controls { display: flex; gap: 8px; flex: 1; }
-        .win-btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: opacity 0.2s; }
-        .win-btn:hover { opacity: 0.8; }
-        .btn-close { background: #ff5f56; }
-        .btn-min { background: #ffbd2e; }
-        .btn-max { background: #27c93f; }
-
-        .window-title { flex: 2; text-align: center; font-size: 13px; font-weight: 600; color: #ffffff; }
-        .window-spacer { flex: 1; }
-        .window-content { display: flex; flex: 1; overflow: hidden; color: var(--text-main); }
-
-        /* --- SETTINGS APP --- */
-        .settings-sidebar {
-            width: 230px;
-            background: rgba(0, 0, 0, 0.2);
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 16px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .settings-sidebar h3 { font-size: 16px; margin-bottom: 16px; padding-left: 8px; color: #ffffff; }
-        .tab-btn {
-            display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-            border-radius: var(--radius-element); cursor: pointer; font-size: 13px; color: #ffffff; transition: 0.2s;
-        }
-        .tab-btn:hover { background: rgba(255, 255, 255, 0.1); }
-        .tab-btn.active { background: var(--accent-color); color: white; font-weight: 600; }
-
-        .settings-main { flex: 1; padding: 28px 36px; overflow-y: auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .tab-content h2 { margin-bottom: 24px; font-size: 22px; color: #ffffff; }
-
-        .settings-panel {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .toggle-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        .toggle-row:last-child { border-bottom: none; }
-
-        /* Switch UI */
-        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider-switch {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.3); transition: .3s; border-radius: 26px;
-        }
-        .slider-switch:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
-        input:checked + .slider-switch { background-color: var(--accent-color); }
-        input:checked + .slider-switch:before { transform: translateX(20px); }
-
-        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
-        .option-card {
-            background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
-            padding: 14px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 13px; color: #ffffff;
-        }
-        .option-card:hover { border-color: var(--accent-color); }
-        .option-card.active { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.25); }
-
-        /* --- NOTEPAD APP --- */
-        .notepad-area {
-            width: 100%; height: 100%; background: transparent; border: none;
-            color: #ffffff; padding: 16px; font-size: 14px; resize: none; outline: none;
-            line-height: 1.5;
-        }
-
-        /* --- PAINT APP --- */
-        .paint-toolbar {
-            height: 44px; background: rgba(255,255,255,0.05); display: flex; align-items: center;
-            gap: 14px; padding: 0 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); font-size: 13px;
-        }
-        .paint-canvas { background: white; cursor: crosshair; display: block; width: 100%; flex: 1; }
-
-        /* --- FILES APP --- */
-        .files-sidebar { width: 180px; border-right: 1px solid rgba(255, 255, 255, 0.15); padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #ffffff; }
-        .files-main { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 16px; align-content: flex-start; overflow-y: auto; }
-        .file-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; border-radius: 8px; cursor: pointer; color: #ffffff; }
-        .file-item:hover { background: rgba(255,255,255,0.12); }
-        .file-icon { font-size: 32px; }
-        .file-name { font-size: 12px; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; color: #ffffff; }
-
-        /* --- CHAT APP --- */
-        .chat-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
-        .chat-toolbar {
-            padding: 8px 16px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { background: rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; max-width: 75%; font-size: 13px; line-height: 1.4; color: #ffffff; border: 1px solid rgba(255,255,255,0.1); }
-        .chat-msg.self { background: var(--accent-color); color: white; align-self: flex-end; border: none; }
-        .chat-input-bar { padding: 12px 16px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255, 255, 255, 0.15); display: flex; gap: 10px; }
-        .chat-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 12px; color: #ffffff; outline: none; font-size: 13px; }
-        .os-btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: opacity 0.2s; }
-        .os-btn:hover { opacity: 0.85; }
-        .os-btn.danger { background: rgba(239, 68, 68, 0.9); }
-
-        select, input[type="text"], input[type="file"] { background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; padding: 8px 12px; border-radius: 6px; font-size: 13px; outline: none; }
-        select option { background: #111115; color: #ffffff; }
-    </style>
+@media(max-width:700px){
+  .desktop-icons{left:7px;top:7px}
+  .desktop-app{width:72px}
+  .window{width:calc(100vw - 12px);height:calc(100vh - 88px);min-width:0}
+  .web-cards{grid-template-columns:1fr}
+  .web-action{display:none}
+  .clock{display:none}
+}
+</style>
 </head>
+
 <body>
 
-    <!-- TOP TASKBAR -->
-    <div class="top-bar">
-        <div class="left-items">
-            <strong>V0ID OS</strong>
-            <span id="current-app-name" style="color: var(--text-muted);">Finder</span>
+<main id="desktop">
+
+  <div class="desktop-icons">
+
+    <button class="desktop-app" data-open="webWindow" title="Web">
+      <div class="app-icon icon-web">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8"/>
+          <path d="M4 12h16"/>
+          <path d="M12 4c2.2 2.2 3.2 5 3.2 8S14.2 17.8 12 20"/>
+          <path d="M12 4c-2.2 2.2-3.2 5-3.2 8S9.8 17.8 12 20"/>
+        </svg>
+      </div>
+      <div class="desktop-label">Web</div>
+    </button>
+
+    <button class="desktop-app" data-open="chatWindow" title="Chat">
+      <div class="app-icon icon-chat">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.7-.8L4 20l1.5-3.8A7.4 7.4 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/>
+          <path d="M8 11h.01M12 11h.01M16 11h.01"/>
+        </svg>
+      </div>
+      <div class="desktop-label">Chat</div>
+    </button>
+
+    <button class="desktop-app" data-open="voidWindow" title="V0ID ID">
+      <div class="app-icon icon-void">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"/>
+          <path d="m8 9 4 2 4-2M12 11v6"/>
+        </svg>
+      </div>
+      <div class="desktop-label">V0ID ID</div>
+    </button>
+
+    <button class="desktop-app" data-open="notesWindow" title="Notes">
+      <div class="app-icon icon-notes">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+          <path d="M14 3v5h5M8 13h8M8 17h6"/>
+        </svg>
+      </div>
+      <div class="desktop-label">Notes</div>
+    </button>
+
+    <button class="desktop-app" data-open="calculatorWindow" title="Calculator">
+      <div class="app-icon icon-calculator">
+        <svg viewBox="0 0 24 24">
+          <rect x="5" y="3" width="14" height="18" rx="3"/>
+          <path d="M8 7h8"/>
+          <path d="M8 11h2M12 11h2M16 11h0"/>
+          <path d="M8 15h2M12 15h2M16 15h0"/>
+          <path d="M8 18h2M12 18h2M16 18h0"/>
+        </svg>
+      </div>
+      <div class="desktop-label">Calculator</div>
+    </button>
+
+    <button class="desktop-app" data-open="aboutWindow" title="About">
+      <div class="app-icon icon-about">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 10v6M12 7h.01"/>
+        </svg>
+      </div>
+      <div class="desktop-label">About</div>
+    </button>
+
+  </div>
+</main>
+
+<div id="taskbar">
+
+  <button class="task-icon icon-web" data-open="webWindow" title="Web">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8"/>
+      <path d="M4 12h16"/>
+      <path d="M12 4c2.2 2.2 3.2 5 3.2 8S14.2 17.8 12 20"/>
+      <path d="M12 4c-2.2 2.2-3.2 5-3.2 8S9.8 17.8 12 20"/>
+    </svg>
+  </button>
+
+  <button class="task-icon icon-chat" data-open="chatWindow" title="Chat">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.7-.8L4 20l1.5-3.8A7.4 7.4 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/>
+    </svg>
+  </button>
+
+  <button class="task-icon icon-void" data-open="voidWindow" title="V0ID ID">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"/>
+      <path d="m8 9 4 2 4-2M12 11v6"/>
+    </svg>
+  </button>
+
+  <button class="task-icon icon-notes" data-open="notesWindow" title="Notes">
+    <svg viewBox="0 0 24 24">
+      <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+      <path d="M14 3v5h5M8 13h8M8 17h6"/>
+    </svg>
+  </button>
+
+  <div class="task-separator"></div>
+  <div class="clock" id="clock"></div>
+</div>
+
+<!-- ==================== WEB WINDOW ==================== -->
+<section class="window" id="webWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="webWindow" title="Close"></button>
+      <button class="minimize" data-minimize="webWindow" title="Minimize"></button>
+      <button class="maximize" data-maximize="webWindow" title="Maximize"></button>
+    </div>
+    <div class="window-title">Web</div>
+  </div>
+
+  <div class="window-content">
+
+    <div class="web-app">
+
+      <div class="web-toolbar">
+
+        <button class="web-nav" id="webBack" title="Back">‹</button>
+        <button class="web-nav" id="webForward" title="Forward">›</button>
+        <button class="web-nav" id="webHomeButton" title="Home">⌂</button>
+        <button class="web-nav" id="webReload" title="Reload">↻</button>
+
+        <div class="web-address-wrap">
+          <span class="web-globe">◉</span>
+
+          <input
+            class="web-address"
+            id="webAddress"
+            placeholder="Search DuckDuckGo or enter URL"
+            autocomplete="off"
+            spellcheck="false">
+
+          <button class="web-go" id="webGo">↵</button>
         </div>
-        <div class="right-items">
-            <div class="system-menu-btn" onclick="openWindow('settings-window')">⚙️ Control Panel</div>
-            <span id="clock">Mon Aug 10 12:00 PM</span>
+
+        <button class="web-action" id="webBookmark" title="Bookmark">☆</button>
+        <button class="web-action" id="webTestProxy" title="Test Proxy">✓</button>
+
+      </div>
+
+      <div class="web-status" id="webStatus">
+        DuckDuckGo search • Proxy ready
+      </div>
+
+      <div class="web-stage">
+
+        <div id="webHome">
+
+          <div class="web-home-inner">
+
+            <div class="web-brand">
+
+              <div class="web-brand-mark">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="8"/>
+                  <path d="M4 12h16"/>
+                  <path d="M12 4c2.2 2.2 3.2 5 3.2 8S14.2 17.8 12 20"/>
+                  <path d="M12 4c-2.2 2.2-3.2 5-3.2 8S9.8 17.8 12 20"/>
+                </svg>
+              </div>
+
+              <h1>Web</h1>
+              <p>Search DuckDuckGo or open a real URL.</p>
+
+            </div>
+
+            <form class="web-search" id="webHomeSearch">
+
+              <input
+                id="webHomeInput"
+                placeholder="Search DuckDuckGo..."
+                autocomplete="off">
+
+              <button type="submit">
+                Search
+              </button>
+
+            </form>
+
+            <div class="web-cards">
+
+              <button
+                class="web-card"
+                data-web-url="https://duckduckgo.com/">
+                <strong>DuckDuckGo</strong>
+                <small>duckduckgo.com</small>
+              </button>
+
+              <button
+                class="web-card"
+                data-web-url="https://example.com/">
+                <strong>Example</strong>
+                <small>example.com</small>
+              </button>
+
+              <button
+                class="web-card"
+                data-web-url="https://www.wikipedia.org/">
+                <strong>Wikipedia</strong>
+                <small>wikipedia.org</small>
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
+
+
+        <iframe
+          id="webFrame"
+          title="Proxied web page"
+          sandbox="allow-scripts allow-forms allow-popups allow-modals"
+          referrerpolicy="no-referrer">
+        </iframe>
+
+
+        <div class="web-error" id="webError">
+
+          <div class="web-error-box">
+
+            <h2>
+              This page could not be loaded
+            </h2>
+
+            <p id="webErrorText">
+              The proxy or target site rejected the request.
+            </p>
+
+            <button id="webRetry">
+              Retry
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <!-- DESKTOP AREA -->
-    <div class="desktop-area" id="desktop-area" oncontextmenu="showContextMenu(event)">
-        <div class="app-icon" id="desktop-icon-settings" data-app="settings" style="top: 20px; left: 20px;">
-            <div class="icon-box bg-settings">⚙️</div>
-            <span>Settings</span>
+  </div>
+
+</section>
+
+<!-- ==================== CHAT WINDOW ==================== -->
+
+<section class="window" id="chatWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="chatWindow"></button>
+      <button class="minimize" data-minimize="chatWindow"></button>
+      <button class="maximize" data-maximize="chatWindow"></button>
+    </div>
+    <div class="window-title">Chat</div>
+  </div>
+
+  <div class="window-content">
+
+    <div style="height:100%;display:flex;flex-direction:column">
+
+      <div class="chat-tabs" style="display:flex;gap:7px;padding:11px;background:#202127">
+        <button class="chat-tab" id="globalTab">Global</button>
+        <button class="chat-tab" id="lanTab">LAN</button>
+      </div>
+
+      <div class="chat-toolbar" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:#1b1d22;border-bottom:1px solid rgba(255,255,255,.07)">
+        <div class="chat-status" id="chatStatus" style="flex:1;color:#969ca8;font-size:11px">
+          Firebase chat ready
         </div>
-        <div class="app-icon" id="desktop-icon-files" data-app="files" style="top: 120px; left: 20px;">
-            <div class="icon-box bg-files">📁</div>
-            <span>Files</span>
+
+        <button class="small-button clear-button" id="clearChatBtn" style="padding:7px 11px;color:white;background:rgba(255,70,70,.14);border:1px solid rgba(255,70,70,.22);border-radius:9px;cursor:pointer">
+          Clear Chat
+        </button>
+      </div>
+
+      <div id="lanControls" style="display:none">
+        <div style="display:flex;gap:7px;padding:10px 12px">
+          <input id="lanRoom" maxlength="32" placeholder="LAN room ID"
+                 style="flex:1;padding:9px 10px;color:white;background:#292c35;border:1px solid rgba(255,255,255,.1);border-radius:9px;outline:none">
+          <button class="small-button" id="joinLanBtn">Join</button>
         </div>
-        <div class="app-icon" id="desktop-icon-notepad" data-app="notepad" style="top: 220px; left: 20px;">
-            <div class="icon-box bg-notepad">📝</div>
-            <span>Notepad</span>
-        </div>
-        <div class="app-icon" id="desktop-icon-paint" data-app="paint" style="top: 320px; left: 20px;">
-            <div class="icon-box bg-paint">🎨</div>
-            <span>Paint</span>
-        </div>
-        <div class="app-icon" id="desktop-icon-chat" data-app="chat" style="top: 420px; left: 20px;">
-            <div class="icon-box bg-chat">💬</div>
-            <span>Global Chat</span>
-        </div>
-        <div class="app-icon" id="desktop-icon-terminal" data-app="terminal" style="top: 520px; left: 20px;">
-            <div class="icon-box bg-terminal">💻</div>
-            <span>Terminal</span>
-        </div>
+      </div>
+
+      <div class="messages" id="messages"
+           style="flex:1;min-height:0;overflow-y:auto;padding:16px;background:#14161a"></div>
+
+      <form class="composer" id="messageForm"
+            style="display:flex;gap:7px;padding:10px;background:#202228;border-top:1px solid rgba(255,255,255,.07)">
+        <input id="messageInput" maxlength="1000" autocomplete="off" placeholder="Message..."
+               style="flex:1;min-width:0;padding:10px 12px;color:white;background:#2a2d34;border:1px solid rgba(255,255,255,.09);border-radius:10px;outline:none">
+        <button class="send-button" type="submit"
+                style="padding:0 16px;color:white;background:#397cf6;border-radius:10px;cursor:pointer;font-weight:600">
+          Send
+        </button>
+      </form>
+
     </div>
 
-    <!-- RIGHT CLICK CONTEXT MENU -->
-    <div class="context-menu" id="desktop-context-menu">
-        <div class="context-item" onclick="createNewFolder()">📁 New Folder</div>
-        <div class="context-item" onclick="createNewTextFile()">📄 New Text File</div>
-        <div class="context-divider"></div>
-        <div class="context-item" onclick="openWindow('settings-window'); switchTabDirect('tab-wallpaper')">🖼️ Change Wallpaper</div>
-        <div class="context-item" onclick="resetIconPositions(); location.reload()">🔄 Reset Icon Positions</div>
+  </div>
+
+</section>
+
+<!-- ==================== V0ID ID ==================== -->
+
+<section class="window" id="voidWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="voidWindow"></button>
+      <button class="minimize" data-minimize="voidWindow"></button>
+      <button class="maximize" data-maximize="voidWindow"></button>
+    </div>
+    <div class="window-title">V0ID ID</div>
+  </div>
+
+  <div class="window-content">
+
+    <div class="void-page">
+
+      <div class="profile-card">
+
+        <div class="profile-avatar" id="profileEmoji">
+          😀
+        </div>
+
+        <div class="profile-info">
+
+          <div class="profile-name" id="profileName">
+            User_00000
+          </div>
+
+          <div class="profile-id">
+            Local V0ID ID
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="void-section">
+
+        <h3>Profile Emoji</h3>
+
+        <div class="emoji-picker" id="emojiPicker"></div>
+
+      </div>
+
+      <div class="void-section">
+
+        <h3>Display Name</h3>
+
+        <input
+          class="name-input"
+          id="displayNameInput"
+          maxlength="15"
+          placeholder="Display Name">
+
+        <button class="small-button" id="saveProfileBtn">
+          Save Profile
+        </button>
+
+        <div class="note">
+          Maximum 15 characters. Leave empty to generate User_#####.
+        </div>
+
+      </div>
+
+      <div class="void-section">
+
+        <h3>Blocked People</h3>
+
+        <div id="blockedList"></div>
+
+      </div>
+
     </div>
 
-    <!-- DOCK / TASKBAR -->
-    <div class="dock" id="dock-container">
-        <div class="dock-icon" draggable="true" data-app="settings" onclick="openWindow('settings-window')" id="dock-settings" oncontextmenu="promptCloseApp('settings-window', event)">
-            <div class="icon-box bg-settings">⚙️</div>
-            <div class="dock-dot"></div>
-        </div>
-        <div class="dock-icon" draggable="true" data-app="files" onclick="openWindow('files-window')" id="dock-files" oncontextmenu="promptCloseApp('files-window', event)">
-            <div class="icon-box bg-files">📁</div>
-            <div class="dock-dot"></div>
-        </div>
-        <div class="dock-icon" draggable="true" data-app="notepad" onclick="openWindow('notepad-window')" id="dock-notepad" oncontextmenu="promptCloseApp('notepad-window', event)">
-            <div class="icon-box bg-notepad">📝</div>
-            <div class="dock-dot"></div>
-        </div>
-        <div class="dock-icon" draggable="true" data-app="paint" onclick="openWindow('paint-window')" id="dock-paint" oncontextmenu="promptCloseApp('paint-window', event)">
-            <div class="icon-box bg-paint">🎨</div>
-            <div class="dock-dot"></div>
-        </div>
-        <div class="dock-icon" draggable="true" data-app="chat" onclick="openWindow('chat-window')" id="dock-chat" oncontextmenu="promptCloseApp('chat-window', event)">
-            <div class="icon-box bg-chat">💬</div>
-            <div class="dock-dot"></div>
-        </div>
-        <div class="dock-icon" draggable="true" data-app="terminal" onclick="openWindow('terminal-window')" id="dock-terminal" oncontextmenu="promptCloseApp('terminal-window', event)">
-            <div class="icon-box bg-terminal">💻</div>
-            <div class="dock-dot"></div>
-        </div>
+  </div>
+</section>
+
+<!-- ==================== NOTES ==================== -->
+
+<section class="window" id="notesWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="notesWindow"></button>
+      <button class="minimize" data-minimize="notesWindow"></button>
+      <button class="maximize" data-maximize="notesWindow"></button>
+    </div>
+    <div class="window-title">Notes</div>
+  </div>
+
+  <div class="window-content">
+
+    <div class="notes-wrapper">
+      <textarea id="notesArea" placeholder="Write something..."></textarea>
     </div>
 
-    <!-- SETTINGS WINDOW -->
-    <div class="window" id="settings-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'settings-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('settings-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('settings-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">V0ID Settings</div>
-            <div class="window-spacer"></div>
+  </div>
+
+</section>
+
+<!-- ==================== CALCULATOR ==================== -->
+
+<section class="window" id="calculatorWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="calculatorWindow"></button>
+      <button class="minimize" data-minimize="calculatorWindow"></button>
+      <button class="maximize" data-maximize="calculatorWindow"></button>
+    </div>
+    <div class="window-title">Calculator</div>
+  </div>
+
+  <div class="window-content">
+
+    <div style="height:100%;display:flex;align-items:center;justify-content:center;padding:20px">
+
+      <div style="width:min(360px,100%);padding:16px;border-radius:17px;background:#202329;box-shadow:0 20px 50px rgba(0,0,0,.35)">
+
+        <input
+          id="calcDisplay"
+          readonly
+          style="width:100%;padding:15px;margin-bottom:9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:#101216;color:white;font-size:24px;text-align:right;outline:0">
+
+        <div
+          id="calculatorGrid"
+          style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
         </div>
-        <div class="window-content">
-            <div class="settings-sidebar">
-                <h3>Settings</h3>
-                <div class="tab-btn active" onclick="switchTab(event, 'tab-appearance')">Appearance</div>
-                <div class="tab-btn" onclick="switchTab(event, 'tab-wallpaper')" id="btn-tab-wallpaper">Wallpaper</div>
-                <div class="tab-btn" onclick="switchTab(event, 'tab-cloaking')">Cloaking & Panic</div>
-                <div class="tab-btn" onclick="switchTab(event, 'tab-about')">About V0ID</div>
-            </div>
-            <div class="settings-main">
-                <div class="tab-content active" id="tab-appearance">
-                    <h2>Appearance & Themes</h2>
-                    <div class="settings-panel">
-                        <label style="font-size: 13px; color: var(--text-muted);">System Theme Mode</label>
-                        <div class="options-grid">
-                            <div class="option-card" onclick="setTheme('light')">Light</div>
-                            <div class="option-card active" onclick="setTheme('black')">Black</div>
-                            <div class="option-card" onclick="setTheme('mono')">Mono</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-wallpaper">
-                    <h2>Wallpaper Changer</h2>
-                    <div class="settings-panel" style="display: flex; flex-direction: column; gap: 14px;">
-                        <label style="font-size: 13px; color: var(--text-muted);">Choose Default Preset:</label>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="os-btn" onclick="setWallpaperPreset('fade')">Sleek Black Fade (Default)</button>
-                            <button class="os-btn" onclick="setWallpaperPreset('midnight')">Midnight Gradient</button>
-                        </div>
-                        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 6px 0;">
-                        <label style="font-size: 13px; color: var(--text-muted);">Upload Image (PNG / JPG / HTML):</label>
-                        <input type="file" id="wallpaper-file-input" accept="image/*,text/html" onchange="handleWallpaperUpload(event)">
-                        <label style="font-size: 13px; color: var(--text-muted);">Or paste Image/HTML URL:</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="wallpaper-url-input" placeholder="https://example.com/image.jpg" style="flex:1;">
-                            <button class="os-btn" onclick="applyWallpaperURL()">Apply URL</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-cloaking">
-                    <h2>Cloaking & Panic Key</h2>
-                    <div class="settings-panel">
-                        <div class="toggle-row">
-                            <span>Cloak this tab (Disguise title/favicon)</span>
-                            <label class="switch"><input type="checkbox" id="cloak-tab-toggle" onchange="toggleTabCloak(this.checked)"><span class="slider-switch"></span></label>
-                        </div>
-                        <div class="toggle-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
-                            <span>Panic Key Shortcut (Press to trigger redirection)</span>
-                            <div style="display: flex; gap: 10px; width: 100%;">
-                                <input type="text" id="panic-key-input" value="Escape" style="width: 120px;" readonly onclick="this.value='Press any key...'; captureNextKey(this)">
-                                <input type="text" id="panic-url-input" value="about:blank" style="flex:1;" placeholder="Redirect URL (default about:blank)">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-about">
-                    <h2>About V0ID OS</h2>
-                    <div class="settings-panel">
-                        <p style="font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #ffffff;">V0ID OS v2.0 "Eclipse"</p>
-                        <p style="color: var(--text-muted); font-size: 13px;">A lightning-fast, highly polished web desktop simulation with zero local dependencies and complete multi-user support.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+      </div>
+
     </div>
 
-    <!-- FILES WINDOW -->
-    <div class="window" id="files-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'files-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('files-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('files-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">File Explorer</div>
-            <div class="window-spacer"></div>
-        </div>
-        <div class="window-content">
-            <div class="files-sidebar">
-                <strong>Locations</strong>
-                <span style="cursor: pointer; opacity: 0.9;" onclick="renderFiles()">📁 Desktop</span>
-                <span style="cursor: pointer; opacity: 0.9;" onclick="renderFiles()">📄 Documents</span>
-            </div>
-            <div class="files-main" id="files-grid-container">
-                <!-- Populated dynamically -->
-            </div>
-        </div>
+  </div>
+
+</section>
+
+<!-- ==================== ABOUT ==================== -->
+
+<section class="window" id="aboutWindow">
+
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="aboutWindow"></button>
+      <button class="minimize" data-minimize="aboutWindow"></button>
+      <button class="maximize" data-maximize="aboutWindow"></button>
+    </div>
+    <div class="window-title">About</div>
+  </div>
+
+  <div class="window-content">
+
+    <div class="about-page">
+
+      <div class="about-symbol">
+
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 10v6"/>
+          <path d="M12 7h.01"/>
+        </svg>
+
+      </div>
+
+      <h1>Home - Classroom</h1>
+
+      <p>
+        A browser desktop environment with local apps,
+        a V0ID ID profile, and Firebase-powered chat.
+      </p>
+
     </div>
 
-    <!-- NOTEPAD WINDOW -->
-    <div class="window" id="notepad-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'notepad-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('notepad-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('notepad-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">Notepad</div>
-            <div class="window-spacer"></div>
-        </div>
-        <div class="window-content">
-            <textarea class="notepad-area" id="notepad-text" placeholder="Type your notes here..."></textarea>
-        </div>
-    </div>
+  </div>
 
-    <!-- PAINT WINDOW -->
-    <div class="window" id="paint-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'paint-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('paint-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('paint-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">Paint Studio</div>
-            <div class="window-spacer"></div>
-        </div>
-        <div class="window-content" style="flex-direction: column;">
-            <div class="paint-toolbar">
-                <label>Color: <input type="color" id="paint-color" value="#ffffff"></label>
-                <label>Brush Size: <input type="range" id="paint-size" min="1" max="30" value="4"></label>
-                <button class="os-btn" onclick="clearCanvas()" style="padding: 4px 10px; font-size: 12px;">Clear Canvas</button>
-            </div>
-            <canvas class="paint-canvas" id="paint-canvas"></canvas>
-        </div>
-    </div>
+</section>
 
-    <!-- CHAT ROOM WINDOW -->
-    <div class="window" id="chat-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'chat-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('chat-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('chat-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">V0ID Global Chat</div>
-            <div class="window-spacer"></div>
-        </div>
-        <div class="window-content" style="flex-direction: column;">
-            <div class="chat-toolbar" style="display: flex; gap: 8px; justify-content: space-between;">
-                <span style="font-size: 13px; color: var(--text-muted); align-self: center; margin-left: 8px;">🟡 Connecting to P2P Network...</span>
-                <button class="os-btn danger" onclick="clearChat()">Clear Local View</button>
-            </div>
-            <div class="chat-messages" id="chat-messages" style="flex:1;">
-                <div class="chat-msg" style="color: #10b981; border-color: rgba(16,185,129,0.3);">
-                    <strong>Welcome to V0ID Multiplayer Chat!</strong><br>
-                    Automatically connecting to decentralized relays...
-                </div>
-            </div>
-            <div class="chat-input-bar">
-                <input type="text" class="chat-input" id="chat-input-box" placeholder="Type a message to everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-                <button class="os-btn" id="chat-send-btn" onclick="sendChatMessage()">Send</button>
-            </div>
-        </div>
-    </div>
+<div id="contextMenu"></div>
+<div id="toast"></div>
 
-    <!-- TERMINAL WINDOW -->
-    <div class="window" id="terminal-window">
-        <div class="title-bar" onmousedown="startDrag(event, 'terminal-window')">
-            <div class="window-controls">
-                <button class="win-btn btn-close" onclick="closeWindow('terminal-window')"></button>
-                <button class="win-btn btn-min" onclick="minimizeWindow('terminal-window')"></button>
-                <button class="win-btn btn-max"></button>
-            </div>
-            <div class="window-title">Terminal</div>
-            <div class="window-spacer"></div>
-        </div>
-        <div class="window-content" style="background: #050507; color: #10b981; font-family: monospace; padding: 16px; font-size: 13px; flex-direction: column; justify-content: flex-end;">
-            <div id="terminal-output" style="overflow-y:auto; margin-bottom: 10px; display:flex; flex-direction:column; gap:4px;">
-                <div>V0ID Shell v2.0. Type 'help' for available commands.</div>
-            </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <span>v0id@desktop:~$</span>
-                <input type="text" id="terminal-input" style="background:transparent; border:none; color:white; outline:none; flex:1; font-family:monospace;" onkeydown="handleTerminalCommand(event)">
-            </div>
-        </div>
-    </div>
 
-    <script>
-        /* --- CLOCK --- */
-        setInterval(() => {
-            const now = new Date();
-            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('clock').innerText = now.toLocaleDateString('en-US', options);
-        }, 1000);
+<!-- =======================================================
+     FIREBASE
+======================================================== -->
 
-        /* --- DRAGGABLE DESKTOP ICONS (WITH CLICK/DRAG SEPARATION) --- */
-        let draggedDesktopIcon = null;
-        let desktopOffsetX = 0;
-        let desktopOffsetY = 0;
-        let hasMoved = false;
-        let startMouseX = 0;
-        let startMouseY = 0;
+<script type="module">
 
-        function loadDesktopIconPositions() {
-            const savedPositions = JSON.parse(localStorage.getItem('v0id_desktop_positions')) || {};
-            document.querySelectorAll('.desktop-area .app-icon').forEach(icon => {
-                const id = icon.id;
-                if (savedPositions[id]) {
-                    icon.style.top = savedPositions[id].top;
-                    icon.style.left = savedPositions[id].left;
-                }
-                icon.addEventListener('mousedown', startDragDesktopIcon);
-            });
-        }
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
-        function startDragDesktopIcon(e) {
-            if (e.button !== 0) return; // Only left click
-            draggedDesktopIcon = e.currentTarget;
-            const rect = draggedDesktopIcon.getBoundingClientRect();
-            desktopOffsetX = e.clientX - rect.left;
-            desktopOffsetY = e.clientY - rect.top;
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  limit
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-            startMouseX = e.clientX;
-            startMouseY = e.clientY;
-            hasMoved = false;
 
-            bringDesktopIconToFront(draggedDesktopIcon);
+const firebaseConfig = {
 
-            document.addEventListener('mousemove', dragDesktopIcon);
-            document.addEventListener('mouseup', stopDragDesktopIcon);
-            e.stopPropagation();
-        }
+  apiKey:
+    "AIzaSyAF7B7qYDrUi-C5_6LCjQfoXRhH95QmIio",
 
-        function dragDesktopIcon(e) {
-            if (!draggedDesktopIcon) return;
+  authDomain:
+    "v14a-bb967.firebaseapp.com",
 
-            // Check if user has moved the mouse past a tiny threshold (5px) to count as a drag
-            const distance = Math.hypot(e.clientX - startMouseX, e.clientY - startMouseY);
-            if (distance > 5) {
-                hasMoved = true;
-            }
+  projectId:
+    "v14a-bb967",
 
-            if (hasMoved) {
-                const desktopArea = document.getElementById('desktop-area');
-                const dRect = desktopArea.getBoundingClientRect();
+  storageBucket:
+    "v14a-bb967.firebasestorage.app",
 
-                let newX = e.clientX - dRect.left - desktopOffsetX;
-                let newY = e.clientY - dRect.top - desktopOffsetY;
+  messagingSenderId:
+    "226123648400",
 
-                newX = Math.max(0, Math.min(newX, dRect.width - 80));
-                newY = Math.max(0, Math.min(newY, dRect.height - 90));
+  appId:
+    "1:226123648400:web:089323e070661a87c4b715",
 
-                draggedDesktopIcon.style.left = `${newX}px`;
-                draggedDesktopIcon.style.top = `${newY}px`;
-            }
-        }
+  measurementId:
+    "G-R9Q24182LC"
 
-        function stopDragDesktopIcon(e) {
-            if (draggedDesktopIcon) {
-                if (hasMoved) {
-                    // Save custom position if it was actually dragged
-                    let savedPositions = JSON.parse(localStorage.getItem('v0id_desktop_positions')) || {};
-                    savedPositions[draggedDesktopIcon.id] = {
-                        top: draggedDesktopIcon.style.top,
-                        left: draggedDesktopIcon.style.left
-                    };
-                    localStorage.setItem('v0id_desktop_positions', JSON.stringify(savedPositions));
-                } else {
-                    // It was just a click, open the app!
-                    const appId = draggedDesktopIcon.getAttribute('data-app');
-                    if (appId) {
-                        openWindow(appId + '-window');
-                    }
-                }
-            }
-            draggedDesktopIcon = null;
-            document.removeEventListener('mousemove', dragDesktopIcon);
-            document.removeEventListener('mouseup', stopDragDesktopIcon);
-        }
+};
 
-        function bringDesktopIconToFront(icon) {
-            document.querySelectorAll('.desktop-area .app-icon').forEach(i => i.style.zIndex = 1);
-            icon.style.zIndex = 10;
-        }
 
-        function resetIconPositions() {
-            localStorage.removeItem('v0id_desktop_positions');
-        }
+const firebaseApp =
+  initializeApp(firebaseConfig);
 
-        loadDesktopIconPositions();
+const db =
+  getFirestore(firebaseApp);
 
-        /* --- DRAGGABLE / REORDERABLE DOCK ICONS --- */
-        const dockContainer = document.getElementById('dock-container');
-        let draggedDockItem = null;
 
-        dockContainer.querySelectorAll('.dock-icon').forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                draggedDockItem = item;
-                setTimeout(() => item.classList.add('dragging'), 0);
-            });
+/* =========================================================
+   COMMON
+========================================================= */
 
-            item.addEventListener('dragend', () => {
-                item.classList.remove('dragging');
-                draggedDockItem = null;
-                saveDockOrder();
-            });
+const MAX_NAME = 15;
+const MAX_MESSAGE = 1000;
+const MAX_ROOM = 32;
 
-            item.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                const afterElement = getDragAfterElement(dockContainer, e.clientX);
-                if (afterElement == null) {
-                    dockContainer.appendChild(draggedDockItem);
-                } else {
-                    dockContainer.insertBefore(draggedDockItem, afterElement);
-                }
-            });
-        });
+function loadJSON(key,fallback){
 
-        function getDragAfterElement(container, x) {
-            const draggableElements = [...container.querySelectorAll('.dock-icon:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = x - box.left - box.width / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
+  try{
 
-        function saveDockOrder() {
-            const order = [];
-            dockContainer.querySelectorAll('.dock-icon').forEach(el => {
-                order.push(el.id);
-            });
-            localStorage.setItem('v0id_dock_order', JSON.stringify(order));
-        }
+    const value =
+      JSON.parse(
+        localStorage.getItem(key)
+      );
 
-        function loadDockOrder() {
-            const savedOrder = JSON.parse(localStorage.getItem('v0id_dock_order'));
-            if (savedOrder) {
-                savedOrder.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) dockContainer.appendChild(el);
+    return value ?? fallback;
+
+  }catch{
+
+    return fallback;
+
+  }
+
+}
+
+
+function saveJSON(key,value){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(value)
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Storage error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   V0ID ID
+========================================================= */
+
+const PROFILE_KEY =
+  "homeClassroomProfile";
+
+const BLOCK_KEY =
+  "homeClassroomBlocked";
+
+const HIDDEN_KEY =
+  "homeClassroomHiddenMessages";
+
+
+const emojis = [
+
+  "😀","😎","🤖","👻",
+  "👽","💀","😺","🐱",
+
+  "🐶","🦊","🐸","🐼",
+  "🐨","🐯","🦁","🐵",
+
+  "🍕","🍔","🍩","🍪",
+  "🍓","🍉","🍇","🍎",
+
+  "⚡","🔥","💎","⭐",
+  "🌙","☀️","🌈","❄️",
+
+  "🎮","🎧","🎸","🚀",
+  "🛸","🎨","💻","📱"
+
+];
+
+
+function randomUserName(){
+
+  return (
+    "User_" +
+    Math.floor(
+      10000 +
+      Math.random() * 90000
+    )
+  );
+
+}
+
+
+let profile =
+  loadJSON(
+    PROFILE_KEY,
+    null
+  );
+
+
+if(
+  !profile ||
+  typeof profile !== "object"
+){
+
+  profile = {
+
+    name:
+      randomUserName(),
+
+    emoji:
+      "😀"
+
+  };
+
+}
+
+
+if(
+  typeof profile.name !== "string" ||
+  !profile.name.trim()
+){
+
+  profile.name =
+    randomUserName();
+
+}
+
+
+profile.name =
+  profile.name
+    .trim()
+    .slice(0,MAX_NAME);
+
+
+if(
+  !emojis.includes(profile.emoji)
+){
+
+  profile.emoji =
+    "😀";
+
+}
+
+
+saveJSON(
+  PROFILE_KEY,
+  profile
+);
+
+
+let blocked =
+  loadJSON(
+    BLOCK_KEY,
+    []
+  );
+
+
+if(
+  !Array.isArray(blocked)
+){
+
+  blocked = [];
+
+}
+
+
+blocked =
+  blocked
+    .filter(
+      x =>
+        x &&
+        typeof x.id === "string"
+    )
+    .slice(0,500);
+
+
+function saveBlocked(){
+
+  saveJSON(
+    BLOCK_KEY,
+    blocked
+  );
+
+}
+
+
+function isBlocked(id){
+
+  return blocked.some(
+    x =>
+      x.id === id
+  );
+
+}
+
+
+/* Profile UI */
+
+function updateProfileUI(){
+
+  document.getElementById(
+    "profileEmoji"
+  ).textContent =
+    profile.emoji;
+
+
+  document.getElementById(
+    "profileName"
+  ).textContent =
+    profile.name;
+
+
+  document.getElementById(
+    "displayNameInput"
+  ).value =
+    profile.name;
+
+
+  renderBlocked();
+
+}
+
+
+function saveProfile(){
+
+  let name =
+    document.getElementById(
+      "displayNameInput"
+    ).value
+      .trim()
+      .slice(0,MAX_NAME);
+
+
+  if(!name){
+
+    name =
+      randomUserName();
+
+  }
+
+
+  profile.name =
+    name;
+
+
+  saveJSON(
+    PROFILE_KEY,
+    profile
+  );
+
+
+  updateProfileUI();
+
+
+  showToast(
+    "Profile saved"
+  );
+
+}
+
+
+function buildEmojiPicker(){
+
+  const picker =
+    document.getElementById(
+      "emojiPicker"
+    );
+
+
+  picker.replaceChildren();
+
+
+  emojis.forEach(
+    emoji => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.type =
+        "button";
+
+      button.className =
+        "emoji-choice";
+
+      button.textContent =
+        emoji;
+
+
+      button.classList.toggle(
+        "selected",
+        emoji ===
+        profile.emoji
+      );
+
+
+      button.onclick =
+        () => {
+
+          profile.emoji =
+            emoji;
+
+
+          saveJSON(
+            PROFILE_KEY,
+            profile
+          );
+
+
+          buildEmojiPicker();
+          updateProfileUI();
+
+
+          showToast(
+            "Emoji changed"
+          );
+
+        };
+
+
+      picker.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
+
+function renderBlocked(){
+
+  const list =
+    document.getElementById(
+      "blockedList"
+    );
+
+
+  list.replaceChildren();
+
+
+  if(!blocked.length){
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+
+    empty.textContent =
+      "Nobody blocked.";
+
+
+    empty.style.color =
+      "#777";
+
+
+    list.appendChild(
+      empty
+    );
+
+
+    return;
+
+  }
+
+
+  blocked.forEach(
+    user => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "blocked-user";
+
+
+      const avatar =
+        document.createElement(
+          "span"
+        );
+
+
+      avatar.textContent =
+        emojis.includes(
+          user.emoji
+        )
+          ? user.emoji
+          : "😀";
+
+
+      const name =
+        document.createElement(
+          "span"
+        );
+
+
+      name.className =
+        "blocked-user-name";
+
+
+      name.textContent =
+        String(
+          user.name ||
+          "Unknown"
+        ).slice(
+          0,
+          MAX_NAME
+        );
+
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.className =
+        "small-button";
+
+      button.textContent =
+        "Unblock";
+
+
+      button.onclick =
+        () => {
+
+          blocked =
+            blocked.filter(
+              x =>
+                x.id !==
+                user.id
+            );
+
+
+          saveBlocked();
+
+          renderBlocked();
+
+          renderMessages();
+
+          showToast(
+            "User unblocked"
+          );
+
+        };
+
+
+      row.append(
+        avatar,
+        name,
+        button
+      );
+
+
+      list.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LOCAL ID
+========================================================= */
+
+const LOCAL_ID_KEY =
+  "homeClassroomLocalId";
+
+
+let localId =
+  localStorage.getItem(
+    LOCAL_ID_KEY
+  );
+
+
+if(!localId){
+
+  localId =
+    crypto?.randomUUID
+      ? crypto.randomUUID()
+      : Date.now()
+          .toString(36) +
+        Math.random()
+          .toString(36)
+          .slice(2);
+
+
+  localStorage.setItem(
+    LOCAL_ID_KEY,
+    localId
+  );
+
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+let currentChat =
+  "global";
+
+
+let currentLanRoom =
+  localStorage.getItem(
+    "homeClassroomLanRoom"
+  ) ||
+  "default";
+
+
+let allMessages =
+  [];
+
+
+let unsubscribe =
+  null;
+
+
+let hiddenMessages =
+  new Set(
+    loadJSON(
+      HIDDEN_KEY,
+      []
+    )
+  );
+
+
+function chatCollection(){
+
+  if(
+    currentChat ===
+    "global"
+  ){
+
+    return collection(
+      db,
+      "globalMessages"
+    );
+
+  }
+
+
+  return collection(
+    db,
+    "lanRooms",
+    currentLanRoom,
+    "messages"
+  );
+
+}
+
+
+function subscribeChat(){
+
+  if(unsubscribe){
+
+    unsubscribe();
+    unsubscribe =
+      null;
+
+  }
+
+
+  allMessages = [];
+
+
+  const container =
+    document.getElementById(
+      "messages"
+    );
+
+
+  container.replaceChildren();
+
+
+  try{
+
+    const q =
+      query(
+        chatCollection(),
+        orderBy(
+          "createdAt",
+          "asc"
+        ),
+        limit(100)
+      );
+
+
+    unsubscribe =
+      onSnapshot(
+        q,
+        snapshot => {
+
+          allMessages = [];
+
+
+          snapshot.forEach(
+            docSnap => {
+
+              const data =
+                docSnap.data();
+
+
+              if(
+                data &&
+                typeof data ===
+                "object"
+              ){
+
+                allMessages.push({
+
+                  id:
+                    docSnap.id,
+
+                  ...data
+
                 });
+
+              }
+
             }
+          );
+
+
+          document.getElementById(
+            "chatStatus"
+          ).textContent =
+            currentChat ===
+            "global"
+              ? "Global chat"
+              : "LAN: " +
+                currentLanRoom;
+
+
+          renderMessages();
+
+        },
+        error => {
+
+          console.error(
+            "Firestore error:",
+            error
+          );
+
+
+          document.getElementById(
+            "chatStatus"
+          ).textContent =
+            "Firebase error";
+
         }
-        loadDockOrder();
+      );
 
-        /* --- WINDOW & APP MANAGEMENT --- */
-        function openWindow(id) {
-            const win = document.getElementById(id);
-            if (!win) return;
-            win.classList.add('active');
-            bringToFront(win);
-            
-            const dockId = 'dock-' + id.replace('-window', '');
-            const dockEl = document.getElementById(dockId);
-            if (dockEl) dockEl.classList.add('running');
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+
+function renderMessages(){
+
+  const container =
+    document.getElementById(
+      "messages"
+    );
+
+
+  container.replaceChildren();
+
+
+  allMessages.forEach(
+    message => {
+
+      if(
+        !message ||
+        typeof message !==
+        "object"
+      ){
+
+        return;
+
+      }
+
+
+      const senderId =
+        typeof message.senderId ===
+        "string"
+          ? message.senderId
+          : "";
+
+
+      if(!senderId){
+
+        return;
+
+      }
+
+
+      if(
+        isBlocked(
+          senderId
+        )
+      ){
+
+        return;
+
+      }
+
+
+      if(
+        hiddenMessages.has(
+          message.id
+        )
+      ){
+
+        return;
+
+      }
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "message";
+
+
+      if(
+        senderId ===
+        localId
+      ){
+
+        row.classList.add(
+          "mine"
+        );
+
+      }
+
+
+      const avatar =
+        document.createElement(
+          "div"
+        );
+
+
+      avatar.className =
+        "message-avatar";
+
+
+      avatar.textContent =
+        emojis.includes(
+          message.emoji
+        )
+          ? message.emoji
+          : "😀";
+
+
+      const body =
+        document.createElement(
+          "div"
+        );
+
+
+      body.className =
+        "message-body";
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+
+      name.className =
+        "message-name";
+
+
+      name.textContent =
+        String(
+          message.name ||
+          "User"
+        ).slice(
+          0,
+          MAX_NAME
+        );
+
+
+      const text =
+        document.createElement(
+          "div"
+        );
+
+
+      text.className =
+        "message-text";
+
+
+      /*
+       * Never use innerHTML for Firebase content.
+       */
+
+      text.textContent =
+        String(
+          message.text ||
+          ""
+        ).slice(
+          0,
+          MAX_MESSAGE
+        );
+
+
+      body.append(
+        name,
+        text
+      );
+
+
+      row.append(
+        avatar,
+        body
+      );
+
+
+      if(
+        senderId !==
+        localId
+      ){
+
+        row.addEventListener(
+          "contextmenu",
+          event => {
+
+            event.preventDefault();
+
+
+            showUserMenu(
+              event.clientX,
+              event.clientY,
+              {
+                id:
+                  senderId,
+
+                name:
+                  String(
+                    message.name ||
+                    "User"
+                  ).slice(
+                    0,
+                    MAX_NAME
+                  ),
+
+                emoji:
+                  emojis.includes(
+                    message.emoji
+                  )
+                    ? message.emoji
+                    : "😀"
+
+              }
+            );
+
+          }
+        );
+
+      }
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  container.scrollTop =
+    container.scrollHeight;
+
+}
+
+
+/* Chat mode */
+
+document.getElementById(
+  "globalTab"
+).addEventListener(
+  "click",
+  () => {
+
+    currentChat =
+      "global";
+
+
+    document.getElementById(
+      "globalTab"
+    ).classList.add(
+      "active"
+    );
+
+
+    document.getElementById(
+      "lanTab"
+    ).classList.remove(
+      "active"
+    );
+
+
+    document.getElementById(
+      "lanControls"
+    ).style.display =
+      "none";
+
+
+    subscribeChat();
+
+  }
+);
+
+
+document.getElementById(
+  "lanTab"
+).addEventListener(
+  "click",
+  () => {
+
+    currentChat =
+      "lan";
+
+
+    document.getElementById(
+      "globalTab"
+    ).classList.remove(
+      "active"
+    );
+
+
+    document.getElementById(
+      "lanTab"
+    ).classList.add(
+      "active"
+    );
+
+
+    document.getElementById(
+      "lanControls"
+    ).style.display =
+      "block";
+
+
+    subscribeChat();
+
+  }
+);
+
+
+/* Join LAN */
+
+document.getElementById(
+  "lanRoom"
+).value =
+  currentLanRoom;
+
+
+document.getElementById(
+  "joinLanBtn"
+).addEventListener(
+  "click",
+  () => {
+
+    let room =
+      document.getElementById(
+        "lanRoom"
+      ).value
+        .trim()
+        .replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        )
+        .slice(
+          0,
+          MAX_ROOM
+        );
+
+
+    if(!room){
+
+      room =
+        "default";
+
+    }
+
+
+    currentLanRoom =
+      room;
+
+
+    localStorage.setItem(
+      "homeClassroomLanRoom",
+      room
+    );
+
+
+    subscribeChat();
+
+
+    showToast(
+      "Joined LAN room"
+    );
+
+  }
+);
+
+
+/* Send */
+
+document.getElementById(
+  "messageForm"
+).addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const input =
+      document.getElementById(
+        "messageInput"
+      );
+
+
+    const text =
+      input.value
+        .trim()
+        .slice(
+          0,
+          MAX_MESSAGE
+        );
+
+
+    if(!text){
+
+      return;
+
+    }
+
+
+    const button =
+      event.submitter;
+
+
+    if(button){
+
+      button.disabled =
+        true;
+
+    }
+
+
+    try{
+
+      const data = {
+
+        senderId:
+          localId,
+
+        name:
+          profile.name
+            .slice(
+              0,
+              MAX_NAME
+            ),
+
+        emoji:
+          emojis.includes(
+            profile.emoji
+          )
+            ? profile.emoji
+            : "😀",
+
+        text,
+
+        createdAt:
+          serverTimestamp()
+
+      };
+
+
+      if(
+        currentChat ===
+        "lan"
+      ){
+
+        data.room =
+          currentLanRoom;
+
+      }
+
+
+      await addDoc(
+        chatCollection(),
+        data
+      );
+
+
+      input.value =
+        "";
+
+
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+
+      showToast(
+        "Could not send message"
+      );
+
+
+    }finally{
+
+      if(button){
+
+        button.disabled =
+          false;
+
+      }
+
+    }
+
+  }
+);
+
+
+/* Clear chat LOCAL ONLY */
+
+document.getElementById(
+  "clearChatBtn"
+).addEventListener(
+  "click",
+  () => {
+
+    if(!allMessages.length){
+
+      showToast(
+        "There is nothing to clear"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      !confirm(
+        "Clear this chat on this device only?\n\n" +
+        "Nothing will be deleted from Firebase."
+      )
+    ){
+
+      return;
+
+    }
+
+
+    allMessages.forEach(
+      message => {
+
+        if(
+          message &&
+          message.id
+        ){
+
+          hiddenMessages.add(
+            message.id
+          );
+
         }
 
-        function closeWindow(id) {
-            const win = document.getElementById(id);
-            if (win) win.classList.remove('active');
-            const dockId = 'dock-' + id.replace('-window', '');
-            const dockEl = document.getElementById(dockId);
-            if (dockEl) dockEl.classList.remove('running');
-        }
+      }
+    );
 
-        function minimizeWindow(id) {
-            closeWindow(id);
-        }
 
-        function promptCloseApp(id, e) {
-            e.preventDefault();
-            if (confirm("Close application?")) {
-                closeWindow(id);
-            }
-        }
+    saveHiddenMessages();
 
-        function bringToFront(win) {
-            document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
-            win.style.zIndex = 105;
-        }
 
-        /* --- WINDOW DRAGGING --- */
-        let activeWindow = null, startX = 0, startY = 0, initialX = 0, initialY = 0;
+    renderMessages();
 
-        function startDrag(e, id) {
-            if (e.target.classList.contains('win-btn')) return;
-            activeWindow = document.getElementById(id);
-            startX = e.clientX;
-            startY = e.clientY;
-            const rect = activeWindow.getBoundingClientRect();
-            initialX = rect.left;
-            initialY = rect.top;
-            
-            bringToFront(activeWindow);
 
-            document.addEventListener('mousemove', dragWindow);
-            document.addEventListener('mouseup', stopDrag);
-        }
+    showToast(
+      "Chat cleared locally"
+    );
 
-        function dragWindow(e) {
-            if (!activeWindow) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            activeWindow.style.left = `${initialX + dx}px`;
-            activeWindow.style.top = `${initialY + dy}px`;
-        }
+  }
+);
 
-        function stopDrag() {
-            document.removeEventListener('mousemove', dragWindow);
-            document.removeEventListener('mouseup', stopDrag);
-            activeWindow = null;
-        }
 
-        /* --- CONTEXT MENU --- */
-        const contextMenu = document.getElementById('desktop-context-menu');
-        function showContextMenu(e) {
-            e.preventDefault();
-            contextMenu.style.display = 'flex';
-            contextMenu.style.left = `${e.clientX}px`;
-            contextMenu.style.top = `${e.clientY}px`;
-        }
-        window.addEventListener('click', () => {
-            contextMenu.style.display = 'none';
+function saveHiddenMessages(){
+
+  const values =
+    [...hiddenMessages]
+      .slice(-1000);
+
+
+  hiddenMessages =
+    new Set(
+      values
+    );
+
+
+  saveJSON(
+    HIDDEN_KEY,
+    values
+  );
+
+}
+
+
+/* User block menu */
+
+function showUserMenu(
+  x,
+  y,
+  user
+){
+
+  const menu =
+    document.getElementById(
+      "contextMenu"
+    );
+
+
+  menu.replaceChildren();
+
+
+  const item =
+    document.createElement(
+      "div"
+    );
+
+
+  item.className =
+    "context-item context-danger";
+
+
+  item.textContent =
+    isBlocked(
+      user.id
+    )
+      ? "Unblock User"
+      : "Block User";
+
+
+  item.onclick =
+    () => {
+
+      if(
+        isBlocked(
+          user.id
+        )
+      ){
+
+        blocked =
+          blocked.filter(
+            x =>
+              x.id !==
+              user.id
+          );
+
+
+        showToast(
+          "User unblocked"
+        );
+
+      }else{
+
+        blocked.push({
+          id:
+            String(
+              user.id
+            ).slice(
+              0,
+              100
+            ),
+
+          name:
+            String(
+              user.name ||
+              "User"
+            ).slice(
+              0,
+              MAX_NAME
+            ),
+
+          emoji:
+            emojis.includes(
+              user.emoji
+            )
+              ? user.emoji
+              : "😀"
         });
 
-        /* --- VIRTUAL FILES SYSTEM --- */
-        let virtualFiles = JSON.parse(localStorage.getItem('v0id_files')) || [
-            { name: 'Welcome.txt', type: 'text', content: 'Welcome to V0ID OS. You can create files and notes right here!' },
-            { name: 'Projects', type: 'folder', content: '' }
-        ];
 
-        function saveFiles() {
-            localStorage.setItem('v0id_files', JSON.stringify(virtualFiles));
+        showToast(
+          "User blocked"
+        );
+
+      }
+
+
+      saveBlocked();
+
+      renderBlocked();
+      renderMessages();
+
+      menu.style.display =
+        "none";
+
+    };
+
+
+  menu.appendChild(
+    item
+  );
+
+
+  menu.style.display =
+    "block";
+
+
+  requestAnimationFrame(
+    () => {
+
+      const width =
+        menu.offsetWidth ||
+        190;
+
+      const height =
+        menu.offsetHeight ||
+        50;
+
+
+      menu.style.left =
+        Math.max(
+          5,
+          Math.min(
+            x,
+            innerWidth -
+            width -
+            5
+          )
+        ) + "px";
+
+
+      menu.style.top =
+        Math.max(
+          5,
+          Math.min(
+            y,
+            innerHeight -
+            height -
+            5
+          )
+        ) + "px";
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   WINDOW DRAGGING
+========================================================= */
+
+let windowZ =
+  100;
+
+
+function openWindow(id){
+
+  const win =
+    document.getElementById(
+      id
+    );
+
+
+  if(!win){
+
+    return;
+
+  }
+
+
+  win.classList.add(
+    "active"
+  );
+
+
+  windowZ++;
+
+
+  win.style.zIndex =
+    windowZ;
+
+
+  if(
+    id ===
+    "chatWindow"
+  ){
+
+    subscribeChat();
+
+  }
+
+}
+
+
+function closeWindow(id){
+
+  const win =
+    document.getElementById(
+      id
+    );
+
+
+  if(!win){
+
+    return;
+
+  }
+
+
+  win.classList.remove(
+    "active"
+  );
+
+
+  if(
+    id ===
+    "chatWindow" &&
+    unsubscribe
+  ){
+
+    unsubscribe();
+
+    unsubscribe =
+      null;
+
+  }
+
+}
+
+
+window.openWindow =
+  openWindow;
+
+window.closeWindow =
+  closeWindow;
+
+
+document
+  .querySelectorAll(
+    "[data-open]"
+  )
+  .forEach(
+    element => {
+
+      element.addEventListener(
+        "click",
+        () =>
+          openWindow(
+            element.dataset.open
+          )
+      );
+
+    }
+  );
+
+
+document
+  .querySelectorAll(
+    "[data-close]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          closeWindow(
+            button.dataset.close
+          )
+      );
+
+    }
+  );
+
+
+document
+  .querySelectorAll(
+    "[data-minimize]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          closeWindow(
+            button.dataset.minimize
+          )
+      );
+
+    }
+  );
+
+
+document
+  .querySelectorAll(
+    "[data-maximize]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const win =
+            document.getElementById(
+              button.dataset.maximize
+            );
+
+
+          if(win){
+
+            win.classList.toggle(
+              "maximized"
+            );
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+document
+  .querySelectorAll(
+    ".window"
+  )
+  .forEach(
+    win => {
+
+      win.addEventListener(
+        "pointerdown",
+        () => {
+
+          windowZ++;
+
+          win.style.zIndex =
+            windowZ;
+
+        }
+      );
+
+
+      const bar =
+        win.querySelector(
+          ".titlebar"
+        );
+
+
+      if(!bar){
+
+        return;
+
+      }
+
+
+      let dragging =
+        false;
+
+      let offsetX =
+        0;
+
+      let offsetY =
+        0;
+
+
+      bar.addEventListener(
+        "pointerdown",
+        event => {
+
+          if(
+            event.target.closest(
+              ".traffic"
+            )
+          ){
+
+            return;
+
+          }
+
+
+          if(
+            win.classList.contains(
+              "maximized"
+            )
+          ){
+
+            return;
+
+          }
+
+
+          dragging =
+            true;
+
+
+          const rect =
+            win.getBoundingClientRect();
+
+
+          offsetX =
+            event.clientX -
+            rect.left;
+
+
+          offsetY =
+            event.clientY -
+            rect.top;
+
+
+          win.style.left =
+            rect.left +
+            "px";
+
+
+          win.style.top =
+            rect.top +
+            "px";
+
+
+          win.style.transform =
+            "none";
+
+
+          windowZ++;
+
+
+          win.style.zIndex =
+            windowZ;
+
+
+          try{
+
+            bar.setPointerCapture(
+              event.pointerId
+            );
+
+          }catch{}
+
+        }
+      );
+
+
+      bar.addEventListener(
+        "pointermove",
+        event => {
+
+          if(!dragging){
+
+            return;
+
+          }
+
+
+          const maxX =
+            Math.max(
+              0,
+              innerWidth -
+              win.offsetWidth
+            );
+
+
+          const maxY =
+            Math.max(
+              0,
+              innerHeight -
+              74 -
+              win.offsetHeight
+            );
+
+
+          win.style.left =
+            Math.max(
+              0,
+              Math.min(
+                maxX,
+                event.clientX -
+                offsetX
+              )
+            ) + "px";
+
+
+          win.style.top =
+            Math.max(
+              0,
+              Math.min(
+                maxY,
+                event.clientY -
+                offsetY
+              )
+            ) + "px";
+
+        }
+      );
+
+
+      const stopDrag =
+        event => {
+
+          if(!dragging){
+
+            return;
+
+          }
+
+
+          dragging =
+            false;
+
+
+          try{
+
+            bar.releasePointerCapture(
+              event.pointerId
+            );
+
+          }catch{}
+
+        };
+
+
+      bar.addEventListener(
+        "pointerup",
+        stopDrag
+      );
+
+
+      bar.addEventListener(
+        "pointercancel",
+        stopDrag
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+const notes =
+  document.getElementById(
+    "notesArea"
+  );
+
+
+notes.value =
+  localStorage.getItem(
+    "homeClassroomNotes"
+  ) || "";
+
+
+notes.addEventListener(
+  "input",
+  () =>
+    localStorage.setItem(
+      "homeClassroomNotes",
+      notes.value
+    )
+);
+
+
+/* =========================================================
+   CALCULATOR
+========================================================= */
+
+const calcDisplay =
+  document.getElementById(
+    "calcDisplay"
+  );
+
+
+const calcGrid =
+  document.getElementById(
+    "calculatorGrid"
+  );
+
+
+let expression =
+  "";
+
+
+[
+  "7","8","9","÷",
+  "4","5","6","×",
+  "1","2","3","−",
+  "0",".","C","+",
+  "(",
+  ")",
+  "="
+].forEach(
+  value => {
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+
+    button.type =
+      "button";
+
+
+    button.className =
+      "calc-key";
+
+
+    if(
+      ["÷","×","−","+"]
+        .includes(value)
+    ){
+
+      button.classList.add(
+        "operator"
+      );
+
+    }
+
+
+    button.textContent =
+      value;
+
+
+    button.onclick =
+      () => {
+
+        if(
+          value ===
+          "C"
+        ){
+
+          expression =
+            "";
+
+          calcDisplay.value =
+            "";
+
+          return;
+
         }
 
-        function renderFiles() {
-            const container = document.getElementById('files-grid-container');
-            container.innerHTML = '';
-            virtualFiles.forEach((file) => {
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerHTML = `
-                    <div class="file-icon">${file.type === 'folder' ? '📁' : '📄'}</div>
-                    <span class="file-name">${file.name}</span>
-                `;
-                item.ondblclick = () => {
-                    if (file.type === 'text') {
-                        openWindow('notepad-window');
-                        document.getElementById('notepad-text').value = file.content;
-                    }
-                };
-                container.appendChild(item);
-            });
-        }
-        renderFiles();
 
-        function createNewFolder() {
-            const name = prompt("Enter folder name:", "New Folder");
-            if (name) {
-                virtualFiles.push({ name, type: 'folder', content: '' });
-                saveFiles();
-                renderFiles();
+        if(
+          value ===
+          "="
+        ){
+
+          try{
+
+            const safe =
+              expression
+                .replaceAll(
+                  "×",
+                  "*"
+                )
+                .replaceAll(
+                  "÷",
+                  "/"
+                )
+                .replaceAll(
+                  "−",
+                  "-"
+                );
+
+
+            if(
+              !/^[0-9+\-*/().\s]+$/
+                .test(
+                  safe
+                )
+            ){
+
+              throw new Error();
+
             }
-        }
 
-        function createNewTextFile() {
-            const name = prompt("Enter file name:", "Document.txt");
-            if (name) {
-                virtualFiles.push({ name, type: 'text', content: '' });
-                saveFiles();
-                renderFiles();
+
+            const result =
+              Function(
+                '"use strict";return(' +
+                safe +
+                ')'
+              )();
+
+
+            if(
+              !Number.isFinite(
+                result
+              )
+            ){
+
+              throw new Error();
+
             }
+
+
+            expression =
+              String(
+                result
+              );
+
+
+            calcDisplay.value =
+              expression;
+
+          }catch{
+
+            expression =
+              "";
+
+            calcDisplay.value =
+              "Error";
+
+          }
+
+
+          return;
+
         }
 
-        /* --- SETTINGS TABS & THEMES --- */
-        function switchTab(e, tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
 
-        function switchTabDirect(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            if(tabId === 'tab-wallpaper') {
-                document.getElementById('btn-tab-wallpaper').classList.add('active');
+        expression +=
+          value;
+
+
+        calcDisplay.value =
+          expression;
+
+      };
+
+
+    calcGrid.appendChild(
+      button
+    );
+
+  }
+);
+
+
+/* =========================================================
+   WEB APP
+========================================================= */
+
+/*
+ * CorsProxy's current documentation uses:
+ *
+ * https://corsproxy.io/?url=<encoded target>
+ *
+ * A key can optionally be added by putting it in
+ * localStorage under "corsProxyKey".
+ *
+ * Example:
+ * localStorage.setItem("corsProxyKey","YOUR_KEY")
+ *
+ * This keeps the HTML usable without hard-coding
+ * anybody's private proxy key.
+ */
+
+const PROXY_BASE = "https://proxy.corsfix.com/?";
+const PROXY_URL_PARAM = "https://proxy.corsfix.com/?url=";
+
+const WEB_HISTORY_KEY =
+  "homeClassroomWebHistory";
+
+
+let webHistory =
+  loadJSON(
+    WEB_HISTORY_KEY,
+    []
+  );
+
+
+let webIndex =
+  -1;
+
+
+let currentWebURL =
+  "";
+
+
+function buildProxyURL(
+  target
+){
+
+  return (
+    PROXY_BASE +
+    target
+  );
+
+}
+
+
+/*
+ * Public/private local addresses are rejected before
+ * being sent to a public proxy.
+ */
+
+function isPrivateHost(
+  hostname
+){
+
+  const host =
+    hostname.toLowerCase();
+
+
+  if(
+    host === "localhost" ||
+    host === "localhost.localdomain" ||
+    host === "::1" ||
+    host === "0.0.0.0"
+  ){
+
+    return true;
+
+  }
+
+
+  const ipv4 =
+    host.match(
+      /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+    );
+
+
+  if(!ipv4){
+
+    return false;
+
+  }
+
+
+  const a =
+    Number(
+      ipv4[1]
+    );
+
+
+  const b =
+    Number(
+      ipv4[2]
+    );
+
+
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 169 && b === 254)
+  );
+
+}
+
+
+function normalizeWebURL(
+  input
+){
+
+  let value =
+    String(
+      input ||
+      ""
+    ).trim();
+
+
+  if(!value){
+
+    return null;
+
+  }
+
+
+  /*
+   * Anything that doesn't look like a URL
+   * becomes a DuckDuckGo search.
+   */
+
+  const looksLikeURL =
+    /^https?:\/\//i.test(value) ||
+    /^www\./i.test(value) ||
+    /^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(value);
+
+
+  if(!looksLikeURL){
+
+    return (
+      "https://duckduckgo.com/?q=" +
+      encodeURIComponent(
+        value
+      )
+    );
+
+  }
+
+
+  if(
+    /^www\./i.test(value)
+  ){
+
+    value =
+      "https://" +
+      value;
+
+  }
+
+
+  if(
+    !/^https?:\/\//i.test(value)
+  ){
+
+    value =
+      "https://" +
+      value;
+
+  }
+
+
+  try{
+
+    const url =
+      new URL(
+        value
+      );
+
+
+    if(
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ){
+
+      return null;
+
+    }
+
+
+    if(
+      isPrivateHost(
+        url.hostname
+      )
+    ){
+
+      return null;
+
+    }
+
+
+    return url.href;
+
+  }catch{
+
+    return null;
+
+  }
+
+}
+
+
+/*
+ * Rewrite the fetched page so that ordinary links and
+ * resources continue to pass through the proxy.
+ *
+ * This is intentionally conservative. JavaScript inside
+ * a target page is isolated in the iframe sandbox.
+ */
+
+function rewritePageURLs(
+  doc,
+  baseURL
+){
+
+  const attributes = [
+    ["a","href"],
+    ["link","href"],
+    ["img","src"],
+    ["script","src"],
+    ["iframe","src"],
+    ["source","src"],
+    ["video","src"],
+    ["audio","src"],
+    ["track","src"],
+    ["object","data"],
+    ["form","action"]
+  ];
+
+
+  attributes.forEach(
+    ([selector,attribute]) => {
+
+      doc
+        .querySelectorAll(
+          selector + "[" + attribute + "]"
+        )
+        .forEach(
+          node => {
+
+            const raw =
+              node.getAttribute(
+                attribute
+              );
+
+
+            if(
+              !raw ||
+              raw.startsWith("#") ||
+              raw.startsWith("data:") ||
+              raw.startsWith("blob:") ||
+              raw.startsWith("mailto:") ||
+              raw.startsWith("javascript:")
+            ){
+
+              return;
+
             }
-            document.getElementById(tabId).classList.add('active');
-        }
 
-        function setTheme(theme) {
-            if (theme === 'black') {
-                document.body.removeAttribute('data-theme');
-                document.body.setAttribute('data-theme', 'black');
-            } else {
-                document.body.setAttribute('data-theme', theme);
-            }
-            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
 
-        /* --- WALLPAPER MANAGER --- */
-        function setWallpaperPreset(type) {
-            if (type === 'fade') {
-                document.body.style.background = 'radial-gradient(circle at 50% 30%, #16161f 0%, #08080c 55%, #000000 100%)';
-                document.body.style.backgroundSize = 'cover';
-            } else if (type === 'midnight') {
-                document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
-                document.body.style.backgroundSize = 'cover';
-            }
-        }
+            try{
 
-        function applyWallpaperURL() {
-            const url = document.getElementById('wallpaper-url-input').value;
-            if (url) {
-                document.body.style.background = `url('${url}') no-repeat center center fixed`;
-                document.body.style.backgroundSize = 'cover';
-            }
-        }
+              const absolute =
+                new URL(
+                  raw,
+                  baseURL
+                ).href;
 
-        function handleWallpaperUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (file.type === 'text/html') {
-                    document.body.style.background = `url('data:text/html;base64,${btoa(e.target.result)}')`;
-                } else {
-                    document.body.style.background = `url('${e.target.result}') no-repeat center center fixed`;
-                    document.body.style.backgroundSize = 'cover';
-                }
-            };
-            reader.readAsDataURL(file);
-        }
 
-        /* --- NOTEPAD PERSISTENCE --- */
-        const notepad = document.getElementById('notepad-text');
-        notepad.value = localStorage.getItem('v0id_notes') || '';
-        notepad.addEventListener('input', () => {
-            localStorage.setItem('v0id_notes', notepad.value);
-        });
+              if(
+                !/^https?:\/\//i.test(
+                  absolute
+                )
+              ){
 
-        /* --- PAINT APP --- */
-        const canvas = document.getElementById('paint-canvas');
-        const ctx = canvas.getContext('2d');
-        let painting = false;
+                return;
 
-        function resizeCanvas() {
-            const parent = canvas.parentElement;
-            if(!parent) return;
-            canvas.width = parent.clientWidth;
-            canvas.height = parent.clientHeight - 44;
-            ctx.fillStyle = '#08080c';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        window.addEventListener('resize', resizeCanvas);
-        setTimeout(resizeCanvas, 150);
+              }
 
-        canvas.addEventListener('mousedown', () => painting = true);
-        canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
-        canvas.addEventListener('mousemove', drawCanvas);
 
-        function drawCanvas(e) {
-            if (!painting) return;
-            ctx.lineWidth = document.getElementById('paint-size').value;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = document.getElementById('paint-color').value;
+              if(
+                isPrivateHost(
+                  new URL(
+                    absolute
+                  ).hostname
+                )
+              ){
 
-            const rect = canvas.getBoundingClientRect();
-            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-        }
+                return;
 
-        function clearCanvas() {
-            ctx.fillStyle = '#08080c';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+              }
 
-        /* --- CHAT ROOM (ROBUST MULTIPLAYER VIA GUN.JS) --- */
-        const gun = Gun({
-            peers: [
-                'https://peer.wallie.io/gun',
-                'https://relay.peer.ooo/gun',
-                'https://maddiex.glitch.me/gun',
-                'https://gun-rs.iris.to/gun'
-            ],
-            localStorage: false
-        });
 
-        const chatRoom = gun.get('v0id_os_global_chat_room_v2');
-        const mySessionId = Math.random().toString(36).substring(2, 10);
-        const sessionStartTime = Date.now();
-        const loadedMessages = new Set();
+              /*
+               * Links use the proxy as well.
+               */
 
-        function appendChatMessage(text, isSelf, isSystem = false) {
-            const container = document.getElementById('chat-messages');
-            const msg = document.createElement('div');
-            msg.className = isSystem ? 'chat-msg' : (isSelf ? 'chat-msg self' : 'chat-msg');
-            if (isSystem) msg.style.color = '#ffbd2e';
-            msg.innerText = text;
-            container.appendChild(msg);
-            container.scrollTop = container.scrollHeight;
-        }
+              node.setAttribute(
+                attribute,
+                buildProxyURL(
+                  absolute
+                )
+              );
 
-        gun.on('hi', peer => {
-            const statusEl = document.querySelector('.chat-toolbar span');
-            if(statusEl) statusEl.innerText = '🟢 Connected to P2P Network';
-        });
+            }catch{}
 
-        chatRoom.map().once((data, id) => {
-            if (data && data.text && data.timestamp) {
-                if (data.timestamp >= sessionStartTime && !loadedMessages.has(id)) {
-                    loadedMessages.add(id);
-                    const isSelf = data.senderId === mySessionId;
-                    appendChatMessage(data.text, isSelf);
-                }
-            }
-        });
+          }
+        );
 
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input-box');
-            const text = input.value.trim();
-            if (!text) return;
+    }
+  );
 
-            chatRoom.set({
-                text: text,
-                timestamp: Date.now(),
-                senderId: mySessionId
-            });
 
-            input.value = '';
-        }
+  /*
+   * CSS url(...) values inside inline styles are harder
+   * to safely rewrite. External CSS files are already
+   * requested through the proxy.
+   */
 
-        function clearChat() {
-            document.getElementById('chat-messages').innerHTML = '';
-        }
+}
 
-        /* --- TERMINAL --- */
-        function handleTerminalCommand(e) {
-            if (e.key === 'Enter') {
-                const input = e.target;
-                const cmd = input.value.trim();
-                const output = document.getElementById('terminal-output');
-                
-                const line = document.createElement('div');
-                line.innerText = `v0id@desktop:~$ ${cmd}`;
-                output.appendChild(line);
 
-                if (cmd === 'help') {
-                    const res = document.createElement('div');
-                    res.innerText = "Available commands: clear, ls, date, about, reboot";
-                    output.appendChild(res);
-                } else if (cmd === 'clear') {
-                    output.innerHTML = '';
-                } else if (cmd === 'ls') {
-                    const res = document.createElement('div');
-                    res.innerText = "Desktop/ Documents/ System/ Settings.config";
-                    output.appendChild(res);
-                } else if (cmd === 'date') {
-                    const res = document.createElement('div');
-                    res.innerText = new Date().toString();
-                    output.appendChild(res);
-                } else if (cmd === 'reboot') {
-                    location.reload();
-                } else if (cmd !== '') {
-                    const res = document.createElement('div');
-                    res.innerText = `Command not found: ${cmd}`;
-                    output.appendChild(res);
-                }
-                input.value = '';
-                output.scrollTop = output.scrollHeight;
-            }
-        }
+async function fetchWebPage(url){
 
-        /* --- CLOAKING & PANIC KEY --- */
-        let currentPanicKey = 'Escape';
+  const directURL = PROXY_URL_PARAM + encodeURIComponent(url);
+  return {
+    body: "",
+    proxy: "Corsfix",
+    contentType: "text/html",
+    directURL
+  };
+}
+function escapeWebAttribute(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
+}
 
-        function captureNextKey(inputEl) {
-            const listener = (e) => {
-                e.preventDefault();
-                currentPanicKey = e.key;
-                inputEl.value = e.key;
-                window.removeEventListener('keydown', listener);
-            };
-            window.addEventListener('keydown', listener);
-        }
+/*
+ * Important performance optimization:
+ * don't parse and walk the whole document in the parent.
+ * Large websites can contain thousands of DOM nodes. Instead,
+ * make a few cheap string transforms and hand the result to the
+ * sandboxed iframe immediately.
+ */
+function prepareWebHTML(html, baseURL){
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key === currentPanicKey) {
-                const targetUrl = document.getElementById('panic-url-input').value || 'about:blank';
-                window.location.replace(targetUrl);
-            }
-        });
+  let output = String(html);
 
-        function toggleTabCloak(enabled) {
-            if (enabled) {
-                document.title = 'Home - Classroom';
-            } else {
-                document.title = 'Home - Classroom';
-            }
-        }
-    </script>
+  /* Remove page scripts and nested browsing contexts. */
+  output = output.replace(
+    /<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,
+    ""
+  );
+
+  output = output.replace(
+    /<noscript\b[^>]*>[\s\S]*?<\/noscript\s*>/gi,
+    ""
+  );
+
+  output = output.replace(
+    /<iframe\b[^>]*>[\s\S]*?<\/iframe\s*>/gi,
+    ""
+  );
+
+  output = output.replace(
+    /<(?:frame|frameset|object|embed|applet)\b[^>]*\/?>/gi,
+    ""
+  );
+
+  /* Remove refresh/CSP directives and speculative downloads. */
+  output = output.replace(
+    /<meta\b[^>]*http-equiv\s*=\s*["']?(?:refresh|content-security-policy)["']?[^>]*>/gi,
+    ""
+  );
+
+  output = output.replace(
+    /<link\b[^>]*rel\s*=\s*["']?(?:preload|prefetch|preconnect|dns-prefetch|modulepreload)["']?[^>]*>/gi,
+    ""
+  );
+
+  /* Remove inline event handlers. */
+  output = output.replace(
+    /\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi,
+    ""
+  );
+
+  /* Disable media players that often create long-running requests. */
+  output = output.replace(
+    /<(?:video|audio|source|track)\b[^>]*>[\s\S]*?<\/(?:video|audio|source|track)\s*>/gi,
+    ""
+  );
+
+  output = output.replace(
+    /<(?:video|audio|source|track)\b[^>]*\/?>/gi,
+    ""
+  );
+
+  /* Lazy images. */
+  output = output.replace(
+    /<img\b(?![^>]*\bloading\s*=)/gi,
+    '<img loading="lazy" decoding="async"'
+  );
+
+  /* Let ordinary CSS/images resolve at their real URL. */
+  const baseTag =
+    '<base href="' +
+    escapeWebAttribute(baseURL) +
+    '">';
+
+  if(/<head\b[^>]*>/i.test(output)){
+    output = output.replace(
+      /<head\b[^>]*>/i,
+      match => match + baseTag
+    );
+  }else{
+    output =
+      '<!doctype html><html><head>' +
+      baseTag +
+      '</head><body>' +
+      output +
+      '</body></html>';
+  }
+
+  /* Tiny navigation bridge. Original page JS stays removed. */
+  const bridge = `
+<script>
+(function(){
+  document.addEventListener("click",function(event){
+    var link=event.target.closest&&event.target.closest("a[href]");
+    if(!link)return;
+    var raw=link.getAttribute("href")||"";
+    if(!raw||raw[0]==="#"||/^(?:javascript:|mailto:|tel:|data:|blob:)/i.test(raw))return;
+    try{
+      var absolute=new URL(raw,document.baseURI).href;
+      var protocol=new URL(absolute).protocol;
+      if(protocol!=="http:"&&protocol!=="https:")return;
+      event.preventDefault();
+      parent.postMessage({type:"CLASSROOM_WEB_NAV",url:absolute},"*");
+    }catch(e){}
+  },true);
+})();
+<\/script>`;
+
+  if(/<\/body\s*>/i.test(output)){
+    output = output.replace(
+      /<\/body\s*>/i,
+      bridge + "</body>"
+    );
+  }else if(/<\/html\s*>/i.test(output)){
+    output = output.replace(
+      /<\/html\s*>/i,
+      bridge + "</html>"
+    );
+  }else{
+    output += bridge;
+  }
+
+  return output;
+}
+
+async function loadWebURL(input, addHistory = true){
+
+  const url = normalizeWebURL(input);
+
+  if(!url){
+
+    showWebError(
+      "That is not a valid HTTP/HTTPS URL."
+    );
+
+    return;
+  }
+
+  currentWebURL = url;
+
+  document.getElementById(
+    "webAddress"
+  ).value = url;
+
+  hideWebError();
+
+  document.getElementById(
+    "webHome"
+  ).style.display = "none";
+
+  const frame = document.getElementById("webFrame");
+
+  frame.style.display = "none";
+
+  if(addHistory){
+
+    webHistory =
+      webHistory.slice(
+        0,
+        webIndex + 1
+      );
+
+    webHistory.push(url);
+
+    webHistory =
+      webHistory.slice(-100);
+
+    webIndex =
+      webHistory.length - 1;
+
+    saveJSON(
+      WEB_HISTORY_KEY,
+      webHistory
+    );
+  }
+
+  updateWebNavigation();
+
+  try{
+
+    const frame = document.getElementById("webFrame");
+    const directURL = PROXY_URL_PARAM + encodeURIComponent(url);
+
+    frame.srcdoc = "";
+    frame.style.display = "block";
+    frame.src = directURL;
+
+    setWebStatus(
+      "Opening through Corsfix • " + new URL(url).hostname
+    );
+
+    frame.onload = () => {
+      setWebStatus(
+        "Loaded through Corsfix • " + new URL(url).hostname
+      );
+    };
+
+    frame.onerror = () => {
+      showWebError(
+        "The proxy or target site could not be displayed."
+      );
+      setWebStatus("Web page failed to display");
+    };
+
+  }catch(error){
+
+    console.error("Web navigation error:", error);
+    showWebError(
+      error.message || "The Web page could not be opened."
+    );
+    setWebStatus("Web error");
+  }
+}
+function setWebStatus(
+  text
+){
+
+  document.getElementById(
+    "webStatus"
+  ).textContent =
+    String(
+      text
+    );
+
+}
+
+
+function showWebError(
+  text
+){
+
+  document.getElementById(
+    "webErrorText"
+  ).textContent =
+    String(
+      text
+    );
+
+
+  document.getElementById(
+    "webError"
+  ).classList.add(
+    "show"
+  );
+
+}
+
+
+function hideWebError(){
+
+  document.getElementById(
+    "webError"
+  ).classList.remove(
+    "show"
+  );
+
+}
+
+
+function goWebHome(){
+
+  currentWebURL =
+    "";
+
+
+  document.getElementById(
+    "webAddress"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "webHome"
+  ).style.display =
+    "flex";
+
+
+  document.getElementById(
+    "webFrame"
+  ).style.display =
+    "none";
+
+
+  hideWebError();
+
+
+  setWebStatus(
+    "DuckDuckGo search • Proxy ready"
+  );
+
+
+  updateWebNavigation();
+
+}
+
+
+/* Search */
+
+document.getElementById(
+  "webHomeSearch"
+).addEventListener(
+  "submit",
+  event => {
+
+    event.preventDefault();
+
+
+    loadWebURL(
+      document.getElementById(
+        "webHomeInput"
+      ).value,
+      true
+    );
+
+  }
+);
+
+
+document
+  .querySelectorAll(
+    "[data-web-url]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          loadWebURL(
+            button.dataset.webUrl,
+            true
+          )
+      );
+
+    }
+);
+
+
+/* Address */
+
+document.getElementById(
+  "webGo"
+).addEventListener(
+  "click",
+  () => {
+
+    loadWebURL(
+      document.getElementById(
+        "webAddress"
+      ).value,
+      true
+    );
+
+  }
+);
+
+
+document.getElementById(
+  "webAddress"
+).addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key ===
+      "Enter"
+    ){
+
+      event.preventDefault();
+
+      loadWebURL(
+        event.currentTarget.value,
+        true
+      );
+
+    }
+
+  }
+);
+
+
+/* Back */
+
+document.getElementById(
+  "webBack"
+).addEventListener(
+  "click",
+  () => {
+
+    if(
+      webIndex <= 0
+    ){
+
+      return;
+
+    }
+
+
+    webIndex--;
+
+    loadWebURL(
+      webHistory[webIndex],
+      false
+    );
+
+  }
+);
+
+
+/* Forward */
+
+document.getElementById(
+  "webForward"
+).addEventListener(
+  "click",
+  () => {
+
+    if(
+      webIndex >=
+      webHistory.length - 1
+    ){
+
+      return;
+
+    }
+
+
+    webIndex++;
+
+    loadWebURL(
+      webHistory[webIndex],
+      false
+    );
+
+  }
+);
+
+
+/* Home */
+
+document.getElementById(
+  "webHomeButton"
+).addEventListener(
+  "click",
+  goWebHome
+);
+
+
+/* Reload */
+
+document.getElementById(
+  "webReload"
+).addEventListener(
+  "click",
+  () => {
+
+    if(
+      currentWebURL
+    ){
+
+      loadWebURL(
+        currentWebURL,
+        false
+      );
+
+    }else{
+
+      goWebHome();
+
+    }
+
+  }
+);
+
+
+/* Retry */
+
+document.getElementById(
+  "webRetry"
+).addEventListener(
+  "click",
+  () => {
+
+    if(
+      currentWebURL
+    ){
+
+      loadWebURL(
+        currentWebURL,
+        false
+      );
+
+    }
+
+  }
+);
+
+
+/* Bookmark */
+
+document.getElementById(
+  "webBookmark"
+).addEventListener(
+  "click",
+  () => {
+
+    if(
+      !currentWebURL
+    ){
+
+      showToast(
+        "Open a page first"
+      );
+
+      return;
+
+    }
+
+
+    const key =
+      "homeClassroomWebBookmarks";
+
+
+    const bookmarks =
+      loadJSON(
+        key,
+        []
+      );
+
+
+    if(
+      bookmarks.includes(
+        currentWebURL
+      )
+    ){
+
+      showToast(
+        "Already bookmarked"
+      );
+
+      return;
+
+    }
+
+
+    bookmarks.unshift(
+      currentWebURL
+    );
+
+
+    saveJSON(
+      key,
+      bookmarks.slice(
+        0,
+        100
+      )
+    );
+
+
+    showToast(
+      "Bookmarked"
+    );
+
+  }
+);
+
+
+/* Proxy test */
+
+document.getElementById(
+  "webTestProxy"
+).addEventListener(
+  "click",
+  () => {
+
+    const testURL = "https://example.com/";
+    const frame = document.getElementById("webFrame");
+    const proxyURL = PROXY_URL_PARAM + encodeURIComponent(testURL);
+
+    hideWebError();
+    document.getElementById("webHome").style.display = "none";
+    frame.style.display = "block";
+    setWebStatus("Testing Corsfix directly...");
+
+    let finished = false;
+
+    const timer = setTimeout(() => {
+      if(finished) return;
+      finished = true;
+      showWebError("Corsfix did not finish loading the test page within 8 seconds. The proxy may be busy or the target may be unavailable.");
+      setWebStatus("Proxy test timed out");
+    }, 8000);
+
+    frame.onload = () => {
+      if(finished) return;
+      finished = true;
+      clearTimeout(timer);
+      setWebStatus("Corsfix proxy test loaded");
+      showToast("Corsfix responded to the browser");
+    };
+
+    frame.src = proxyURL;
+  }
+);
+
+
+function updateWebNavigation(){
+
+  document.getElementById(
+    "webBack"
+  ).disabled =
+    webIndex <= 0;
+
+
+  document.getElementById(
+    "webForward"
+  ).disabled =
+    webIndex >=
+    webHistory.length - 1;
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function updateClock(){
+
+  document.getElementById(
+    "clock"
+  ).textContent =
+    new Date().toLocaleTimeString(
+      [],
+      {
+        hour:"numeric",
+        minute:"2-digit"
+      }
+    );
+
+}
+
+
+updateClock();
+
+setInterval(
+  updateClock,
+  1000
+);
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer =
+  null;
+
+
+function showToast(
+  message
+){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent =
+    String(
+      message
+    );
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer =
+    setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      2200
+    );
+
+}
+
+
+window.showToast =
+  showToast;
+
+
+/* =========================================================
+   GLOBAL CONTEXT MENU CLOSE
+========================================================= */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if(
+      !event.target.closest(
+        "#contextMenu"
+      )
+    ){
+
+      document.getElementById(
+        "contextMenu"
+      ).style.display =
+        "none";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+document.getElementById(
+  "globalTab"
+).click();
+
+buildEmojiPicker();
+updateProfileUI();
+updateWebNavigation();
+
+</script>
+
 </body>
 </html>
