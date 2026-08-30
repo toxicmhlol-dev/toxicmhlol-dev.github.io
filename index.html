@@ -73,10 +73,38 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   z-index:100;display:none;flex-direction:column;overflow:hidden;
   background:rgba(24,25,29,.95);border:1px solid rgba(255,255,255,.12);border-radius:17px;
   box-shadow:0 30px 100px rgba(0,0,0,.68);
+  overflow:hidden;
   backdrop-filter:blur(30px) saturate(130%);-webkit-backdrop-filter:blur(30px) saturate(130%)
 }
 .window.active{display:flex}
 .window.maximized{left:10px;top:10px;width:calc(100vw - 20px);height:calc(100vh - 84px);transform:none;border-radius:14px}
+
+/* Custom window resize handle */
+ .window-resize-handle{
+  position:absolute;
+  right:0;
+  bottom:0;
+  width:18px;
+  height:18px;
+  cursor:nwse-resize;
+  z-index:50;
+  touch-action:none;
+  pointer-events:auto;
+  user-select:none;
+}
+.window-resize-handle::after{
+  content:"";
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:9px;
+  height:9px;
+  border-right:2px solid rgba(255,255,255,.35);
+  border-bottom:2px solid rgba(255,255,255,.35);
+}
+.window.resizing,.window.resizing *{
+  user-select:none!important;
+}
 .titlebar{
   position:relative;height:50px;min-height:50px;display:flex;align-items:center;padding:0 15px;
   background:rgba(40,41,45,.83);border-bottom:1px solid rgba(255,255,255,.08);
@@ -142,6 +170,19 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 }
 .send-button:disabled{opacity:.55;cursor:default}
 
+/* ===== Web Browser Tabs ===== */
+.web-tabs{display:flex;align-items:stretch;gap:5px;padding:7px 7px 0;background:#151515;border-bottom:1px solid #303030;overflow-x:auto;flex:0 0 auto}
+.web-tab{display:flex;align-items:center;gap:8px;min-width:120px;max-width:240px;padding:8px 10px;border:1px solid transparent;border-bottom:0;border-radius:10px 10px 0 0;background:#23262c;color:#aeb4bf;cursor:pointer;font-size:11px}
+.web-tab.active{background:#2f333b;color:#fff;border-color:#3b4049}
+.web-tab-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.web-tab-close{width:18px;height:18px;display:grid;place-items:center;padding:0;border:0;border-radius:6px;background:transparent;color:#9ba2ae;cursor:pointer;font-size:13px;line-height:1}
+.web-tab-close:hover{background:#454a54;color:#fff}
+.web-new-tab{width:32px;height:30px;flex:0 0 auto;margin:0 0 5px;padding:0;border:1px solid #353943;border-radius:9px;background:#22252b;color:#fff;cursor:pointer;font-size:18px}
+.web-new-tab:hover{background:#333741}
+.web-frames{position:relative;flex:1;min-height:0;background:#000}
+.web-tab-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;display:none}
+.web-tab-frame.active{display:block}
+.web-address-input:focus{border-color:#5e8cff!important;background:#15171b!important}
 /* ===== Web App ===== */
 .web-app{width:100%;height:100%;display:flex;flex-direction:column;background:#f4f5f7;color:#13151a}
 .web-toolbar{
@@ -164,6 +205,23 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:7px;border:0;
   color:white;background:#397cf6;cursor:pointer
 }
+.web-provider-select{
+  height:34px;
+  max-width:118px;
+  padding:0 8px;
+  color:#eee;
+  background:#282828;
+  border:1px solid #3b3b3b;
+  border-radius:10px;
+  outline:none;
+  cursor:pointer;
+  font-size:11px;
+}
+
+.web-provider-select:focus{
+  border-color:#438bff;
+}
+
 .web-action{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;color:#ddd;background:#2f333b;cursor:pointer}
 .web-action:hover{background:#3a3f48}
 .web-status{
@@ -249,7 +307,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .calculator-window .calc-key{height:56px;min-height:56px;padding:0;border-radius:10px;font-size:16px}
 .calculator-window #calcDisplay{height:62px;font-size:25px}
 
-@media(max-width:700px){
   .calculator-window{width:calc(100vw - 24px)!important;height:500px!important;min-width:0}
 }
 
@@ -268,6 +325,55 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .chat-shell .messages{flex:1 1 auto!important;min-height:0!important}
 .chat-shell .composer{display:flex!important;flex:0 0 auto!important}
 
+
+
+/* ===== HTML 5 Games Folder ===== */
+.games-window{width:760px;height:600px;min-width:520px;min-height:420px}
+.games-folder{height:100%;display:flex;flex-direction:column;background:#111318;color:#eef1f7}
+.games-toolbar{display:flex;align-items:center;gap:9px;padding:12px;background:#1a1c22;border-bottom:1px solid rgba(255,255,255,.08)}
+.games-back,.games-restart{border:0;border-radius:9px;padding:8px 12px;background:#2a2e37;color:#fff;cursor:pointer}
+.games-title{font-weight:700;font-size:13px;flex:1}
+.games-note{font-size:10px;color:#8f96a5}
+.games-list{flex:1;overflow:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;align-content:start}
+.game-card{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:15px;background:linear-gradient(145deg,#20242d,#17191f);color:#fff;text-align:left;cursor:pointer;transition:.15s}
+.game-card:hover{transform:translateY(-2px);border-color:rgba(110,150,255,.5);background:linear-gradient(145deg,#252b36,#191c23)}
+.game-card-icon{width:50px;height:50px;border-radius:13px;display:grid;place-items:center;margin-bottom:10px;box-shadow:inset 0 1px rgba(255,255,255,.2)}
+.game-card-icon svg{width:29px;height:29px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.game-card h3{margin:0 0 5px;font-size:14px}.game-card p{margin:0;color:#949baa;font-size:11px;line-height:1.45}
+.game-screen{display:none;flex:1;min-height:0;flex-direction:column;background:#0c0e12}
+.game-screen.active{display:flex}
+.game-canvas-wrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px;background:#0b0d10}
+.game-canvas{max-width:100%;max-height:100%;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:#050607;image-rendering:pixelated}
+.game-hud{display:flex;align-items:center;justify-content:center;gap:18px;padding:9px 12px;background:#15171d;color:#d9deea;font-size:11px;border-top:1px solid rgba(255,255,255,.08)}
+.game-hud button{border:0;border-radius:8px;padding:7px 10px;background:#3478f6;color:#fff;cursor:pointer}
+.game-overlay{position:absolute;inset:12px;display:none;align-items:center;justify-content:center;background:rgba(5,7,9,.76);border-radius:12px;text-align:center}
+.game-overlay.show{display:flex}.game-overlay-box{padding:22px 24px;border:1px solid rgba(255,255,255,.1);border-radius:15px;background:#171a20;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.game-overlay-box h2{margin:0 0 7px}.game-overlay-box p{margin:0 0 13px;color:#9aa1af;font-size:12px}.game-overlay-box button{border:0;border-radius:9px;padding:9px 13px;background:#3478f6;color:#fff;cursor:pointer}
+.game-2048{width:min(430px,100%);aspect-ratio:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;border-radius:13px;background:#2d3139}
+.tile2048{display:grid;place-items:center;border-radius:9px;background:#454a55;font-size:20px;font-weight:700;color:#fff}.tile2048.v2{background:#5c6bc0}.tile2048.v4{background:#2f9e9e}.tile2048.v8{background:#cc7a2b}.tile2048.v16{background:#d6503f}.tile2048.v32{background:#c13d70}.tile2048.v64{background:#8f3fc2}.tile2048.v128{background:#5a54d6}.tile2048.v256{background:#3c74d9}.tile2048.v512{background:#2c9c74}.tile2048.v1024{background:#8c6d2e}.tile2048.v2048{background:#c99618}
+@media(max-width:700px){.games-window{width:calc(100vw - 12px)!important;height:calc(100vh - 88px)!important;min-width:0}.games-list{grid-template-columns:1fr}}
+
+</style>
+<style id="extraGamesAndAppFixes">
+.extra-game-screen{display:none;flex:1;min-height:0;flex-direction:column;background:#0c0e12}.extra-game-screen.active{display:flex}.extra-game-area{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}.extra-game-panel{width:min(620px,100%);padding:20px;border-radius:18px;background:#171a20;border:1px solid rgba(255,255,255,.09);box-shadow:0 20px 60px rgba(0,0,0,.35)}.extra-game-title{margin:0 0 7px;font-size:22px}.extra-game-sub{margin:0 0 16px;color:#9299a6;font-size:12px}.extra-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:14px}.extra-btn{border:0;border-radius:10px;padding:9px 14px;background:#3478f6;color:#fff;cursor:pointer;font-weight:600}.extra-btn.alt{background:#2b2f38}.extra-input{height:40px;padding:0 11px;border-radius:10px;border:1px solid #383d47;background:#0d0f13;color:#fff;outline:none}.ttt-board{display:grid;grid-template-columns:repeat(3,86px);gap:8px}.ttt-cell{width:86px;height:86px;border:0;border-radius:12px;background:#292e38;color:#fff;font-size:32px;font-weight:800;cursor:pointer}.rps-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.rps-choice{width:110px;height:76px;border:0;border-radius:14px;color:#fff;background:#292e38;cursor:pointer;font-size:14px}.clicker-button{width:170px;height:170px;border-radius:50%;border:0;background:linear-gradient(145deg,#43a6ff,#5d55ea);color:#fff;font-size:28px;font-weight:800;cursor:pointer;box-shadow:0 20px 50px rgba(70,100,240,.3)}.reaction-box{width:min(520px,100%);height:250px;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:#8b3c3c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;cursor:pointer;text-align:center;padding:20px}.reaction-box.ready{background:#2d9c66}.reaction-box.waiting{background:#a77728}.whack-grid{display:grid;grid-template-columns:repeat(3,90px);gap:9px}.hole{width:90px;height:90px;border-radius:50%;border:0;background:#242a33;color:#fff;cursor:pointer}.hole.active{background:#ef8d36;box-shadow:0 0 0 5px rgba(239,141,54,.18)}.lights-grid{display:grid;grid-template-columns:repeat(5,56px);gap:6px}.light-cell{width:56px;height:56px;border:0;border-radius:10px;background:#262b34;cursor:pointer}.light-cell.on{background:#5b69e8;box-shadow:0 0 18px rgba(91,105,232,.28)}.hangman-word{letter-spacing:8px;font-size:28px;font-weight:700;margin:12px 0}.hangman-letters{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px}.hangman-letter{width:38px;height:38px;border:0;border-radius:9px;background:#2a2e37;color:#fff;cursor:pointer}.hangman-letter:disabled{opacity:.35;cursor:default}.mole-status{font-size:14px;color:#cfd4dd}.dodger-canvas{width:min(520px,100%);max-height:430px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#050607;touch-action:none}.golf-canvas{width:min(560px,100%);border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#0d1e15;touch-action:none}.extra-stat{font-size:14px;color:#dce1ea}
+@media(max-width:700px){.ttt-board{grid-template-columns:repeat(3,70px)}.ttt-cell{width:70px;height:70px}.whack-grid{grid-template-columns:repeat(3,72px)}.hole{width:72px;height:72px}.lights-grid{grid-template-columns:repeat(5,44px)}.light-cell{width:44px;height:44px}}
+</style>
+
+<style>
+/* Robust OS-style window interaction layer */
+.window{user-select:none;}
+.window.os-active{display:flex;}
+.window.os-resizing,.window.os-resizing *{user-select:none!important;}
+.os-resize-edge{position:absolute;z-index:9999;background:transparent;}
+.os-resize-edge.n{left:8px;right:8px;top:0;height:9px;cursor:ns-resize;}
+.os-resize-edge.s{left:8px;right:8px;bottom:0;height:9px;cursor:ns-resize;}
+.os-resize-edge.w{left:0;top:8px;bottom:8px;width:9px;cursor:ew-resize;}
+.os-resize-edge.e{right:0;top:8px;bottom:8px;width:9px;cursor:ew-resize;}
+.os-resize-edge.nw{left:0;top:0;width:12px;height:12px;cursor:nwse-resize;}
+.os-resize-edge.ne{right:0;top:0;width:12px;height:12px;cursor:nesw-resize;}
+.os-resize-edge.sw{left:0;bottom:0;width:12px;height:12px;cursor:nesw-resize;}
+.os-resize-edge.se{right:0;bottom:0;width:12px;height:12px;cursor:nwse-resize;}
+.window.os-resizing .os-resize-edge{pointer-events:auto;}
 </style>
 </head>
 
@@ -277,7 +383,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
   <div class="desktop-icons">
 
-    <button class="desktop-app" data-open="webWindow" title="Web">
+    <button type="button" class="desktop-app" data-open="webWindow" title="Web">
       <div class="app-icon icon-web">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="8"/>
@@ -289,7 +395,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">Web</div>
     </button>
 
-    <button class="desktop-app" data-open="chatWindow" title="Chat">
+    <button type="button" class="desktop-app" data-open="chatWindow" title="Chat">
       <div class="app-icon icon-chat">
         <svg viewBox="0 0 24 24">
           <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.7-.8L4 20l1.5-3.8A7.4 7.4 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/>
@@ -299,7 +405,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">Chat</div>
     </button>
 
-    <button class="desktop-app" data-open="voidWindow" title="V0ID ID">
+    <button type="button" class="desktop-app" data-open="voidWindow" title="V0ID ID">
       <div class="app-icon icon-void">
         <svg viewBox="0 0 24 24">
           <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"/>
@@ -309,7 +415,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">V0ID ID</div>
     </button>
 
-    <button class="desktop-app" data-open="notesWindow" title="Notes">
+    <button type="button" class="desktop-app" data-open="notesWindow" title="Notes">
       <div class="app-icon icon-notes">
         <svg viewBox="0 0 24 24">
           <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
@@ -319,7 +425,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">Notes</div>
     </button>
 
-    <button class="desktop-app" data-open="calculatorWindow" title="Calculator">
+    <button type="button" class="desktop-app" data-open="calculatorWindow" title="Calculator">
       <div class="app-icon icon-calculator">
         <svg viewBox="0 0 24 24">
           <rect x="5" y="3" width="14" height="18" rx="3"/>
@@ -332,7 +438,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">Calculator</div>
     </button>
 
-    <button class="desktop-app" data-open="aboutWindow" title="About">
+    <button type="button" class="desktop-app" data-open="aboutWindow" title="About">
       <div class="app-icon icon-about">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="9"/>
@@ -342,12 +448,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="desktop-label">About</div>
     </button>
 
+
+
+    <button type="button" class="desktop-app" data-open="gamesWindow" title="HTML 5 Games">
+      <div class="app-icon" style="background:linear-gradient(135deg,#f6c453,#ef8f24);">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 6h7l2 2h9v10H3z"/>
+          <path d="M3 6V5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </div>
+      <div class="desktop-label">HTML 5 Games</div>
+    </button>
+
   </div>
 </main>
 
 <div id="taskbar">
 
-  <button class="task-icon icon-web" data-open="webWindow" title="Web">
+  <button type="button" class="task-icon icon-web" data-open="webWindow" title="Web">
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="8"/>
       <path d="M4 12h16"/>
@@ -356,20 +474,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </svg>
   </button>
 
-  <button class="task-icon icon-chat" data-open="chatWindow" title="Chat">
+  <button type="button" class="task-icon" data-open="gamesWindow" title="HTML 5 Games" style="background:linear-gradient(135deg,#f6c453,#ef8f24);">
+    <svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v10H3z"/><path d="M3 6V5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1"/></svg>
+  </button>
+
+  <button type="button" class="task-icon icon-chat" data-open="chatWindow" title="Chat">
     <svg viewBox="0 0 24 24">
       <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.7-.8L4 20l1.5-3.8A7.4 7.4 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/>
     </svg>
   </button>
 
-  <button class="task-icon icon-void" data-open="voidWindow" title="V0ID ID">
+  <button type="button" class="task-icon icon-void" data-open="voidWindow" title="V0ID ID">
     <svg viewBox="0 0 24 24">
       <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"/>
       <path d="m8 9 4 2 4-2M12 11v6"/>
     </svg>
   </button>
 
-  <button class="task-icon icon-notes" data-open="notesWindow" title="Notes">
+  <button type="button" class="task-icon icon-notes" data-open="notesWindow" title="Notes">
     <svg viewBox="0 0 24 24">
       <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
       <path d="M14 3v5h5M8 13h8M8 17h6"/>
@@ -382,7 +504,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
 <!-- ==================== WEB WINDOW ==================== -->
 <section class="window" id="webWindow">
-
   <div class="titlebar">
     <div class="traffic">
       <button class="close" data-close="webWindow" title="Close"></button>
@@ -391,139 +512,109 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
     <div class="window-title">Web</div>
   </div>
-
-  <div class="window-content">
-
-    <div class="web-app">
-
-      <div class="web-toolbar">
-
-        <button class="web-nav" id="webBack" title="Back">‹</button>
-        <button class="web-nav" id="webForward" title="Forward">›</button>
-        <button class="web-nav" id="webHomeButton" title="Home">⌂</button>
-        <button class="web-nav" id="webReload" title="Reload">↻</button>
-
-        <div class="web-address-wrap">
-          <span class="web-globe">◉</span>
-
-          <input
-            class="web-address"
-            id="webAddress"
-            placeholder="Search DuckDuckGo or enter URL"
-            autocomplete="off"
-            spellcheck="false">
-
-          <button class="web-go" id="webGo">↵</button>
-        </div>
-
-        <button class="web-action" id="webBookmark" title="Bookmark">☆</button>
-        <button class="web-action" id="webTestProxy" title="Test Proxy">✓</button>
-
-      </div>
-
-      <div class="web-status" id="webStatus">
-        DuckDuckGo search • Proxy ready
-      </div>
-
-      <div class="web-stage">
-
-        <div id="webHome">
-
-          <div class="web-home-inner">
-
-            <div class="web-brand">
-
-              <div class="web-brand-mark">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="8"/>
-                  <path d="M4 12h16"/>
-                  <path d="M12 4c2.2 2.2 3.2 5 3.2 8S14.2 17.8 12 20"/>
-                  <path d="M12 4c-2.2 2.2-3.2 5-3.2 8S9.8 17.8 12 20"/>
-                </svg>
-              </div>
-
-              <h1>Web</h1>
-              <p>Search DuckDuckGo or open a real URL.</p>
-
-            </div>
-
-            <form class="web-search" id="webHomeSearch">
-
-              <input
-                id="webHomeInput"
-                placeholder="Search DuckDuckGo..."
-                autocomplete="off">
-
-              <button type="submit">
-                Search
-              </button>
-
-            </form>
-
-            <div class="web-cards">
-
-              <button
-                class="web-card"
-                data-web-url="https://duckduckgo.com/">
-                <strong>DuckDuckGo</strong>
-                <small>duckduckgo.com</small>
-              </button>
-
-              <button
-                class="web-card"
-                data-web-url="https://example.com/">
-                <strong>Example</strong>
-                <small>example.com</small>
-              </button>
-
-              <button
-                class="web-card"
-                data-web-url="https://www.wikipedia.org/">
-                <strong>Wikipedia</strong>
-                <small>wikipedia.org</small>
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <iframe
-          id="webFrame"
-          title="Proxied web page"
-          sandbox="allow-scripts allow-forms allow-popups allow-modals"
-          referrerpolicy="no-referrer">
-        </iframe>
-
-
-        <div class="web-error" id="webError">
-
-          <div class="web-error-box">
-
-            <h2>
-              This page could not be loaded
-            </h2>
-
-            <p id="webErrorText">
-              The proxy or target site rejected the request.
-            </p>
-
-            <button id="webRetry">
-              Retry
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
+  <div class="window-resize-handle" aria-hidden="true"></div>
+  <div class="window-content" style="display:flex;flex-direction:column;min-height:0;background:#070707;">
+    <div class="web-tabs" id="webTabsBar">
+      <button class="web-new-tab" id="webNewTab" type="button" title="New tab">+</button>
     </div>
-
+    <div style="display:flex;align-items:center;gap:7px;padding:9px;background:#151515;border-bottom:1px solid #303030;flex:0 0 auto;">
+      <button id="scramjetBack" type="button" style="width:36px;height:34px;border:0;border-radius:10px;background:#282828;color:#fff;cursor:pointer;font-size:18px;" title="Back">‹</button>
+      <button id="scramjetForward" type="button" style="width:36px;height:34px;border:0;border-radius:10px;background:#282828;color:#fff;cursor:pointer;font-size:18px;" title="Forward">›</button>
+      <button id="scramjetReload" type="button" style="width:36px;height:34px;border:0;border-radius:10px;background:#282828;color:#fff;cursor:pointer;font-size:18px;" title="Reload active tab">↻</button>
+      <button id="scramjetHome" type="button" style="width:36px;height:34px;border:0;border-radius:10px;background:#282828;color:#fff;cursor:pointer;font-size:18px;" title="Home">⌂</button>
+      <div id="scramjetAddressWrap" style="position:relative;flex:1;min-width:0;">
+        <input id="scramjetAddress" autocomplete="off" spellcheck="false" placeholder="Search or enter URL" style="width:100%;height:34px;padding:0 12px;border:1px solid #333;border-radius:10px;background:#0d0d0d;color:#fff;outline:none;">
+      </div>
+      <button id="scramjetGo" type="button" style="height:34px;padding:0 12px;border:0;border-radius:10px;background:#3478f6;color:#fff;cursor:pointer;font-weight:600;">Go</button>
+      <div id="scramjetTabStatus" style="max-width:170px;padding:9px 10px;color:#9299a6;font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">Ready</div>
+    </div>
+    <div class="web-frames" id="webFrames"></div>
   </div>
+</section>
 
+
+<!-- ==================== HTML 5 GAMES FOLDER ==================== -->
+<section class="window games-window" id="gamesWindow" style="left:55%;top:50%;">
+  <div class="titlebar">
+    <div class="traffic">
+      <button class="close" data-close="gamesWindow"></button>
+      <button class="minimize" data-minimize="gamesWindow"></button>
+      <button class="maximize" data-maximize="gamesWindow"></button>
+    </div>
+    <div class="window-title">HTML 5 Games</div>
+  </div>
+  <div class="window-resize-handle" aria-hidden="true"></div>
+  <div class="window-content">
+    <div class="games-folder">
+      <div class="games-toolbar">
+        <button class="games-back" id="gamesBackBtn" type="button" style="display:none">Back</button>
+        <div class="games-title" id="gamesFolderTitle">HTML 5 Games</div>
+        <div class="games-note">Offline • Made with HTML5 + JavaScript</div>
+      </div>
+
+      <div class="games-list" id="gamesList">
+        <button class="game-card" type="button" data-game="snake">
+          <div class="game-card-icon" style="background:#2d9c66"><svg viewBox="0 0 24 24"><path d="M5 18c0-4 2-7 6-7h2c3 0 4-2 4-5"/><circle cx="17" cy="6" r="1.5"/><path d="M7 18h.01"/></svg></div>
+          <h3>Snake</h3><p>Eat the food, grow longer, and avoid yourself.</p>
+        </button>
+        <button class="game-card" type="button" data-game="breakout">
+          <div class="game-card-icon" style="background:#c94c5a"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="4" height="3" rx="1"/><rect x="10" y="4" width="4" height="3" rx="1"/><rect x="16" y="4" width="4" height="3" rx="1"/><path d="M6 17h12"/><circle cx="12" cy="13" r="2"/></svg></div>
+          <h3>Breakout</h3><p>Move the paddle and smash every brick.</p>
+        </button>
+        <button class="game-card" type="button" data-game="pong">
+          <div class="game-card-icon" style="background:#3469d4"><svg viewBox="0 0 24 24"><path d="M5 5v14M19 5v14M12 8v.01M12 12v.01M12 16v.01"/></svg></div>
+          <h3>Pong</h3><p>Classic paddle action against a simple CPU.</p>
+        </button>
+        <button class="game-card" type="button" data-game="memory">
+          <div class="game-card-icon" style="background:#9a54d7"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="6" height="6" rx="1"/><rect x="14" y="5" width="6" height="6" rx="1"/><rect x="4" y="13" width="6" height="6" rx="1"/><rect x="14" y="13" width="6" height="6" rx="1"/></svg></div>
+          <h3>Memory Match</h3><p>Find all matching pairs with as few moves as possible.</p>
+        </button>
+        <button class="game-card" type="button" data-game="2048">
+          <div class="game-card-icon" style="background:#e29b2d"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></div>
+          <h3>2048</h3><p>Merge equal tiles until you reach 2048.</p>
+        </button>
+        <button class="game-card" type="button" data-extra-game="tictactoe"><div class="game-card-icon" style="background:#4d7eea"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/><path d="M12 3v18M3 12h18"/></svg></div><h3>Tic-Tac-Toe</h3><p>Play X and O against a local CPU.</p></button>
+        <button class="game-card" type="button" data-extra-game="reaction"><div class="game-card-icon" style="background:#3aa77c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div><h3>Reaction Test</h3><p>Wait for green, then click as fast as you can.</p></button>
+        <button class="game-card" type="button" data-extra-game="clicker"><div class="game-card-icon" style="background:#8a58da"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 8v8M8 12h8"/></svg></div><h3>Clicker</h3><p>Get as many clicks as possible in 10 seconds.</p></button>
+        <button class="game-card" type="button" data-extra-game="rps"><div class="game-card-icon" style="background:#d85a68"><svg viewBox="0 0 24 24"><path d="M8 13V6a2 2 0 0 1 4 0v5M12 11V5a2 2 0 0 1 4 0v6M16 12v-5a2 2 0 0 1 4 0v8c0 4-2 6-6 6h-2c-3 0-5-2-7-5l-1-2a2 2 0 0 1 3-2l2 2V9a2 2 0 0 1 4 0v3"/></svg></div><h3>Rock Paper Scissors</h3><p>Play a first-to-five local match.</p></button>
+        <button class="game-card" type="button" data-extra-game="whack"><div class="game-card-icon" style="background:#d88435"><svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="6"/><circle cx="12" cy="14" r="2"/><path d="M8 8c1-2 5-3 8 0"/></svg></div><h3>Whack-a-Mole</h3><p>Hit the mole before the timer ends.</p></button>
+        <button class="game-card" type="button" data-extra-game="lights"><div class="game-card-icon" style="background:#5c67d9"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 1 3 11c-1 .6-3 2-3 4-0-2-2-3.4-3-4a6 6 0 0 1 3-11Z"/></svg></div><h3>Lights Out</h3><p>Turn every light off.</p></button>
+        <button class="game-card" type="button" data-extra-game="number"><div class="game-card-icon" style="background:#2f9a99"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div><h3>Number Guess</h3><p>Guess the secret number from 1 to 100.</p></button>
+        <button class="game-card" type="button" data-extra-game="hangman"><div class="game-card-icon" style="background:#9b5c4c"><svg viewBox="0 0 24 24"><path d="M5 20V4h10"/><path d="M15 4v4"/><circle cx="15" cy="11" r="3"/><path d="M15 14v5M11 17h8"/></svg></div><h3>Hangman</h3><p>Guess the offline word.</p></button>
+        <button class="game-card" type="button" data-extra-game="dodger"><div class="game-card-icon" style="background:#315ac8"><svg viewBox="0 0 24 24"><path d="M12 4 20 20H4z"/></svg></div><h3>Dodger</h3><p>Survive falling blocks.</p></button>
+        <button class="game-card" type="button" data-extra-game="golf"><div class="game-card-icon" style="background:#29845c"><svg viewBox="0 0 24 24"><circle cx="17" cy="17" r="3"/><path d="M17 14V5l-7 2 7 2"/><path d="M4 20h16"/></svg></div><h3>Mini Golf</h3><p>Drag to aim and putt.</p></button>
+      </div>
+
+      <div class="game-screen" id="snakeGame">
+        <div class="game-canvas-wrap"><canvas class="game-canvas" id="snakeCanvas" width="480" height="360"></canvas><div class="game-overlay" id="snakeOverlay"><div class="game-overlay-box"><h2 id="snakeOverlayTitle">Game Over</h2><p id="snakeOverlayText">Score: 0</p><button type="button" id="snakeRetry">Play Again</button></div></div></div>
+        <div class="game-hud"><span id="snakeScore">Score: 0</span><span>Arrow keys / WASD</span><button type="button" id="snakeRestart">Restart</button></div>
+      </div>
+
+      <div class="game-screen" id="breakoutGame">
+        <div class="game-canvas-wrap"><canvas class="game-canvas" id="breakoutCanvas" width="640" height="420"></canvas><div class="game-overlay" id="breakoutOverlay"><div class="game-overlay-box"><h2 id="breakoutOverlayTitle">Game Over</h2><p id="breakoutOverlayText">Score: 0</p><button type="button" id="breakoutRetry">Play Again</button></div></div></div>
+        <div class="game-hud"><span id="breakoutScore">Score: 0</span><span>Move with mouse or ← →</span><button type="button" id="breakoutRestart">Restart</button></div>
+      </div>
+
+      <div class="game-screen" id="pongGame">
+        <div class="game-canvas-wrap"><canvas class="game-canvas" id="pongCanvas" width="640" height="400"></canvas><div class="game-overlay" id="pongOverlay"><div class="game-overlay-box"><h2 id="pongOverlayTitle">Game Over</h2><p id="pongOverlayText">0 - 0</p><button type="button" id="pongRetry">Play Again</button></div></div></div>
+        <div class="game-hud"><span id="pongScore">0 - 0</span><span>W/S or ↑/↓</span><button type="button" id="pongRestart">Restart</button></div>
+      </div>
+
+      <div class="game-screen" id="memoryGame">
+        <div class="game-canvas-wrap"><div id="memoryBoard" style="width:min(520px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:9px;"></div></div>
+        <div class="game-hud"><span id="memoryMoves">Moves: 0</span><span id="memoryPairs">Pairs: 0 / 8</span><button type="button" id="memoryRestart">Restart</button></div>
+      </div>
+
+      <div class="game-screen" id="game2048">
+        <div class="game-canvas-wrap"><div class="game-2048" id="board2048"></div><div class="game-overlay" id="overlay2048"><div class="game-overlay-box"><h2 id="overlay2048Title">Game Over</h2><p id="overlay2048Text">Score: 0</p><button type="button" id="retry2048">Play Again</button></div></div></div>
+        <div class="game-hud"><span id="score2048">Score: 0</span><span>Arrow keys / WASD</span><button type="button" id="restart2048">Restart</button></div>
+      </div>
+      <div class="extra-game-screen" id="extraGameScreen">
+        <div class="extra-game-area" id="extraGameArea"></div>
+        <div class="game-hud"><span id="extraGameStatus">Offline</span><button type="button" id="extraGameBack">Back to Games</button></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ==================== CHAT WINDOW ==================== -->
@@ -537,6 +628,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
     <div class="window-title">Chat</div>
   </div>
+
+  <div class="window-resize-handle" aria-hidden="true"></div>
 
   <div class="window-content">
     <div class="chat-shell">
@@ -577,6 +670,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
     <div class="window-title">V0ID ID</div>
   </div>
+
+  <div class="window-resize-handle" aria-hidden="true"></div>
 
   <div class="window-content">
 
@@ -656,6 +751,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     <div class="window-title">Notes</div>
   </div>
 
+  <div class="window-resize-handle" aria-hidden="true"></div>
+
   <div class="window-content">
 
     <div class="notes-wrapper">
@@ -678,6 +775,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
     <div class="window-title">Calculator</div>
   </div>
+
+  <div class="window-resize-handle" aria-hidden="true"></div>
 
   <div class="window-content">
 
@@ -715,6 +814,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
     <div class="window-title">About</div>
   </div>
+
+  <div class="window-resize-handle" aria-hidden="true"></div>
 
   <div class="window-content">
 
@@ -2239,41 +2340,8 @@ function openWindow(id){
 
   }
 
-}
 
 
-function closeWindow(id){
-
-  const win =
-    document.getElementById(
-      id
-    );
-
-
-  if(!win){
-
-    return;
-
-  }
-
-
-  win.classList.remove(
-    "active"
-  );
-
-
-  if(
-    id ===
-    "chatWindow" &&
-    unsubscribe
-  ){
-
-    unsubscribe();
-
-    unsubscribe =
-      null;
-
-  }
 
 }
 
@@ -2791,1217 +2859,342 @@ let expression =
 
 
 /* =========================================================
-   WEB APP
+   WEB APP — SCRAMJET TABS
 ========================================================= */
 
-/*
- * CorsProxy's current documentation uses:
- *
- * https://corsproxy.io/?url=<encoded target>
- *
- * A key can optionally be added by putting it in
- * localStorage under "corsProxyKey".
- *
- * Example:
- * localStorage.setItem("corsProxyKey","YOUR_KEY")
- *
- * This keeps the HTML usable without hard-coding
- * anybody's private proxy key.
- */
+const SCRAMJET_STATIC_URL =
+  "https://hahahah67-pixel.github.io/scramjet-static/";
 
-const PROXY_BASE = "https://proxy.corsfix.com/?";
+const webTabsBar = document.getElementById("webTabsBar");
+const webFrames = document.getElementById("webFrames");
+const webNewTab = document.getElementById("webNewTab");
+const scramjetReload = document.getElementById("scramjetReload");
+const scramjetHome = document.getElementById("scramjetHome");
+const scramjetOpen = document.getElementById("scramjetOpen");
+const scramjetTabStatus = document.getElementById("scramjetTabStatus");
 
-const WEB_HISTORY_KEY =
-  "homeClassroomWebHistory";
+let webTabs = [];
+let activeWebTabId = null;
+let webTabCounter = 0;
+let webTabStateKey = "homeClassroomWebTabs";
 
+function createWebTab(options = {}){
+  const id = "web-tab-" + (++webTabCounter);
+  const tab = {
+    id,
+    title: options.title || "New Tab",
+    frame: null,
+    loaded: false,
+    address: options.address || "",
+    button: null
+  };
 
-let webHistory =
-  loadJSON(
-    WEB_HISTORY_KEY,
-    []
-  );
+  const tabButton = document.createElement("button");
+  tabButton.className = "web-tab";
+  tabButton.type = "button";
+  tabButton.dataset.tabId = id;
 
+  const title = document.createElement("span");
+  title.className = "web-tab-title";
+  title.textContent = tab.title;
 
-let webIndex =
-  -1;
+  const close = document.createElement("span");
+  close.className = "web-tab-close";
+  close.textContent = "×";
+  close.title = "Close tab";
 
+  close.addEventListener("click", (event) => {
+    event.stopPropagation();
+    closeWebTab(id);
+  });
 
-let currentWebURL =
-  "";
+  tabButton.append(title, close);
+  tabButton.addEventListener("click", () => activateWebTab(id));
 
+  webTabsBar.insertBefore(tabButton, webNewTab);
 
-function buildProxyURL(
-  target
-){
+  const frame = document.createElement("iframe");
+  frame.className = "web-tab-frame";
+  frame.title = "Scramjet Web Browser — " + id;
+  frame.referrerPolicy = "no-referrer";
+  frame.allow = "autoplay; fullscreen; picture-in-picture; clipboard-read; clipboard-write; downloads";
 
-  return (
-    PROXY_BASE +
-    target
-  );
-
-}
-
-
-/*
- * Public/private local addresses are rejected before
- * being sent to a public proxy.
- */
-
-function isPrivateHost(
-  hostname
-){
-
-  const host =
-    hostname.toLowerCase();
-
-
-  if(
-    host === "localhost" ||
-    host === "localhost.localdomain" ||
-    host === "::1" ||
-    host === "0.0.0.0"
-  ){
-
-    return true;
-
-  }
-
-
-  const ipv4 =
-    host.match(
-      /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-    );
-
-
-  if(!ipv4){
-
-    return false;
-
-  }
-
-
-  const a =
-    Number(
-      ipv4[1]
-    );
-
-
-  const b =
-    Number(
-      ipv4[2]
-    );
-
-
-  return (
-    a === 0 ||
-    a === 10 ||
-    a === 127 ||
-    (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168) ||
-    (a === 169 && b === 254)
-  );
-
-}
-
-
-function normalizeWebURL(
-  input
-){
-
-  let value =
-    String(
-      input ||
-      ""
-    ).trim();
-
-
-  if(!value){
-
-    return null;
-
-  }
-
-
-  /*
-   * Anything that doesn't look like a URL
-   * becomes a DuckDuckGo search.
-   */
-
-  const looksLikeURL =
-    /^https?:\/\//i.test(value) ||
-    /^www\./i.test(value) ||
-    /^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(value);
-
-
-  if(!looksLikeURL){
-
-    return (
-      "https://duckduckgo.com/?q=" +
-      encodeURIComponent(
-        value
-      )
-    );
-
-  }
-
-
-  if(
-    /^www\./i.test(value)
-  ){
-
-    value =
-      "https://" +
-      value;
-
-  }
-
-
-  if(
-    !/^https?:\/\//i.test(value)
-  ){
-
-    value =
-      "https://" +
-      value;
-
-  }
-
-
-  try{
-
-    const url =
-      new URL(
-        value
-      );
-
-
-    if(
-      url.protocol !== "http:" &&
-      url.protocol !== "https:"
-    ){
-
-      return null;
-
+  frame.addEventListener("load", () => {
+    tab.loaded = true;
+    if(activeWebTabId === id){
+      setWebStatus("Scramjet STATIC loaded");
     }
+  });
 
+  webFrames.appendChild(frame);
+  tab.frame = frame;
+  tab.button = tabButton;
 
-    if(
-      isPrivateHost(
-        url.hostname
-      )
-    ){
+  webTabs.push(tab);
 
-      return null;
+  activateWebTab(id);
 
-    }
-
-
-    return url.href;
-
-  }catch{
-
-    return null;
-
+  /* Load only the active tab so opening extra tabs doesn't start
+     several heavy proxy sessions at once. */
+  if(options.load !== false){
+    frame.src = SCRAMJET_STATIC_URL;
   }
 
+  return tab;
 }
 
+function activateWebTab(id){
+  const tab = webTabs.find(item => item.id === id);
+  if(!tab) return;
 
-/*
- * Rewrite the fetched page so that ordinary links and
- * resources continue to pass through the proxy.
- *
- * This is intentionally conservative. JavaScript inside
- * a target page is isolated in the iframe sandbox.
- */
+  activeWebTabId = id;
 
-function rewritePageURLs(
-  doc,
-  baseURL
-){
+  webTabs.forEach(item => {
+    item.button.classList.toggle("active", item.id === id);
+    item.frame.classList.toggle("active", item.id === id);
+  });
 
-  const attributes = [
-    ["a","href"],
-    ["link","href"],
-    ["img","src"],
-    ["script","src"],
-    ["iframe","src"],
-    ["source","src"],
-    ["video","src"],
-    ["audio","src"],
-    ["track","src"],
-    ["object","data"],
-    ["form","action"]
-  ];
-
-
-  attributes.forEach(
-    ([selector,attribute]) => {
-
-      doc
-        .querySelectorAll(
-          selector + "[" + attribute + "]"
-        )
-        .forEach(
-          node => {
-
-            const raw =
-              node.getAttribute(
-                attribute
-              );
-
-
-            if(
-              !raw ||
-              raw.startsWith("#") ||
-              raw.startsWith("data:") ||
-              raw.startsWith("blob:") ||
-              raw.startsWith("mailto:") ||
-              raw.startsWith("javascript:")
-            ){
-
-              return;
-
-            }
-
-
-            try{
-
-              const absolute =
-                new URL(
-                  raw,
-                  baseURL
-                ).href;
-
-
-              if(
-                !/^https?:\/\//i.test(
-                  absolute
-                )
-              ){
-
-                return;
-
-              }
-
-
-              if(
-                isPrivateHost(
-                  new URL(
-                    absolute
-                  ).hostname
-                )
-              ){
-
-                return;
-
-              }
-
-
-              /*
-               * Links use the proxy as well.
-               */
-
-              node.setAttribute(
-                attribute,
-                buildProxyURL(
-                  absolute
-                )
-              );
-
-            }catch{}
-
-          }
-        );
-
-    }
-  );
-
-
-  /*
-   * CSS url(...) values inside inline styles are harder
-   * to safely rewrite. External CSS files are already
-   * requested through the proxy.
-   */
-
-}
-
-
-async function fetchWebPage(url){
-
-  /* Primary: isomorphic-git public proxy. Current project docs still publish this endpoint. */
-  const proxies = [
-    {
-      name: "isomorphic-git CORS Proxy",
-      build: target =>
-        "https://cors.isomorphic-git.org/" + target,
-      read: response => response.text()
-    },
-    {
-      name: "CodeTabs",
-      build: target =>
-        "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(target),
-      read: response => response.text()
-    },
-    {
-      name: "ThingProxy",
-      build: target =>
-        "https://thingproxy.freeboard.io/fetch/" + target,
-      read: response => response.text()
-    }
-  ];
-
-  const errors = [];
-
-  for(const proxy of proxies){
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
-
-    try{
-      setWebStatus("Loading with " + proxy.name + "...");
-
-      const response = await fetch(
-        proxy.build(url),
-        {
-          method: "GET",
-          mode: "cors",
-          redirect: "follow",
-          signal: controller.signal,
-          cache: "no-store",
-          credentials: "omit"
-        }
-      );
-
-      if(!response.ok){
-        throw new Error("HTTP " + response.status);
-      }
-
-      const body = await proxy.read(response);
-
-      if(typeof body !== "string" || !body.trim()){
-        throw new Error("empty response");
-      }
-
-      return {
-        body,
-        proxy: proxy.name,
-        contentType: response.headers.get("content-type") || ""
-      };
-
-    }catch(error){
-      errors.push(
-        proxy.name + ": " +
-        (error.name === "AbortError" ? "timeout" : error.message)
-      );
-    }finally{
-      clearTimeout(timer);
-    }
+  if(!tab.frame.src || tab.frame.src === location.href){
+    tab.frame.src = SCRAMJET_STATIC_URL;
   }
 
-  throw new Error("Free proxies failed. " + errors.join(" | "));
-}
-function escapeWebAttribute(value){
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;");
-}
-
-/*
- * Important performance optimization:
- * don't parse and walk the whole document in the parent.
- * Large websites can contain thousands of DOM nodes. Instead,
- * make a few cheap string transforms and hand the result to the
- * sandboxed iframe immediately.
- */
-function prepareWebHTML(html, baseURL){
-
-  let output = String(html);
-
-  /* Remove page scripts and nested browsing contexts. */
-  output = output.replace(
-    /<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,
-    ""
-  );
-
-  output = output.replace(
-    /<noscript\b[^>]*>[\s\S]*?<\/noscript\s*>/gi,
-    ""
-  );
-
-  output = output.replace(
-    /<iframe\b[^>]*>[\s\S]*?<\/iframe\s*>/gi,
-    ""
-  );
-
-  output = output.replace(
-    /<(?:frame|frameset|object|embed|applet)\b[^>]*\/?>/gi,
-    ""
-  );
-
-  /* Remove refresh/CSP directives and speculative downloads. */
-  output = output.replace(
-    /<meta\b[^>]*http-equiv\s*=\s*["']?(?:refresh|content-security-policy)["']?[^>]*>/gi,
-    ""
-  );
-
-  output = output.replace(
-    /<link\b[^>]*rel\s*=\s*["']?(?:preload|prefetch|preconnect|dns-prefetch|modulepreload)["']?[^>]*>/gi,
-    ""
-  );
-
-  /* Remove inline event handlers. */
-  output = output.replace(
-    /\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi,
-    ""
-  );
-
-  /* Disable media players that often create long-running requests. */
-  output = output.replace(
-    /<(?:video|audio|source|track)\b[^>]*>[\s\S]*?<\/(?:video|audio|source|track)\s*>/gi,
-    ""
-  );
-
-  output = output.replace(
-    /<(?:video|audio|source|track)\b[^>]*\/?>/gi,
-    ""
-  );
-
-  /* Lazy images. */
-  output = output.replace(
-    /<img\b(?![^>]*\bloading\s*=)/gi,
-    '<img loading="lazy" decoding="async"'
-  );
-
-  /* Let ordinary CSS/images resolve at their real URL. */
-  const baseTag =
-    '<base href="' +
-    escapeWebAttribute(baseURL) +
-    '">';
-
-  if(/<head\b[^>]*>/i.test(output)){
-    output = output.replace(
-      /<head\b[^>]*>/i,
-      match => match + baseTag
-    );
-  }else{
-    output =
-      '<!doctype html><html><head>' +
-      baseTag +
-      '</head><body>' +
-      output +
-      '</body></html>';
+  const address = document.getElementById("scramjetAddress");
+  if(address){
+    address.value = tab.address || "";
+    address.classList.add("web-address-input");
   }
 
-  /* Tiny navigation bridge. Original page JS stays removed. */
-  const bridge = `
-<script>
-(function(){
-  document.addEventListener("click",function(event){
-    var link=event.target.closest&&event.target.closest("a[href]");
-    if(!link)return;
-    var raw=link.getAttribute("href")||"";
-    if(!raw||raw[0]==="#"||/^(?:javascript:|mailto:|tel:|data:|blob:)/i.test(raw))return;
-    try{
-      var absolute=new URL(raw,document.baseURI).href;
-      var protocol=new URL(absolute).protocol;
-      if(protocol!=="http:"&&protocol!=="https:")return;
-      event.preventDefault();
-      parent.postMessage({type:"CLASSROOM_WEB_NAV",url:absolute},"*");
-    }catch(e){}
-  },true);
-})();
-<\/script>`;
-
-  if(/<\/body\s*>/i.test(output)){
-    output = output.replace(
-      /<\/body\s*>/i,
-      bridge + "</body>"
-    );
-  }else if(/<\/html\s*>/i.test(output)){
-    output = output.replace(
-      /<\/html\s*>/i,
-      bridge + "</html>"
-    );
-  }else{
-    output += bridge;
-  }
-
-  return output;
+  setWebStatus(tab.loaded ? "Scramjet STATIC ready" : "Loading Scramjet STATIC…");
 }
 
-async function loadWebURL(input, addHistory = true){
+function closeWebTab(id){
+  const index = webTabs.findIndex(item => item.id === id);
+  if(index < 0) return;
 
-  const url = normalizeWebURL(input);
+  const tab = webTabs[index];
+  tab.button.remove();
+  tab.frame.remove();
+  webTabs.splice(index, 1);
 
-  if(!url){
-
-    showWebError(
-      "That is not a valid HTTP/HTTPS URL."
-    );
-
+  if(webTabs.length === 0){
+    createWebTab({title:"New Tab"});
     return;
   }
 
-  currentWebURL = url;
-
-  document.getElementById(
-    "webAddress"
-  ).value = url;
-
-  hideWebError();
-
-  document.getElementById(
-    "webHome"
-  ).style.display = "none";
-
-  const frame = document.getElementById("webFrame");
-
-  frame.style.display = "none";
-
-  if(addHistory){
-
-    webHistory =
-      webHistory.slice(
-        0,
-        webIndex + 1
-      );
-
-    webHistory.push(url);
-
-    webHistory =
-      webHistory.slice(-100);
-
-    webIndex =
-      webHistory.length - 1;
-
-    saveJSON(
-      WEB_HISTORY_KEY,
-      webHistory
-    );
+  if(activeWebTabId === id){
+    const next = webTabs[Math.min(index, webTabs.length - 1)];
+    activateWebTab(next.id);
   }
+}
 
-  updateWebNavigation();
+function getActiveWebTab(){
+  return webTabs.find(tab => tab.id === activeWebTabId) || null;
+}
 
+function setWebStatus(text){
+  if(scramjetTabStatus){
+    scramjetTabStatus.textContent = String(text);
+  }
+}
+
+function loadScramjetStatic(){
+  const tab = getActiveWebTab();
+  if(!tab) return;
+  tab.frame.src = SCRAMJET_STATIC_URL;
+  tab.loaded = false;
+  setWebStatus("Loading Scramjet STATIC…");
+}
+
+function reloadScramjetStatic(){
+  const tab = getActiveWebTab();
+  if(!tab) return;
   try{
+    tab.frame.contentWindow.location.reload();
+  }catch{
+    tab.frame.src = SCRAMJET_STATIC_URL;
+  }
+  setWebStatus("Reloading Scramjet STATIC…");
+}
 
-    const result =
-      await fetchWebPage(url);
+function openScramjetExternal(){
+  window.open(SCRAMJET_STATIC_URL, "_blank", "noopener,noreferrer");
+}
 
-    const type =
-      String(result.contentType || "")
-        .toLowerCase();
-
-    const looksHTML =
-      type.includes("text/html") ||
-      /<!doctype|<html[\\s>]|<body[\\s>]/i.test(result.body);
-
-    if(looksHTML){
-
-      /* No DOMParser: render the prepared document immediately. */
-      frame.srcdoc =
-        prepareWebHTML(
-          result.body,
-          url
-        );
-
-    }else{
-
-      const escaped =
-        String(result.body)
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;");
-
-      frame.srcdoc = `
-<!doctype html>
-<html>
-<body style="
-  margin:0;
-  padding:24px;
-  color:#111;
-  background:#fff;
-  font-family:ui-monospace,monospace;
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-">${escaped}</body>
-</html>`;
-
+if(webNewTab){
+  webNewTab.addEventListener("click", () => {
+    if(webTabs.length >= 8){
+      showToast("Maximum of 8 Web tabs");
+      return;
     }
+    createWebTab();
+  });
+}
 
-    frame.style.display = "block";
+if(scramjetReload){
+  scramjetReload.addEventListener("click", reloadScramjetStatic);
+}
 
-    /* Do not wait for iframe.onload; resource loads can be indefinite. */
-    setWebStatus(
-      "Loaded via " +
-      result.proxy +
-      " • " +
-      new URL(url).hostname
-    );
+if(scramjetHome){
+  scramjetHome.addEventListener("click", loadScramjetStatic);
+}
 
-  }catch(error){
+if(scramjetOpen){
+  scramjetOpen.addEventListener("click", openScramjetExternal);
+}
 
-    console.error(
-      "Web proxy error:",
-      error
-    );
+const scramjetAddress = document.getElementById("scramjetAddress");
+const scramjetGo = document.getElementById("scramjetGo");
+const scramjetBack = document.getElementById("scramjetBack");
+const scramjetForward = document.getElementById("scramjetForward");
 
-    showWebError(
-      error.message ||
-      "The free proxy could not fetch this page."
-    );
-
-    setWebStatus(
-      "Proxy error"
-    );
+function rememberActiveAddress(){
+  const tab = getActiveWebTab();
+  if(tab && scramjetAddress){
+    tab.address = scramjetAddress.value.trim();
   }
 }
-function setWebStatus(
-  text
-){
 
-  document.getElementById(
-    "webStatus"
-  ).textContent =
-    String(
-      text
-    );
+function goActiveAddress(){
+  const value = scramjetAddress?.value.trim();
+  const tab = getActiveWebTab();
+  if(!tab || !value) return;
+  tab.address = value;
 
+  /* The hosted Scramjet app owns its own browser URL/session.
+     Opening the typed destination inside the hosted app is safer
+     than inventing an undocumented proxy URL contract. */
+  try{
+    const url = /^https?:\/\//i.test(value) ? value : "https://www.google.com/search?q=" + encodeURIComponent(value);
+    window.open(url, "_blank", "noopener,noreferrer");
+    setWebStatus("Opened URL in a browser tab");
+  }catch{
+    setWebStatus("Could not open URL");
+  }
 }
 
-
-function showWebError(
-  text
-){
-
-  document.getElementById(
-    "webErrorText"
-  ).textContent =
-    String(
-      text
-    );
-
-
-  document.getElementById(
-    "webError"
-  ).classList.add(
-    "show"
-  );
-
-}
-
-
-function hideWebError(){
-
-  document.getElementById(
-    "webError"
-  ).classList.remove(
-    "show"
-  );
-
-}
-
-
-function goWebHome(){
-
-  currentWebURL =
-    "";
-
-
-  document.getElementById(
-    "webAddress"
-  ).value =
-    "";
-
-
-  document.getElementById(
-    "webHome"
-  ).style.display =
-    "flex";
-
-
-  document.getElementById(
-    "webFrame"
-  ).style.display =
-    "none";
-
-
-  hideWebError();
-
-
-  setWebStatus(
-    "DuckDuckGo search • Proxy ready"
-  );
-
-
-  updateWebNavigation();
-
-}
-
-
-/* Search */
-
-document.getElementById(
-  "webHomeSearch"
-).addEventListener(
-  "submit",
-  event => {
-
+scramjetGo?.addEventListener("click", goActiveAddress);
+scramjetAddress?.addEventListener("keydown", event => {
+  if(event.key === "Enter") {
     event.preventDefault();
-
-
-    loadWebURL(
-      document.getElementById(
-        "webHomeInput"
-      ).value,
-      true
-    );
-
+    goActiveAddress();
   }
-);
-
-
-document
-  .querySelectorAll(
-    "[data-web-url]"
-  )
-  .forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () =>
-          loadWebURL(
-            button.dataset.webUrl,
-            true
-          )
-      );
-
-    }
-);
-
-
-/* Address */
-
-document.getElementById(
-  "webGo"
-).addEventListener(
-  "click",
-  () => {
-
-    loadWebURL(
-      document.getElementById(
-        "webAddress"
-      ).value,
-      true
-    );
-
-  }
-);
-
-
-document.getElementById(
-  "webAddress"
-).addEventListener(
-  "keydown",
-  event => {
-
-    if(
-      event.key ===
-      "Enter"
-    ){
-
-      event.preventDefault();
-
-      loadWebURL(
-        event.currentTarget.value,
-        true
-      );
-
-    }
-
-  }
-);
-
-
-/* Back */
-
-document.getElementById(
-  "webBack"
-).addEventListener(
-  "click",
-  () => {
-
-    if(
-      webIndex <= 0
-    ){
-
-      return;
-
-    }
-
-
-    webIndex--;
-
-    loadWebURL(
-      webHistory[webIndex],
-      false
-    );
-
-  }
-);
-
-
-/* Forward */
-
-document.getElementById(
-  "webForward"
-).addEventListener(
-  "click",
-  () => {
-
-    if(
-      webIndex >=
-      webHistory.length - 1
-    ){
-
-      return;
-
-    }
-
-
-    webIndex++;
-
-    loadWebURL(
-      webHistory[webIndex],
-      false
-    );
-
-  }
-);
-
-
-/* Home */
-
-document.getElementById(
-  "webHomeButton"
-).addEventListener(
-  "click",
-  goWebHome
-);
-
-
-/* Reload */
-
-document.getElementById(
-  "webReload"
-).addEventListener(
-  "click",
-  () => {
-
-    if(
-      currentWebURL
-    ){
-
-      loadWebURL(
-        currentWebURL,
-        false
-      );
-
-    }else{
-
-      goWebHome();
-
-    }
-
-  }
-);
-
-
-/* Retry */
-
-document.getElementById(
-  "webRetry"
-).addEventListener(
-  "click",
-  () => {
-
-    if(
-      currentWebURL
-    ){
-
-      loadWebURL(
-        currentWebURL,
-        false
-      );
-
-    }
-
-  }
-);
-
-
-/* Bookmark */
-
-document.getElementById(
-  "webBookmark"
-).addEventListener(
-  "click",
-  () => {
-
-    if(
-      !currentWebURL
-    ){
-
-      showToast(
-        "Open a page first"
-      );
-
-      return;
-
-    }
-
-
-    const key =
-      "homeClassroomWebBookmarks";
-
-
-    const bookmarks =
-      loadJSON(
-        key,
-        []
-      );
-
-
-    if(
-      bookmarks.includes(
-        currentWebURL
-      )
-    ){
-
-      showToast(
-        "Already bookmarked"
-      );
-
-      return;
-
-    }
-
-
-    bookmarks.unshift(
-      currentWebURL
-    );
-
-
-    saveJSON(
-      key,
-      bookmarks.slice(
-        0,
-        100
-      )
-    );
-
-
-    showToast(
-      "Bookmarked"
-    );
-
-  }
-);
-
-
-/* Proxy test */
-
-document.getElementById(
-  "webTestProxy"
-).addEventListener(
-  "click",
-  async () => {
-
-    setWebStatus(
-      "Testing proxy..."
-    );
-
-
-    try{
-
-      const testURL =
-        "https://example.com/";
-
-
-      const result =
-        await fetchWebPage(
-          testURL
-        );
-
-
-      if(
-        !result.body
-      ){
-
-        throw new Error(
-          "Empty response"
-        );
-
-      }
-
-
-      setWebStatus(
-        "Proxy test passed"
-      );
-
-
-      showToast(
-        "Proxy is responding"
-      );
-
-    }catch(error){
-
-      console.error(
-        error
-      );
-
-
-      setWebStatus(
-        "Proxy test failed"
-      );
-
-
-      showWebError(
-        "Proxy test failed: " +
-        error.message
-      );
-
-    }
-
-  }
-);
-
-
-function updateWebNavigation(){
-
-  document.getElementById(
-    "webBack"
-  ).disabled =
-    webIndex <= 0;
-
-
-  document.getElementById(
-    "webForward"
-  ).disabled =
-    webIndex >=
-    webHistory.length - 1;
-
-}
-
+});
+
+scramjetBack?.addEventListener("click", () => {
+  const tab = getActiveWebTab();
+  if(!tab) return;
+  try{ tab.frame.contentWindow.history.back(); }catch{}
+});
+
+scramjetForward?.addEventListener("click", () => {
+  const tab = getActiveWebTab();
+  if(!tab) return;
+  try{ tab.frame.contentWindow.history.forward(); }catch{}
+});
+
+window.loadWebURL = function(){
+  loadScramjetStatic();
+};
+
+window.goWebHome = function(){
+  loadScramjetStatic();
+};
+
+/* Compatibility function used elsewhere in the desktop. */
+function updateWebNavigation(){}
+
+createWebTab({title:"New Tab"});
 
 /* =========================================================
-   CLOCK
+   HTML 5 GAMES — FULLY OFFLINE
 ========================================================= */
+(function initHTML5Games(){
+  const back=document.getElementById('gamesBackBtn');
+  const list=document.getElementById('gamesList');
+  const title=document.getElementById('gamesFolderTitle');
+  if(!back||!list)return;
+  const screens={snake:'snakeGame',breakout:'breakoutGame',pong:'pongGame',memory:'memoryGame','2048':'game2048'};
+  let activeGame=null;
 
-function updateClock(){
-
-  document.getElementById(
-    "clock"
-  ).textContent =
-    new Date().toLocaleTimeString(
-      [],
-      {
-        hour:"numeric",
-        minute:"2-digit"
-      }
-    );
-
-}
-
-
-updateClock();
-
-setInterval(
-  updateClock,
-  1000
-);
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer =
-  null;
-
-
-function showToast(
-  message
-){
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  toast.textContent =
-    String(
-      message
-    );
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  clearTimeout(
-    toastTimer
-  );
-
-
-  toastTimer =
-    setTimeout(
-      () => {
-
-        toast.classList.remove(
-          "show"
-        );
-
-      },
-      2200
-    );
-
-}
-
-
-window.showToast =
-  showToast;
-
-
-/* =========================================================
-   GLOBAL CONTEXT MENU CLOSE
-========================================================= */
-
-document.addEventListener(
-  "click",
-  event => {
-
-    if(
-      !event.target.closest(
-        "#contextMenu"
-      )
-    ){
-
-      document.getElementById(
-        "contextMenu"
-      ).style.display =
-        "none";
-
-    }
-
+  function showFolder(){
+    list.style.display='grid';
+    back.style.display='none';
+    title.textContent='HTML 5 Games';
+    Object.values(screens).forEach(id=>document.getElementById(id)?.classList.remove('active'));
+    activeGame=null;
+    stopAllLoops();
   }
-);
+  function showGame(name){
+    list.style.display='none'; back.style.display='block'; title.textContent=name==='2048'?'2048':name.charAt(0).toUpperCase()+name.slice(1);
+    Object.values(screens).forEach(id=>document.getElementById(id)?.classList.remove('active'));
+    document.getElementById(screens[name]).classList.add('active'); activeGame=name;
+    stopAllLoops();
+    if(name==='snake') startSnake();
+    if(name==='breakout') startBreakout();
+    if(name==='pong') startPong();
+    if(name==='memory') startMemory();
+    if(name==='2048') start2048();
+  }
+  list.querySelectorAll('[data-game]').forEach(btn=>btn.addEventListener('click',()=>showGame(btn.dataset.game)));
+  back.addEventListener('click',showFolder);
 
+  let rafs=[]; let intervals=[];
+  function trackRAF(id){rafs.push(id)} function trackInterval(id){intervals.push(id)}
+  function stopAllLoops(){rafs.forEach(cancelAnimationFrame);intervals.forEach(clearInterval);rafs=[];intervals=[];}
+
+  /* Snake */
+  const sc=document.getElementById('snakeCanvas'), sx=sc.getContext('2d');
+  let snake=[], food={x:0,y:0}, dir={x:1,y:0}, nextDir={x:1,y:0}, snakeScore=0, snakeRunning=false;
+  function resetSnake(){snake=[{x:8,y:6},{x:7,y:6},{x:6,y:6}];dir={x:1,y:0};nextDir={x:1,y:0};snakeScore=0;placeSnakeFood();snakeRunning=true;document.getElementById('snakeScore').textContent='Score: 0';document.getElementById('snakeOverlay').classList.remove('show');}
+  function placeSnakeFood(){do{food={x:Math.floor(Math.random()*24),y:Math.floor(Math.random()*18)}}while(snake.some(p=>p.x===food.x&&p.y===food.y));}
+  function drawSnake(){sx.fillStyle='#0a0c0f';sx.fillRect(0,0,480,360);const cw=20; sx.fillStyle='#ef5350';sx.fillRect(food.x*cw+4,food.y*cw+4,12,12);snake.forEach((p,i)=>{sx.fillStyle=i===0?'#59e391':'#2db36c';sx.fillRect(p.x*cw+2,p.y*cw+2,16,16)});}
+  function snakeLoop(){if(!snakeRunning)return;dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(head.x<0||head.x>=24||head.y<0||head.y>=18||snake.some(p=>p.x===head.x&&p.y===head.y)){snakeRunning=false;document.getElementById('snakeOverlayTitle').textContent='Game Over';document.getElementById('snakeOverlayText').textContent='Score: '+snakeScore;document.getElementById('snakeOverlay').classList.add('show');drawSnake();return;}snake.unshift(head);if(head.x===food.x&&head.y===food.y){snakeScore++;document.getElementById('snakeScore').textContent='Score: '+snakeScore;placeSnakeFood()}else snake.pop();drawSnake();}
+  function startSnake(){resetSnake();drawSnake();trackInterval(setInterval(snakeLoop,120));}
+  function snakeKey(e){if(!activeGame||activeGame!=='snake')return;const k=e.key.toLowerCase();const m={arrowup:{x:0,y:-1},w:{x:0,y:-1},arrowdown:{x:0,y:1},s:{x:0,y:1},arrowleft:{x:-1,y:0},a:{x:-1,y:0},arrowright:{x:1,y:0},d:{x:1,y:0}}[k];if(m&&!(m.x===-dir.x&&m.y===-dir.y)){nextDir=m;e.preventDefault()}}
+  window.addEventListener('keydown',snakeKey); document.getElementById('snakeRestart').onclick=()=>startSnake(); document.getElementById('snakeRetry').onclick=()=>startSnake();
+
+  /* Breakout */
+  const bc=document.getElementById('breakoutCanvas'), bx=bc.getContext('2d');
+  let breakout={};
+  function resetBreakout(){breakout={ball:{x:320,y:330,dx:3,dy:-3},paddleX:270,paddleW:100,score:0,bricks:[]};for(let r=0;r<5;r++)for(let c=0;c<9;c++)breakout.bricks.push({x:18+c*68,y:25+r*24,w:58,h:16,alive:true});document.getElementById('breakoutScore').textContent='Score: 0';document.getElementById('breakoutOverlay').classList.remove('show')}
+  function drawBreakout(){bx.fillStyle='#07090c';bx.fillRect(0,0,640,420);breakout.bricks.forEach((b,i)=>{if(b.alive){bx.fillStyle=['#55c47d','#4c9ce8','#9d6bd6','#e66d77','#ef9b4e'][Math.floor(i/9)%5];bx.fillRect(b.x,b.y,b.w,b.h)}});bx.fillStyle='#f2f4f7';bx.fillRect(breakout.paddleX,390,breakout.paddleW,10);bx.beginPath();bx.arc(breakout.ball.x,breakout.ball.y,7,0,Math.PI*2);bx.fill()}
+  function breakoutLoop(){const g=breakout,b=g.ball; b.x+=b.dx;b.y+=b.dy;if(b.x<7||b.x>633)b.dx*=-1;if(b.y<7)b.dy*=-1;if(b.y>378&&b.y<405&&b.x>g.paddleX&&b.x<g.paddleX+g.paddleW){b.dy=-Math.abs(b.dy);b.y=378}let hit=false;g.bricks.forEach(br=>{if(br.alive&&b.x>br.x&&b.x<br.x+br.w&&b.y>br.y&&b.y<br.y+br.h){br.alive=false;b.dy*=-1;g.score++;hit=true}});if(hit)document.getElementById('breakoutScore').textContent='Score: '+g.score;if(g.bricks.every(br=>!br.alive)){document.getElementById('breakoutOverlayTitle').textContent='You Win!';document.getElementById('breakoutOverlayText').textContent='Score: '+g.score;document.getElementById('breakoutOverlay').classList.add('show');return}if(b.y>430){document.getElementById('breakoutOverlayTitle').textContent='Game Over';document.getElementById('breakoutOverlayText').textContent='Score: '+g.score;document.getElementById('breakoutOverlay').classList.add('show');return}drawBreakout();trackRAF(requestAnimationFrame(breakoutLoop))}
+  function movePaddle(x){if(activeGame!=='breakout')return;const r=bc.getBoundingClientRect(),scale=bc.width/r.width;breakout.paddleX=Math.max(0,Math.min(640-breakout.paddleW,(x-r.left)*scale-breakout.paddleW/2))}
+  bc.addEventListener('mousemove',e=>movePaddle(e.clientX)); window.addEventListener('keydown',e=>{if(activeGame!=='breakout')return;if(e.key==='ArrowLeft')breakout.paddleX=Math.max(0,breakout.paddleX-28);if(e.key==='ArrowRight')breakout.paddleX=Math.min(640-breakout.paddleW,breakout.paddleX+28)});
+  function startBreakout(){stopAllLoops();resetBreakout();drawBreakout();trackRAF(requestAnimationFrame(breakoutLoop))} document.getElementById('breakoutRestart').onclick=()=>startBreakout();document.getElementById('breakoutRetry').onclick=()=>startBreakout();
+
+  /* Pong */
+  const pc=document.getElementById('pongCanvas'), px=pc.getContext('2d'); let pong={};
+  function resetPong(){pong={ball:{x:320,y:200,dx:4,dy:3},pY:160,cY:160,player:0,cpu:0};document.getElementById('pongOverlay').classList.remove('show');document.getElementById('pongScore').textContent='0 - 0'}
+  function drawPong(){px.fillStyle='#07090c';px.fillRect(0,0,640,400);px.strokeStyle='#2e3440';px.setLineDash([8,10]);px.beginPath();px.moveTo(320,0);px.lineTo(320,400);px.stroke();px.setLineDash([]);px.fillStyle='#fff';px.fillRect(18,pong.pY,10,80);px.fillRect(612,pong.cY,10,80);px.beginPath();px.arc(pong.ball.x,pong.ball.y,8,0,Math.PI*2);px.fill()}
+  function pongLoop(){const g=pong,b=g.ball;b.x+=b.dx;b.y+=b.dy;if(b.y<8||b.y>392)b.dy*=-1;g.cY+=(b.y-40-g.cY)*0.06;if(b.x<38&&b.y>g.pY&&b.y<g.pY+80&&b.dx<0){b.dx=Math.abs(b.dx)+0.15;b.x=39;b.dy+=((b.y-(g.pY+40))/40)*0.8}if(b.x>602&&b.y>g.cY&&b.y<g.cY+80&&b.dx>0){b.dx=-Math.abs(b.dx)-0.15;b.x=601;b.dy+=((b.y-(g.cY+40))/40)*0.8}if(b.x<-10){g.cpu++;b.x=320;b.y=200;b.dx=4;b.dy=3}if(b.x>650){g.player++;b.x=320;b.y=200;b.dx=-4;b.dy=-3}document.getElementById('pongScore').textContent=g.player+' - '+g.cpu;if(g.player>=7||g.cpu>=7){document.getElementById('pongOverlayTitle').textContent=g.player>g.cpu?'You Win!':'CPU Wins';document.getElementById('pongOverlayText').textContent=g.player+' - '+g.cpu;document.getElementById('pongOverlay').classList.add('show');return}drawPong();trackRAF(requestAnimationFrame(pongLoop))}
+  window.addEventListener('keydown',e=>{if(activeGame!=='pong')return;if(e.key.toLowerCase()==='w'||e.key==='ArrowUp'){pong.pY=Math.max(0,pong.pY-22);e.preventDefault()}if(e.key.toLowerCase()==='s'||e.key==='ArrowDown'){pong.pY=Math.min(320,pong.pY+22);e.preventDefault()}});
+  function startPong(){stopAllLoops();resetPong();drawPong();trackRAF(requestAnimationFrame(pongLoop))}document.getElementById('pongRestart').onclick=()=>startPong();document.getElementById('pongRetry').onclick=()=>startPong();
+
+  /* Memory Match */
+  let memoryState={cards:[],flipped:[],moves:0,pairs:0,locked:false}; const memorySymbols=['A','B','C','D','E','F','G','H'];
+  function startMemory(){stopAllLoops();const doubled=[...memorySymbols,...memorySymbols].sort(()=>Math.random()-.5);memoryState={cards:doubled.map((v,i)=>({v,i,open:false,matched:false})),flipped:[],moves:0,pairs:0,locked:false};renderMemory()}
+  function renderMemory(){const board=document.getElementById('memoryBoard');board.innerHTML='';memoryState.cards.forEach(card=>{const b=document.createElement('button');b.type='button';b.style.cssText='aspect-ratio:1;border:0;border-radius:12px;background:'+(card.open||card.matched?'#5d64d8':'#282d36')+';color:#fff;font-size:22px;font-weight:700;cursor:pointer';b.textContent=card.open||card.matched?card.v:'?';b.onclick=()=>flipMemory(card.i);board.appendChild(b)});document.getElementById('memoryMoves').textContent='Moves: '+memoryState.moves;document.getElementById('memoryPairs').textContent='Pairs: '+memoryState.pairs+' / 8'}
+  function flipMemory(index){const s=memoryState,c=s.cards[index];if(s.locked||c.open||c.matched)return;c.open=true;s.flipped.push(index);renderMemory();if(s.flipped.length===2){s.moves++;const[a,b]=s.flipped;if(s.cards[a].v===s.cards[b].v){s.cards[a].matched=s.cards[b].matched=true;s.flipped=[];s.pairs++;renderMemory();if(s.pairs===8)showToast('Memory complete!')}else{s.locked=true;setTimeout(()=>{s.cards[a].open=s.cards[b].open=false;s.flipped=[];s.locked=false;renderMemory()},650)}}}
+  document.getElementById('memoryRestart').onclick=()=>startMemory();
+
+  /* 2048 */
+  let board2048=[],score2048=0; const targetBoard=document.getElementById('board2048');
+  function start2048(){stopAllLoops();board2048=Array(16).fill(0);score2048=0;addTile2048();addTile2048();document.getElementById('overlay2048').classList.remove('show');render2048()}
+  function addTile2048(){const empty=board2048.map((v,i)=>v===0?i:-1).filter(i=>i>=0);if(!empty.length)return;board2048[empty[Math.floor(Math.random()*empty.length)]]=Math.random()<0.9?2:4}
+  function slide2048(line){const vals=line.filter(Boolean),out=[];for(let i=0;i<vals.length;i++){if(vals[i]===vals[i+1]){const v=vals[i]*2;out.push(v);score2048+=v;i++}else out.push(vals[i])}while(out.length<4)out.push(0);return out}
+  function move2048(dir){const old=board2048.join(',');const get=r=>board2048.slice(r*4,r*4+4);const set=(r,a)=>a.forEach((v,i)=>board2048[r*4+i]=v);if(dir==='left')for(let r=0;r<4;r++)set(r,slide2048(get(r)));if(dir==='right')for(let r=0;r<4;r++)set(r,slide2048(get(r).reverse()).reverse());if(dir==='up')for(let c=0;c<4;c++){let a=[board2048[c],board2048[c+4],board2048[c+8],board2048[c+12]];a=slide2048(a);a.forEach((v,r)=>board2048[r*4+c]=v)}if(dir==='down')for(let c=0;c<4;c++){let a=[board2048[c],board2048[c+4],board2048[c+8],board2048[c+12]].reverse();a=slide2048(a).reverse();a.forEach((v,r)=>board2048[r*4+c]=v)}if(old!==board2048.join(',')){addTile2048();render2048();if(!hasMove2048()){document.getElementById('overlay2048Text').textContent='Score: '+score2048;document.getElementById('overlay2048').classList.add('show')}}}
+  function hasMove2048(){if(board2048.some(v=>!v))return true;for(let r=0;r<4;r++)for(let c=0;c<4;c++){const i=r*4+c;if(c<3&&board2048[i]===board2048[i+1])return true;if(r<3&&board2048[i]===board2048[i+4])return true}return false}
+  function render2048(){targetBoard.innerHTML='';board2048.forEach(v=>{const d=document.createElement('div');d.className='tile2048'+(v?' v'+v:'');d.textContent=v||'';targetBoard.appendChild(d)});document.getElementById('score2048').textContent='Score: '+score2048}
+  window.addEventListener('keydown',e=>{if(activeGame!=='2048')return;const k=e.key.toLowerCase();const m={arrowleft:'left',a:'left',arrowright:'right',d:'right',arrowup:'up',w:'up',arrowdown:'down',s:'down'}[k];if(m){e.preventDefault();move2048(m)}});document.getElementById('restart2048').onclick=()=>start2048();document.getElementById('retry2048').onclick=()=>start2048();
+
+  /* Make the games folder the default app when opened. */
+  const originalOpen=window.openWindow;
+  if(typeof originalOpen==='function'){
+    const old=originalOpen;
+    window.openWindow=function(id){old(id);if(id==='gamesWindow')showFolder();}
+  }
+})();
 
 /* =========================================================
    STARTUP
@@ -4015,7 +3208,260 @@ buildEmojiPicker();
 updateProfileUI();
 updateWebNavigation();
 
+
+/* ===== Extra 10 offline games ===== */
+(function(){
+  const list=document.getElementById('gamesList');
+  const screen=document.getElementById('extraGameScreen');
+  const area=document.getElementById('extraGameArea');
+  const title=document.getElementById('gamesFolderTitle');
+  const back=document.getElementById('extraGameBack');
+  const status=document.getElementById('extraGameStatus');
+  if(!list||!screen||!area||!back)return;
+  let cleanup=()=>{}; let timer=null;
+  function stop(){if(timer){clearInterval(timer);timer=null}cleanup();cleanup=()=>{}}
+  function el(t,c,x){const n=document.createElement(t);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n}
+  function btn(x,c){const b=el('button',c||'extra-btn',x);b.type='button';return b}
+  function folder(){stop();screen.classList.remove('active');list.style.display='grid';back.style.display='none';title.textContent='HTML 5 Games';area.innerHTML=''}
+  function openExtra(name){stop();list.style.display='none';back.style.display='inline-block';screen.classList.add('active');title.textContent=name;status.textContent='Offline';area.innerHTML='';({tictactoe:tic,reaction,clicker,rps,whack,lights,number,hangman,dodger,golf}[name]||(()=>{}))()}
+  list.querySelectorAll('[data-extra-game]').forEach(b=>b.addEventListener('click',()=>openExtra(b.dataset.extraGame)));back.addEventListener('click',folder)
+  function tic(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Tic-Tac-Toe'),s=el('p','extra-game-sub','You are X. CPU is O.'),bd=el('div','ttt-board'),info=el('div','extra-stat','Your turn'),r=btn('Restart','extra-btn alt');p.append(h,s,bd,info,el('div','extra-controls'));p.lastChild.append(r);area.append(p);let a=Array(9).fill(''),done=false;const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];const check=()=>{for(const w of wins)if(a[w[0]]&&a[w[0]]===a[w[1]]&&a[w[1]]===a[w[2]])return a[w[0]];return a.every(Boolean)?'draw':null};function draw(){bd.innerHTML='';a.forEach((v,i)=>{const c=btn(v||' ','ttt-cell');c.onclick=()=>{if(done||a[i])return;a[i]='X';let z=check();draw();if(z)return end(z);info.textContent='CPU thinking…';setTimeout(()=>{const free=a.map((v,j)=>v?-1:j).filter(j=>j>=0);if(!free.length)return;let pick=free[Math.floor(Math.random()*free.length)];for(const j of free){const t=[...a];t[j]='O';if((()=>{for(const w of wins)if(t[w[0]]&&t[w[0]]===t[w[1]]&&t[w[1]]===t[w[2]])return true;return false})()){pick=j;break}}a[pick]='O';z=check();draw();if(z)end(z);else info.textContent='Your turn'},220)};bd.append(c)})}function end(z){done=true;info.textContent=z==='draw'?'Draw!':z==='X'?'You win!':'CPU wins!'}r.onclick=()=>{a=Array(9).fill('');done=false;info.textContent='Your turn';draw()};draw()}
+  function reaction(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Reaction Test'),s=el('p','extra-game-sub','Click when green.'),b=el('div','reaction-box','Click Start'),out=el('div','extra-stat','Reaction: —'),st=btn('Start');p.append(h,s,b,out,el('div','extra-controls'));p.lastChild.append(st);area.append(p);let state='idle',startTime=0;st.onclick=()=>{if(state!=='idle')return;state='wait';b.className='reaction-box waiting';b.textContent='Wait…';timer=setTimeout(()=>{state='ready';startTime=performance.now();b.className='reaction-box ready';b.textContent='CLICK!'},1200+Math.random()*2600)};b.onclick=()=>{if(state==='wait'){clearTimeout(timer);timer=null;state='idle';b.className='reaction-box';b.textContent='Too soon!'}else if(state==='ready'){out.textContent='Reaction: '+Math.round(performance.now()-startTime)+' ms';state='idle';b.className='reaction-box';b.textContent='Click Start'}};cleanup=()=>{if(timer)clearTimeout(timer)}}
+  function clicker(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Clicker'),s=el('p','extra-game-sub','10 seconds.'),c=btn('0','clicker-button'),sc=el('div','extra-stat','Clicks: 0'),tm=el('div','extra-stat','Time: 10'),st=btn('Start');p.append(h,s,c,sc,tm,el('div','extra-controls'));p.lastChild.append(st);area.append(p);let n=0,left=10,run=false;c.onclick=()=>{if(run){n++;c.textContent=n;sc.textContent='Clicks: '+n}};st.onclick=()=>{if(run)return;n=0;left=10;run=true;c.textContent='0';sc.textContent='Clicks: 0';tm.textContent='Time: 10';timer=setInterval(()=>{left--;tm.textContent='Time: '+left;if(left<=0){clearInterval(timer);timer=null;run=false;tm.textContent='Final clicks: '+n}},1000)};cleanup=()=>{if(timer)clearInterval(timer)}}
+  function rps(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Rock Paper Scissors'),s=el('p','extra-game-sub','First to 5 wins.'),score=el('div','extra-stat','You 0 — 0 CPU'),msg=el('div','extra-stat','Choose one.'),row=el('div','rps-row');p.append(h,s,score,msg,row);area.append(p);let y=0,c=0;['Rock','Paper','Scissors'].forEach(ch=>{const b=btn(ch,'rps-choice');b.onclick=()=>{if(y>=5||c>=5)return;const o=['Rock','Paper','Scissors'][Math.floor(Math.random()*3)];if(ch!==o){if((ch==='Rock'&&o==='Scissors')||(ch==='Paper'&&o==='Rock')||(ch==='Scissors'&&o==='Paper'))y++;else c++}score.textContent=`You ${y} — ${c} CPU`;msg.textContent=ch+' vs '+o+(ch===o?' — Draw':y>=5?' — You win!':c>=5?' — CPU wins!':'')};row.append(b)})}
+  function whack(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Whack-a-Mole'),s=el('p','extra-game-sub','20 seconds.'),st=el('div','mole-status','Score: 0 • Time: 20'),g=el('div','whack-grid'),start=btn('Start');p.append(h,s,st,g,el('div','extra-controls'));p.lastChild.append(start);area.append(p);let active=-1,sc=0,left=20,run=false,holes=[];for(let i=0;i<9;i++){const b=btn('','hole');b.onclick=()=>{if(run&&i===active){sc++;active=-1;draw()}};holes.push(b);g.append(b)}function draw(){holes.forEach((b,i)=>b.classList.toggle('active',i===active));st.textContent=`Score: ${sc} • Time: ${left}`}start.onclick=()=>{if(run)return;sc=0;left=20;run=true;timer=setInterval(()=>{left--;active=Math.floor(Math.random()*9);draw();if(left<=0){clearInterval(timer);timer=null;run=false;active=-1;draw();st.textContent='Final score: '+sc}},1000)};cleanup=()=>{if(timer)clearInterval(timer)}}
+  function lights(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Lights Out'),s=el('p','extra-game-sub','Turn every light off.'),g=el('div','lights-grid'),st=el('div','extra-stat','Lights on: 0'),r=btn('New Board','extra-btn alt');p.append(h,s,g,st,el('div','extra-controls'));p.lastChild.append(r);area.append(p);let a=[];function draw(){g.innerHTML='';let n=0;a.forEach((v,i)=>{if(v)n++;const b=btn('','light-cell'+(v?' on':''));b.onclick=()=>tap(i);g.append(b)});st.textContent='Lights on: '+n+(n?'':' — You win!')}function tap(i){const rr=Math.floor(i/5),cc=i%5;[i,i-1,i+1,i-5,i+5].forEach(j=>{if(j<0||j>=25)return;if(Math.abs(Math.floor(j/5)-rr)+Math.abs((j%5)-cc)>1)return;a[j]=!a[j]});draw()}r.onclick=()=>{a=Array.from({length:25},()=>Math.random()<.4);draw()};r.click()}
+  function number(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Number Guess'),s=el('p','extra-game-sub','Guess 1–100.'),i=el('input','extra-input');i.type='number';i.min='1';i.max='100';i.placeholder='Guess';const g=btn('Guess'),n=btn('New Number','extra-btn alt'),st=el('div','extra-stat','I picked a number.');p.append(h,s,i,el('div','extra-controls'));p.lastChild.append(g,n);p.append(st);area.append(p);let target=Math.floor(Math.random()*100)+1,tries=0;g.onclick=()=>{const v=Number(i.value);if(!Number.isInteger(v)||v<1||v>100){st.textContent='Enter 1–100.';return}tries++;st.textContent=v===target?`Correct in ${tries} guesses!`:v<target?'Too low.':'Too high.'};n.onclick=()=>{target=Math.floor(Math.random()*100)+1;tries=0;i.value='';st.textContent='New number chosen.'}}
+  function hangman(){const words=['JAVASCRIPT','BROWSER','CLASSROOM','PIXEL','ROBOT','COMPUTER','CANVAS','GALAXY','PUZZLE','NETWORK'];let word=words[Math.floor(Math.random()*words.length)],guess=new Set(),miss=0;const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Hangman'),s=el('p','extra-game-sub','Six misses allowed.'),view=el('div','hangman-word'),st=el('div','extra-stat','Misses: 0 / 6'),letters=el('div','hangman-letters'),r=btn('New Word','extra-btn alt');p.append(h,s,view,st,letters,el('div','extra-controls'));p.lastChild.append(r);area.append(p);function draw(){view.textContent=[...word].map(x=>guess.has(x)?x:'_').join(' ');st.textContent=`Misses: ${miss} / 6`;letters.innerHTML='';'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch=>{const b=btn(ch,'hangman-letter');b.disabled=guess.has(ch)||miss>=6||[...word].every(x=>guess.has(x));b.onclick=()=>{guess.add(ch);if(!word.includes(ch))miss++;draw()};letters.append(b)});if([...word].every(x=>guess.has(x)))st.textContent='You win!';else if(miss>=6)st.textContent='Game over — '+word}r.onclick=()=>{word=words[Math.floor(Math.random()*words.length)];guess=new Set();miss=0;draw()};draw()}
+  function dodger(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Dodger'),s=el('p','extra-game-sub','A/D or arrow keys. Survive.'),cv=el('canvas','dodger-canvas'),st=el('div','extra-stat','Score: 0'),start=btn('Start');cv.width=520;cv.height=420;p.append(h,s,cv,st,el('div','extra-controls'));p.lastChild.append(start);area.append(p);const x=cv.getContext('2d');let px=240,score=0,run=false,blocks=[],keys={};const kd=e=>{if(['ArrowLeft','ArrowRight','a','d','A','D'].includes(e.key)){keys[e.key.toLowerCase()]=true;e.preventDefault()}},ku=e=>keys[e.key.toLowerCase()]=false;window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);function draw(){x.fillStyle='#050607';x.fillRect(0,0,520,420);x.fillStyle='#4285f4';x.fillRect(px,380,40,18);blocks.forEach(b=>{x.fillStyle='#ef5350';x.fillRect(b.x,b.y,b.w,b.h)})}function loop(){if(!run)return;if(keys.arrowleft||keys.a)px-=6;if(keys.arrowright||keys.d)px+=6;px=Math.max(0,Math.min(480,px));if(Math.random()<.05)blocks.push({x:Math.random()*500,y:-25,w:18+Math.random()*22,h:18+Math.random()*22,v:2+score/100});blocks.forEach(b=>b.y+=b.v);blocks=blocks.filter(b=>b.y<440);score++;for(const b of blocks)if(b.x<px+40&&b.x+b.w>px&&b.y<398&&b.y+b.h>380){run=false;start.disabled=false;st.textContent='Game over — Score: '+Math.floor(score/10)}draw();if(run)timer=requestAnimationFrame(loop)}start.onclick=()=>{if(run)return;px=240;score=0;blocks=[];run=true;start.disabled=true;timer=requestAnimationFrame(loop)};cleanup=()=>{cancelAnimationFrame(timer);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku)}}
+  function golf(){const p=el('div','extra-game-panel'),h=el('h2','extra-game-title','Mini Golf'),s=el('p','extra-game-sub','Drag from the ball to aim. Click release to putt.'),cv=el('canvas','golf-canvas'),st=el('div','extra-stat','Strokes: 0'),r=btn('Reset','extra-btn alt');cv.width=560;cv.height=320;p.append(h,s,cv,st,el('div','extra-controls'));p.lastChild.append(r);area.append(p);const x=cv.getContext('2d');let ball={x:80,y:260},hole={x:470,y:70},vel={x:0,y:0},strokes=0,drag=false,aim={x:0,y:0};function draw(){x.fillStyle='#10361f';x.fillRect(0,0,560,320);x.fillStyle='#19582e';x.fillRect(12,12,536,296);x.fillStyle='#050505';x.beginPath();x.arc(hole.x,hole.y,14,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(ball.x,ball.y,8,0,7);x.fill();if(drag){x.strokeStyle='rgba(255,255,255,.6)';x.beginPath();x.moveTo(ball.x,ball.y);x.lineTo(aim.x,aim.y);x.stroke()}}function loop(){ball.x+=vel.x;ball.y+=vel.y;vel.x*=.985;vel.y*=.985;if(ball.x<20||ball.x>540)vel.x*=-.8;if(ball.y<20||ball.y>300)vel.y*=-.8;if(Math.hypot(ball.x-hole.x,ball.y-hole.y)<18&&Math.hypot(vel.x,vel.y)<1){ball.x=hole.x;ball.y=hole.y;vel.x=vel.y=0;st.textContent='Hole in '+strokes+' strokes!'}draw();timer=requestAnimationFrame(loop)}cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect();aim={x:(e.clientX-r.left)*560/r.width,y:(e.clientY-r.top)*320/r.height};drag=true;cv.setPointerCapture(e.pointerId);draw()});cv.addEventListener('pointermove',e=>{if(!drag)return;const r=cv.getBoundingClientRect();aim={x:(e.clientX-r.left)*560/r.width,y:(e.clientY-r.top)*320/r.height};draw()});cv.addEventListener('pointerup',e=>{if(!drag)return;const r=cv.getBoundingClientRect();aim={x:(e.clientX-r.left)*560/r.width,y:(e.clientY-r.top)*320/r.height};vel.x=(ball.x-aim.x)*.06;vel.y=(ball.y-aim.y)*.06;strokes++;st.textContent='Strokes: '+strokes;drag=false;draw()});r.onclick=()=>{ball={x:80,y:260};vel={x:0,y:0};strokes=0;st.textContent='Strokes: 0'};timer=requestAnimationFrame(loop);cleanup=()=>cancelAnimationFrame(timer)}
+})();
+
 </script>
 
+
+<script>
+(function(){
+  let z=1000;
+  document.addEventListener('click',function(e){
+    const launcher=e.target.closest('[data-open]');
+    if(!launcher) return;
+    const id=launcher.getAttribute('data-open');
+    const win=document.getElementById(id);
+    if(!win) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    win.classList.add('active');
+    win.style.display='flex';
+    win.style.zIndex=String(++z);
+  },true);
+})();
+</script>
+
+<script>
+(() => {
+  /* This manager is deliberately non-module so the desktop still works
+     if Firebase or another optional module fails to load. */
+  let z = 5000;
+  const minWDefault = 340;
+  const minHDefault = 260;
+  const windows = [...document.querySelectorAll(".window")];
+
+  const bringFront = (win) => {
+    if (!win) return;
+    z += 1;
+    win.style.zIndex = String(z);
+    win.style.display = "flex";
+    win.classList.add("active","os-active");
+  };
+
+  const closeWin = (id) => {
+    const win = document.getElementById(id);
+    if (!win) return;
+    win.style.display = "none";
+    win.classList.remove("active","os-active");
+  };
+
+  const toggleMax = (win) => {
+    if (!win) return;
+    bringFront(win);
+    if (win.classList.contains("maximized")) {
+      win.classList.remove("maximized");
+      if (win.dataset.restoreLeft) {
+        win.style.left = win.dataset.restoreLeft;
+        win.style.top = win.dataset.restoreTop;
+        win.style.width = win.dataset.restoreWidth;
+        win.style.height = win.dataset.restoreHeight;
+      }
+      win.style.transform = "none";
+      return;
+    }
+    const r = win.getBoundingClientRect();
+    win.dataset.restoreLeft = r.left + "px";
+    win.dataset.restoreTop = r.top + "px";
+    win.dataset.restoreWidth = r.width + "px";
+    win.dataset.restoreHeight = r.height + "px";
+    win.classList.add("maximized");
+    win.style.transform = "none";
+    win.style.left = "10px";
+    win.style.top = "10px";
+    win.style.width = "calc(100vw - 20px)";
+    win.style.height = "calc(100vh - 84px)";
+  };
+
+  // App launchers: capture phase means this still works if an optional module failed.
+  document.addEventListener("click", (e) => {
+    const launcher = e.target.closest("[data-open]");
+    if (!launcher) return;
+    const id = launcher.getAttribute("data-open");
+    const win = document.getElementById(id);
+    if (!win) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    bringFront(win);
+    if (id === "gamesWindow") {
+      const list = document.getElementById("gamesList");
+      const back = document.getElementById("gamesBackBtn");
+      const title = document.getElementById("gamesFolderTitle");
+      const screen = document.getElementById("extraGameScreen");
+      if (list) list.style.display = "grid";
+      if (back) back.style.display = "none";
+      if (title) title.textContent = "HTML 5 Games";
+      if (screen) screen.classList.remove("active");
+    }
+  }, true);
+
+  document.addEventListener("click", (e) => {
+    const close = e.target.closest("[data-close]");
+    if (close) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      closeWin(close.getAttribute("data-close"));
+      return;
+    }
+    const min = e.target.closest("[data-minimize]");
+    if (min) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      closeWin(min.getAttribute("data-minimize"));
+      return;
+    }
+    const max = e.target.closest("[data-maximize]");
+    if (max) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      toggleMax(document.getElementById(max.getAttribute("data-maximize")));
+    }
+  }, true);
+
+  // Add real edge/corner hit zones to every window.
+  windows.forEach((win) => {
+    ["n","s","w","e","nw","ne","sw","se"].forEach((dir) => {
+      const edge = document.createElement("div");
+      edge.className = "os-resize-edge " + dir;
+      edge.dataset.resizeDir = dir;
+      edge.setAttribute("aria-hidden","true");
+      win.appendChild(edge);
+    });
+  });
+
+  let resize = null;
+
+  document.addEventListener("pointerdown", (e) => {
+    const edge = e.target.closest?.(".os-resize-edge");
+    if (!edge || e.button !== 0) return;
+    const win = edge.closest(".window");
+    if (!win || win.classList.contains("maximized")) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    bringFront(win);
+    const r = win.getBoundingClientRect();
+    resize = {
+      win, dir: edge.dataset.resizeDir, id: e.pointerId,
+      sx: e.clientX, sy: e.clientY,
+      sl: r.left, st: r.top, sw: r.width, sh: r.height
+    };
+    win.classList.add("os-resizing");
+    document.body.style.cursor = edge.style.cursor || getComputedStyle(edge).cursor;
+    try { edge.setPointerCapture(e.pointerId); } catch {}
+  }, true);
+
+  document.addEventListener("pointermove", (e) => {
+    if (!resize || e.pointerId !== resize.id) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const r = resize;
+    const minW = Math.max(minWDefault, parseFloat(getComputedStyle(r.win).minWidth) || 0);
+    const minH = Math.max(minHDefault, parseFloat(getComputedStyle(r.win).minHeight) || 0);
+    const dx = e.clientX - r.sx;
+    const dy = e.clientY - r.sy;
+    let left = r.sl, top = r.st, width = r.sw, height = r.sh;
+    if (r.dir.includes("e")) width = Math.max(minW, r.sw + dx);
+    if (r.dir.includes("s")) height = Math.max(minH, r.sh + dy);
+    if (r.dir.includes("w")) {
+      left = Math.min(r.sl + dx, r.sl + r.sw - minW);
+      left = Math.max(0, left);
+      width = r.sw + (r.sl - left);
+    }
+    if (r.dir.includes("n")) {
+      top = Math.min(r.st + dy, r.st + r.sh - minH);
+      top = Math.max(0, top);
+      height = r.sh + (r.st - top);
+    }
+    width = Math.min(width, window.innerWidth - left);
+    height = Math.min(height, window.innerHeight - 74 - top);
+    r.win.style.left = Math.max(0,left) + "px";
+    r.win.style.top = Math.max(0,top) + "px";
+    r.win.style.width = Math.max(minW,width) + "px";
+    r.win.style.height = Math.max(minH,height) + "px";
+    r.win.style.transform = "none";
+  }, true);
+
+  const endResize = (e) => {
+    if (!resize || e.pointerId !== resize.id) return;
+    resize.win.classList.remove("os-resizing");
+    document.body.style.cursor = "";
+    resize = null;
+  };
+  document.addEventListener("pointerup", endResize, true);
+  document.addEventListener("pointercancel", endResize, true);
+
+  // OS-style titlebar dragging, independent of Firebase.
+  document.querySelectorAll(".window .titlebar").forEach((bar) => {
+    let drag = null;
+    bar.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || e.target.closest(".traffic")) return;
+      const win = bar.closest(".window");
+      if (!win || win.classList.contains("maximized")) return;
+      const r = win.getBoundingClientRect();
+      win.style.transform = "none";
+      win.style.left = r.left + "px";
+      win.style.top = r.top + "px";
+      drag = { id:e.pointerId, dx:e.clientX-r.left, dy:e.clientY-r.top };
+      bringFront(win);
+      e.preventDefault();
+      e.stopPropagation();
+      try { bar.setPointerCapture(e.pointerId); } catch {}
+    });
+    bar.addEventListener("pointermove", (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const win = bar.closest(".window");
+      const x = Math.max(0, Math.min(window.innerWidth-win.offsetWidth, e.clientX-drag.dx));
+      const y = Math.max(0, Math.min(window.innerHeight-74-win.offsetHeight, e.clientY-drag.dy));
+      win.style.left = x + "px";
+      win.style.top = y + "px";
+      e.preventDefault();
+    });
+    const stop = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      drag = null;
+      try { bar.releasePointerCapture(e.pointerId); } catch {}
+    };
+    bar.addEventListener("pointerup", stop);
+    bar.addEventListener("pointercancel", stop);
+  });
+
+  // Expose safe compatibility functions.
+  window.openWindow = (id) => bringFront(document.getElementById(id));
+  window.closeWindow = closeWin;
+})();
+</script>
 </body>
 </html>
